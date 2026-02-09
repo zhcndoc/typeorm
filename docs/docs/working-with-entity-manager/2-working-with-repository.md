@@ -1,9 +1,9 @@
 # Repository
 
-`Repository` is just like `EntityManager` but its operations are limited to a concrete entity.
-You can access the repository via EntityManager.
+`Repository` 就像 `EntityManager`，但它的操作仅限于具体的实体。
+你可以通过 EntityManager 访问仓库。
 
-Example:
+示例：
 
 ```typescript
 import { User } from "./entity/User"
@@ -16,10 +16,10 @@ user.name = "Umed"
 await userRepository.save(user)
 ```
 
-There are 3 types of repositories:
+有三种类型的仓库：
 
-- `Repository` - Regular repository for any entity.
-- `TreeRepository` - Repository, extensions of `Repository` used for tree-entities
-  (like entities marked with `@Tree` decorator).
-  Has special methods to work with tree structures.
-- `MongoRepository` - Repository with special functions used only with MongoDB.
+- `Repository` - 适用于任何实体的常规仓库。
+- `TreeRepository` - `Repository` 的扩展，适用于树形实体
+  （比如用 `@Tree` 装饰器标记的实体）。
+  具有处理树形结构的特殊方法。
+- `MongoRepository` - 只用于 MongoDB 的特殊功能仓库。

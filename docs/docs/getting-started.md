@@ -1,66 +1,62 @@
-# Getting Started
+# 快速开始
 
-TypeORM is an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping)
-that can run in Node.js, Browser, Cordova, Ionic, React Native, NativeScript, Expo, and Electron platforms
-and can be used with TypeScript and JavaScript (ES2021).
+TypeORM 是一个可以在 Node.js、浏览器、Cordova、Ionic、React Native、NativeScript、Expo 和 Electron 平台上运行的 [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping)，
+并且可用于 TypeScript 和 JavaScript (ES2021)。
 
-Its goal is to always support the latest JavaScript features and provide additional features
-that help you to develop any kind of application that uses databases - from
-small applications with a few tables to large-scale enterprise applications
-with multiple databases.
+它的目标是始终支持最新的 JavaScript 特性，并提供额外功能，
+帮助你开发任何使用数据库的应用——从只有少数表的小型应用到具有多个数据库的大型企业应用。
 
-TypeORM supports more databases than any other JS/TS ORM: [Google Spanner](./drivers/google-spanner.md), [Microsoft SqlServer](./drivers/microsoft-sqlserver.md), [MongoDB](./drivers/mongodb.md), [MySQL/MariaDB](./drivers/mysql.md), [Oracle](./drivers/oracle.md), [Postgres](./drivers/postgres.md), [SAP HANA](./drivers/sap.md) and [SQLite](./drivers/sqlite.md), as well as derived databases and different drivers.
+TypeORM 支持的数据库比任何其他 JS/TS ORM 都多：[Google Spanner](./drivers/google-spanner.md)、[Microsoft SqlServer](./drivers/microsoft-sqlserver.md)、[MongoDB](./drivers/mongodb.md)、[MySQL/MariaDB](./drivers/mysql.md)、[Oracle](./drivers/oracle.md)、[Postgres](./drivers/postgres.md)、[SAP HANA](./drivers/sap.md) 和 [SQLite](./drivers/sqlite.md)，以及派生数据库和不同驱动。
 
-TypeORM supports both [Active Record](./guides/1-active-record-data-mapper.md#what-is-the-active-record-pattern) and [Data Mapper](./guides/1-active-record-data-mapper.md#what-is-the-data-mapper-pattern) patterns,
-unlike all other JavaScript ORMs currently in existence,
-which means you can write high-quality, loosely coupled, scalable,
-maintainable applications in the most productive way.
+TypeORM 支持 [Active Record](./guides/1-active-record-data-mapper.md#what-is-the-active-record-pattern) 和 [Data Mapper](./guides/1-active-record-data-mapper.md#what-is-the-data-mapper-pattern) 模式，
+这与目前所有其他 JavaScript ORM 不同，
+这意味着你可以以最高效的方式编写高质量、松耦合、可扩展、可维护的应用。
 
-TypeORM is highly influenced by other ORMs, such as [Hibernate](http://hibernate.org/orm/),
-[Doctrine](http://www.doctrine-project.org/) and [Entity Framework](https://www.asp.net/entity-framework).
+TypeORM 受到其他 ORM 的影响，如 [Hibernate](http://hibernate.org/orm/)、
+[Doctrine](http://www.doctrine-project.org/) 和 [Entity Framework](https://www.asp.net/entity-framework)。
 
-## Features
+## 功能
 
-- Supports both [DataMapper](./guides/1-active-record-data-mapper.md#what-is-the-data-mapper-pattern) and [ActiveRecord](./guides/1-active-record-data-mapper.md#what-is-the-active-record-pattern) (your choice).
-- Entities and columns.
-- Database-specific column types.
-- Entity manager.
-- Repositories and custom repositories.
-- Clean object-relational model.
-- Associations (relations).
-- Eager and lazy relations.
-- Unidirectional, bidirectional, and self-referenced relations.
-- Supports multiple inheritance patterns.
-- Cascades.
-- Indices.
-- Transactions.
-- [Migrations](/docs/migrations/why) with automatic generation.
-- Connection pooling.
-- Replication.
-- Using multiple database instances.
-- Working with multiple database types.
-- Cross-database and cross-schema queries.
-- Elegant-syntax, flexible and powerful QueryBuilder.
-- Left and inner joins.
-- Proper pagination for queries using joins.
-- Query caching.
-- Streaming raw results.
-- Logging.
-- Listeners and subscribers (hooks).
-- Supports closure table pattern.
-- Schema declaration in models or separate configuration files.
-- Supports MySQL / MariaDB / Postgres / CockroachDB / SQLite / Microsoft SQL Server / Oracle / SAP Hana / sql.js.
-- Supports MongoDB NoSQL database.
-- Works in Node.js / Browser / Ionic / Cordova / React Native / NativeScript / Expo / Electron platforms.
-- TypeScript and JavaScript support.
-- ESM and CommonJS support.
-- Produced code is performant, flexible, clean, and maintainable.
-- Follows all possible best practices.
-- CLI.
+- 同时支持 [DataMapper](./guides/1-active-record-data-mapper.md#what-is-the-data-mapper-pattern) 和 [ActiveRecord](./guides/1-active-record-data-mapper.md#what-is-the-active-record-pattern)（任选其一）。
+- 实体和列。
+- 数据库特定的列类型。
+- 实体管理器。
+- 仓库和自定义仓库。
+- 干净的对象关系模型。
+- 关联（关系）。
+- 急切加载和延迟加载关系。
+- 单向、双向和自引用关系。
+- 支持多重继承模式。
+- 级联操作。
+- 索引。
+- 事务。
+- 支持自动生成的 [迁移](/docs/migrations/why)。
+- 连接池。
+- 复制。
+- 使用多个数据库实例。
+- 支持多种数据库类型。
+- 跨数据库和跨 schema 查询。
+- 优雅语法、灵活强大的查询构建器 (QueryBuilder)。
+- 左连接和内连接。
+- 支持基于连接的正确分页。
+- 查询缓存。
+- 流式原始结果。
+- 日志记录。
+- 监听器和订阅器（钩子）。
+- 支持闭包表模式。
+- 在模型中或单独配置文件中声明 schema。
+- 支持 MySQL / MariaDB / Postgres / CockroachDB / SQLite / Microsoft SQL Server / Oracle / SAP Hana / sql.js。
+- 支持 MongoDB NoSQL 数据库。
+- 适用于 Node.js / 浏览器 / Ionic / Cordova / React Native / NativeScript / Expo / Electron 平台。
+- 支持 TypeScript 和 JavaScript。
+- 支持 ESM 和 CommonJS。
+- 生成的代码高效、灵活、干净且易维护。
+- 遵循所有最佳实践。
+- CLI。
 
-And more...
+等等……
 
-With TypeORM, your models look like this:
+使用 TypeORM，你的模型看起来像这样：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -81,7 +77,7 @@ export class User {
 }
 ```
 
-And your domain logic looks like this:
+你的领域逻辑看起来像这样：
 
 ```typescript
 const userRepository = AppDataSource.getRepository(User)
@@ -95,16 +91,16 @@ await userRepository.save(user)
 const allUsers = await userRepository.find()
 const firstUser = await userRepository.findOneBy({
     id: 1,
-}) // find by id
+}) // 根据id查找
 const timber = await userRepository.findOneBy({
     firstName: "Timber",
     lastName: "Saw",
-}) // find by firstName and lastName
+}) // 根据firstName和lastName查找
 
 await userRepository.remove(timber)
 ```
 
-Alternatively, if you prefer to use the `ActiveRecord` implementation, you can use it as well:
+或者，如果你更喜欢使用 `ActiveRecord` 实现，也可以这样写：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm"
@@ -125,7 +121,7 @@ export class User extends BaseEntity {
 }
 ```
 
-And your domain logic will look this way:
+对应的领域逻辑是：
 
 ```typescript
 const user = new User()
@@ -146,78 +142,77 @@ const timber = await User.findOneBy({
 await timber.remove()
 ```
 
-## Installation
+## 安装
 
-1. Install the npm package:
+1. 安装 npm 包：
 
     `npm install typeorm`
 
-2. You need to install `reflect-metadata` shim:
+2. 你需要安装 `reflect-metadata` shim：
 
     `npm install reflect-metadata`
 
-    and import it somewhere in the global place of your app (for example in `app.ts`):
+    并在应用的全局地方（例如 `app.ts`）导入：
 
     `import "reflect-metadata"`
 
-3. You may need to install node typings:
+3. 你可能还需要安装 Node 类型定义：
 
     `npm install @types/node --save-dev`
 
-4. Install a database driver: see the documentation for each particular driver: [mongodb](./drivers/mongodb.md#installation), [mssql](./drivers/microsoft-sqlserver.md#installation), [mysql/mariadb](./drivers/mysql.md#installation), [oracle](./drivers/oracle.md#installation), [postgres](./drivers/postgres.md#installation), [sap](./drivers/sap.md#installation), [spanner](./drivers/google-spanner.md#installation), [sqlite](./drivers/sqlite.md#installation).
+4. 安装数据库驱动：参见各种驱动的安装说明，[mongodb](./drivers/mongodb.md#installation)、[mssql](./drivers/microsoft-sqlserver.md#installation)、[mysql/mariadb](./drivers/mysql.md#installation)、[oracle](./drivers/oracle.md#installation)、[postgres](./drivers/postgres.md#installation)、[sap](./drivers/sap.md#installation)、[spanner](./drivers/google-spanner.md#installation)、[sqlite](./drivers/sqlite.md#installation)。
 
-### TypeScript configuration
+### TypeScript 配置
 
-Also, make sure you are using TypeScript version **4.5** or higher,
-and you have enabled the following settings in `tsconfig.json`:
+确保你使用的 TypeScript 版本为 **4.5** 或更高，并且在 `tsconfig.json` 中启用了以下配置：
 
 ```json
 "emitDecoratorMetadata": true,
 "experimentalDecorators": true,
 ```
 
-## Quick Start
+## 快速开始
 
-The quickest way to get started with TypeORM is to use its CLI commands to generate a starter project.
-Quick start works only if you are using TypeORM in a Node.js application.
-If you are using other platforms, proceed to the [step-by-step guide](#step-by-step-guide).
+使用 TypeORM 的 CLI 命令生成启动项目是最快速的方式。
+快速开始只适用于 Node.js 应用。
+如果使用其他平台，请参考[分步指南](#step-by-step-guide)。
 
-To create a new project using CLI, run the following command:
+使用 CLI 创建新项目，运行：
 
 ```shell
 npx typeorm init --name MyProject --database postgres
 ```
 
-Where `name` is the name of your project and `database` is the database you'll use.
-Database can be one of the following values: `mysql`, `mariadb`, `postgres`, `cockroachdb`, `sqlite`, `mssql`, `sap`, `spanner`, `oracle`, `mongodb`,
-`cordova`, `react-native`, `expo`, `nativescript`.
+其中 `name` 是你的项目名称，`database` 是你使用的数据库。
+数据库可选值为：`mysql`、`mariadb`、`postgres`、`cockroachdb`、`sqlite`、`mssql`、`sap`、`spanner`、`oracle`、`mongodb`、
+`cordova`、`react-native`、`expo`、`nativescript`。
 
-This command will generate a new project in the `MyProject` directory with the following files:
+该命令将在 `MyProject` 目录生成以下文件：
 
 ```text
 MyProject
-├── src                   // place of your TypeScript code
-│   ├── entities          // place where your entities (database models) are stored
-│   │   └── User.ts       // sample entity
-│   ├── migrations        // place where your migrations are stored
-│   ├── data-source.ts    // data source and all connection configuration
-│   └── index.ts          // start point of your application
-├── .gitignore            // standard gitignore file
-├── package.json          // node module dependencies
-├── README.md             // simple readme file
-└── tsconfig.json         // TypeScript compiler options
+├── src                   // 放置 TypeScript 代码的目录
+│   ├── entities          // 存放实体（数据库模型）
+│   │   └── User.ts       // 示例实体
+│   ├── migrations        // 迁移文件目录
+│   ├── data-source.ts    // 数据源及连接配置
+│   └── index.ts          // 应用入口
+├── .gitignore            // 标准 gitignore 文件
+├── package.json          // Node 模块依赖
+├── README.md             // 简单的说明文件
+└── tsconfig.json         // TypeScript 编译器选项
 ```
 
-> You can also run `typeorm init` on an existing node project, but be careful - it may override some files you already have.
+> 你也可以在已有的 Node 项目中运行 `typeorm init`，但请注意，可能会覆盖某些现有文件。
 
-The next step is to install new project dependencies:
+接下来安装新项目依赖：
 
 ```shell
 cd MyProject
 npm install
 ```
 
-After you have all dependencies installed, edit the `data-source.ts` file and put your own database connection configuration options in there:
+依赖安装完成后，编辑 `data-source.ts` 文件，添加你自己的数据库连接配置：
 
 ```ts
 export const AppDataSource = new DataSource({
@@ -235,44 +230,38 @@ export const AppDataSource = new DataSource({
 })
 ```
 
-Particularly, most of the time you'll only need to configure
-`host`, `username`, `password`, `database` and maybe `port` options.
+通常你只需配置 `host`、`username`、`password`、`database`，可能还需要 `port`。
 
-Once you finish with configuration and all node modules are installed, you can run your application:
+配置完成并安装所有依赖后，运行应用：
 
 ```shell
 npm start
 ```
 
-That's it, your application should successfully run and insert a new user into the database.
-You can continue to work with this project and integrate other modules you need and start
-creating more entities.
+这样，你的应用应当成功运行并插入新用户到数据库。
+你可以继续开发此项目，集成更多模块，创建更多实体。
 
-> You can generate an ESM project by running
-> `npx typeorm init --name MyProject --database postgres --module esm` command.
+> 你可以运行命令 `npx typeorm init --name MyProject --database postgres --module esm` 来生成 ESM 项目。
 
-> You can generate an even more advanced project with express installed by running
-> `npx typeorm init --name MyProject --database mysql --express` command.
+> 运行命令 `npx typeorm init --name MyProject --database mysql --express` 可以生成带 express 的高级项目。
 
-> You can generate a docker-compose file by running
-> `npx typeorm init --name MyProject --database postgres --docker` command.
+> 运行命令 `npx typeorm init --name MyProject --database postgres --docker` 可以生成 docker-compose 文件。
 
-## Step-by-Step Guide
+## 分步指南
 
-What are you expecting from ORM?
-First, you are expecting it will create database tables for you
-and find / insert / update / delete your data without the pain of
-having to write lots of hardly maintainable SQL queries.
-This guide will show you how to set up TypeORM from scratch and make it do what you are expecting from an ORM.
+你对 ORM 有什么期待？
+首先，你期待它帮你创建数据库表，
+并且在查找/插入/更新/删除数据时，不必写大量难维护的 SQL 查询。
+本指南将演示如何从零开始配置 TypeORM，实现 ORM 的这些期待。
 
-### Create a model
+### 创建模型
 
-Working with a database starts with creating tables.
-How do you tell TypeORM to create a database table?
-The answer is - through the models.
-Your models in your app are your database tables.
+数据库操作从创建表开始。
+如何让 TypeORM 创建数据库表？
+答案是：通过模型。
+你的应用中的模型即数据库中的表。
 
-For example, you have a `Photo` model:
+例如，有个 `Photo` 模型：
 
 ```typescript
 export class Photo {
@@ -285,19 +274,19 @@ export class Photo {
 }
 ```
 
-And you want to store photos in your database.
-To store things in the database, first, you need a database table,
-and database tables are created from your models.
-Not all models, but only those you define as _entities_.
+你想将照片保存到数据库。
+要存储数据，首先需要数据库表，
+而数据库表由模型创建生成。
+不是所有模型，而是被定义为 _实体_ 的模型。
 
-### Create an entity
+### 创建实体
 
-_Entity_ is your model decorated by an `@Entity` decorator.
-A database table will be created for such models.
-You work with entities everywhere in TypeORM.
-You can load/insert/update/remove and perform other operations with them.
+_实体_ 是被 `@Entity` 装饰器标记的模型。
+这样的模型会被创建为数据库表。
+在 TypeORM 中，你随时操作实体。
+你可以加载、插入、更新、删除并执行其他操作。
 
-Let's make our `Photo` model an entity:
+让我们的 `Photo` 模型变成实体：
 
 ```typescript
 import { Entity } from "typeorm"
@@ -313,14 +302,13 @@ export class Photo {
 }
 ```
 
-Now, a database table will be created for the `Photo` entity, and we'll be able to work with it anywhere in our app.
-We have created a database table, however, what table can exist without columns?
-Let's create a few columns in our database table.
+现在，`Photo` 实体会对应创建数据库表，你可以在应用任意地方操作它。
+表创建了，但表怎么能没有列呢？
+我们需要为数据表创建若干列。
 
-### Adding table columns
+### 添加表列
 
-To add database columns, you need to decorate an entity's properties you want to make into a column
-with a `@Column` decorator.
+给实体的属性添加 `@Column` 装饰器，即可将其变成数据库列：
 
 ```typescript
 import { Entity, Column } from "typeorm"
@@ -347,19 +335,19 @@ export class Photo {
 }
 ```
 
-Now `id`, `name`, `description`, `filename`, `views`, and `isPublished` columns will be added to the `photo` table.
-Column types in the database are inferred from the property types you used, e.g.
-`number` will be converted into `integer`, `string` into `varchar`, `boolean` into `bool`, etc.
-But you can use any column type your database supports by explicitly specifying a column type into the `@Column` decorator.
+这样，`photo` 表中会添加 `id`、`name`、`description`、`filename`、`views` 和 `isPublished` 列。
+列的数据库类型根据属性类型推断，
+比如 `number` 会映射为 `integer`，`string` 会变成 `varchar`，`boolean` 会变成 `bool` 等。
+但你可在 `@Column` 装饰器中显式指定数据库支持的任意列类型。
 
-We generated a database table with columns, but there is one thing left.
-Each database table must have a column with a primary key.
+我们生成了数据库表及列，但有一条必须的规则：
+每个数据库表都必须有主键列。
 
-### Creating a primary column
+### 创建主键列
 
-Each entity **must** have at least one primary key column.
-This is a requirement, and you can't avoid it.
-To make a column a primary key, you need to use the `@PrimaryColumn` decorator.
+每个实体**必须**至少有一个主键列。
+这是强制要求，无法规避。
+要设置表的主键列，使用 `@PrimaryColumn` 装饰器：
 
 ```typescript
 import { Entity, Column, PrimaryColumn } from "typeorm"
@@ -386,10 +374,10 @@ export class Photo {
 }
 ```
 
-### Creating an auto-generated column
+### 创建自动生成的主键列
 
-Now, let's say you want your id column to be auto-generated (this is known as auto-increment / sequence / serial / generated identity column).
-To do that, you need to change the `@PrimaryColumn` decorator to a `@PrimaryGeneratedColumn` decorator:
+若你希望 id 列为自增类型（自增长 / 序列 / 序列号 / 生成身份列），
+请将 `@PrimaryColumn` 改为 `@PrimaryGeneratedColumn`：
 
 ```typescript
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
@@ -416,12 +404,13 @@ export class Photo {
 }
 ```
 
-### Column data types
+### 列数据类型
 
-Next, let's fix our data types. By default, the string is mapped to a varchar(255)-like type (depending on the database type).
-The number is mapped to an integer-like type (depending on the database type).
-We don't want all our columns to be limited to varchars or integers.
-Let's set up the correct data types:
+接下来，让我们设置正确的数据类型。
+默认情况下，字符串映射为 `varchar(255)` （具体根据数据库而定），
+数字映射为整数类型。
+但我们不想让所有字符串都限制为 255 长度，也不想所有数字都用整数。
+可以指定更合适的数据类型：
 
 ```typescript
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm"
@@ -450,13 +439,13 @@ export class Photo {
 }
 ```
 
-Column types are database-specific.
-You can set any column type your database supports.
-More information on supported column types can be found [here](./entity/1-entities.md#column-types).
+数据库列类型是数据库特定的。
+你可以指定数据库支持的任意列类型。
+更多详情请查看[这里](./entity/1-entities.md#column-types)。
 
-### Creating a new `DataSource`
+### 创建新的 `DataSource`
 
-Now, when our entity is created, let's create `index.ts` file and set up our `DataSource` there:
+实体创建后，建立 `index.ts` 文件，配置 `DataSource`：
 
 ```typescript
 import "reflect-metadata"
@@ -475,9 +464,7 @@ const AppDataSource = new DataSource({
     logging: false,
 })
 
-// to initialize the initial connection with the database, register all entities
-// and "synchronize" database schema, call "initialize()" method of a newly created database
-// once in your application bootstrap
+// 初始化连接数据库、注册实体并同步数据库架构
 try {
     await AppDataSource.initialize()
 } catch (error) {
@@ -485,20 +472,19 @@ try {
 }
 ```
 
-We are using Postgres in this example, but you can use any other supported database.
-To use another database, change the `type` in the options to the database type you are using:
-`mysql`, `mariadb`, `postgres`, `cockroachdb`, `sqlite`, `mssql`, `oracle`, `sap`, `spanner`, `cordova`, `nativescript`, `react-native`,
-`expo`, or `mongodb`.
-Also make sure to use your own host, port, username, password, and database settings.
+本示例使用 Postgres，不过你可以使用其他支持的数据库。
+使用其他数据库，修改 `type` 选项为相应数据库类型：
+`mysql`、`mariadb`、`postgres`、`cockroachdb`、`sqlite`、`mssql`、`oracle`、`sap`、`spanner`、`cordova`、`nativescript`、`react-native`、`expo` 或 `mongodb`。
+还请确认使用自己的 `host`、`port`、`username`、`password` 和 `database` 配置。
 
-We added our Photo entity to the list of entities for this data source.
-Each entity you are using in your connection must be listed there.
+我们将 Photo 实体加入此数据源的实体列表，
+每个连接中你使用的实体都必须注册。
 
-Setting `synchronize` makes sure your entities will be synced with the database, every time you run the application.
+开启 `synchronize` 确保每次运行应用都会同步实体与数据库。
 
-### Running the application
+### 运行应用
 
-Now if you run your `index.ts`, a connection with the database will be initialized and a database table for your photos will be created.
+运行 `index.ts`，将初始化数据库连接并创建 `photo` 表：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -513,9 +499,9 @@ Now if you run your `index.ts`, a connection with the database will be initializ
 +-------------+--------------+----------------------------+
 ```
 
-### Creating and inserting a photo into the database
+### 创建并插入照片数据
 
-Now let's create a new photo to save it in the database:
+创建新照片并保存到数据库：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -529,37 +515,36 @@ photo.views = 1
 photo.isPublished = true
 
 await AppDataSource.manager.save(photo)
-console.log("Photo has been saved. Photo id is", photo.id)
+console.log("照片已保存，照片ID为", photo.id)
 ```
 
-Once your entity is saved, it will get a newly generated id.
-`save` method returns an instance of the same object you pass to it.
-It's not a new copy of the object, it modifies its "id" and returns it.
+保存后，实体获得自动生成的 id。
+`save` 方法返回的是传入对象的实例本身，不是副本，id 属性被修改后返回。
 
-### Using Entity Manager
+### 使用实体管理器 Entity Manager
 
-We just created a new photo and saved it in the database.
-We used `EntityManager` to save it.
-Using entity manager, you can manipulate any entity in your app.
-For example, let's load our saved entity:
+刚才创建并保存了新照片，
+我们用的是 `EntityManager` 进行操作。
+EntityManager 可操作应用中任何实体。
+例如加载所有保存的照片：
 
 ```typescript
 import { Photo } from "./entity/Photo"
 import { AppDataSource } from "./index"
 
 const savedPhotos = await AppDataSource.manager.find(Photo)
-console.log("All photos from the db: ", savedPhotos)
+console.log("数据库中所有照片：", savedPhotos)
 ```
 
-`savedPhotos` will be an array of Photo objects with the data loaded from the database.
+`savedPhotos` 是包含数据库数据的 Photo 对象数组。
 
-Learn more about [EntityManager](./working-with-entity-manager/1-working-with-entity-manager.md).
+了解更多关于 [EntityManager](./working-with-entity-manager/1-working-with-entity-manager.md)。
 
-### Using Repositories
+### 使用仓库 Repositories
 
-Now let's refactor our code and use `Repository` instead of `EntityManager`.
-Each entity has its own repository which handles all operations with its entity.
-When you deal with entities a lot, Repositories are more convenient to use than EntityManagers:
+让我们改用 `Repository` 代替 `EntityManager`。
+每个实体均有自己的仓库，管理该实体所有操作。
+当频繁操作实体时，仓库更便捷：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -575,17 +560,17 @@ photo.isPublished = true
 const photoRepository = AppDataSource.getRepository(Photo)
 
 await photoRepository.save(photo)
-console.log("Photo has been saved")
+console.log("照片已保存")
 
 const savedPhotos = await photoRepository.find()
-console.log("All photos from the db: ", savedPhotos)
+console.log("数据库中所有照片：", savedPhotos)
 ```
 
-Learn more about Repository [here](./working-with-entity-manager/2-working-with-repository.md).
+更多关于仓库内容见[这里](./working-with-entity-manager/2-working-with-repository.md)。
 
-### Loading from the database
+### 从数据库加载数据
 
-Let's try more load operations using the Repository:
+尝试更多读取操作：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -593,32 +578,32 @@ import { AppDataSource } from "./index"
 
 const photoRepository = AppDataSource.getRepository(Photo)
 const allPhotos = await photoRepository.find()
-console.log("All photos from the db: ", allPhotos)
+console.log("数据库中所有照片：", allPhotos)
 
 const firstPhoto = await photoRepository.findOneBy({
     id: 1,
 })
-console.log("First photo from the db: ", firstPhoto)
+console.log("数据库中第一张照片：", firstPhoto)
 
 const meAndBearsPhoto = await photoRepository.findOneBy({
     name: "Me and Bears",
 })
-console.log("Me and Bears photo from the db: ", meAndBearsPhoto)
+console.log("数据库中'Me and Bears'照片：", meAndBearsPhoto)
 
 const allViewedPhotos = await photoRepository.findBy({ views: 1 })
-console.log("All viewed photos: ", allViewedPhotos)
+console.log("所有浏览次数为1的照片：", allViewedPhotos)
 
 const allPublishedPhotos = await photoRepository.findBy({ isPublished: true })
-console.log("All published photos: ", allPublishedPhotos)
+console.log("所有已发布照片：", allPublishedPhotos)
 
 const [photos, photosCount] = await photoRepository.findAndCount()
-console.log("All photos: ", photos)
-console.log("Photos count: ", photosCount)
+console.log("所有照片：", photos)
+console.log("照片数量：", photosCount)
 ```
 
-### Updating in the database
+### 更新数据库
 
-Now let's load a single photo from the database, update it, and save it:
+加载单条照片数据，更新后保存：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -628,15 +613,15 @@ const photoRepository = AppDataSource.getRepository(Photo)
 const photoToUpdate = await photoRepository.findOneBy({
     id: 1,
 })
-photoToUpdate.name = "Me, my friends and polar bears"
+photoToUpdate.name = "我、朋友和北极熊"
 await photoRepository.save(photoToUpdate)
 ```
 
-Now photo with `id = 1` will be updated in the database.
+id 为 1 的照片将在数据库中更新。
 
-### Removing from the database
+### 从数据库删除数据
 
-Now let's remove our photo from the database:
+删除照片：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -649,12 +634,12 @@ const photoToRemove = await photoRepository.findOneBy({
 await photoRepository.remove(photoToRemove)
 ```
 
-Now photo with `id = 1` will be removed from the database.
+id 为 1 的照片将从数据库删除。
 
-### Creating a one-to-one relation
+### 创建一对一关系
 
-Let's create a one-to-one relationship with another class.
-Let's create a new class in `PhotoMetadata.ts`. This PhotoMetadata class is supposed to contain our photo's additional meta-information:
+创建与另一类一对一关系。
+在 `PhotoMetadata.ts` 文件创建新的类，这个类存储照片附加元信息：
 
 ```typescript
 import {
@@ -692,12 +677,13 @@ export class PhotoMetadata {
 }
 ```
 
-Here, we are using a new decorator called `@OneToOne`. It allows us to create a one-to-one relationship between two entities. We also add a `@JoinColumn` decorator, which indicates that this side of the relationship will own the relationship.
-Relations can be unidirectional or bidirectional.
-Only one side of the relation can be the owner.
-Using `@JoinColumn` decorator is required on the owner side of the relationship.
+我们使用了新的 `@OneToOne` 装饰器，建立两个实体间一对一关系。
+`@JoinColumn` 表示此实体拥有关系。
+关系可为单向或双向，
+只有一方持有关系。
+拥有关系的一方必须使用 `@JoinColumn`。
 
-If you run the app, you'll see a newly generated table, and it will contain a column with a foreign key for the photo relation:
+运行应用，会看到新建的表，其中包含指向照片的外键列：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -713,15 +699,15 @@ If you run the app, you'll see a newly generated table, and it will contain a co
 +-------------+--------------+----------------------------+
 ```
 
-### Save a one-to-one relation
+### 保存一对一关联
 
-Now let's save a photo and its metadata and attach them to each other.
+保存照片及其元数据并关联：
 
 ```typescript
 import { Photo } from "./entity/Photo"
 import { PhotoMetadata } from "./entity/PhotoMetadata"
 
-// Create a photo
+// 创建照片
 const photo = new Photo()
 photo.name = "Me and Bears"
 photo.description = "I am near polar bears"
@@ -729,39 +715,38 @@ photo.filename = "photo-with-bears.jpg"
 photo.views = 1
 photo.isPublished = true
 
-// Create a photo metadata
+// 创建照片元数据
 const metadata = new PhotoMetadata()
 metadata.height = 640
 metadata.width = 480
 metadata.compressed = true
 metadata.comment = "cybershoot"
 metadata.orientation = "portrait"
-metadata.photo = photo // this way we connect them
+metadata.photo = photo // 建立关联
 
-// Get entity repositories
+// 获取实体仓库
 const photoRepository = AppDataSource.getRepository(Photo)
 const metadataRepository = AppDataSource.getRepository(PhotoMetadata)
 
-// First we should save a photo
+// 先保存照片
 await photoRepository.save(photo)
 
-// The Photo is saved. Now we need to save a photo metadata
+// 照片保存后，保存元数据
 await metadataRepository.save(metadata)
 
-// Done
 console.log(
-    "Metadata is saved, and the relation between metadata and photo is created in the database too",
+    "元数据已保存，且数据库中成功创建了元数据和照片的关联",
 )
 ```
 
-### Inverse side of the relationship
+### 关系的反向方向
 
-Relations can be unidirectional or bidirectional.
-Currently, our relation between PhotoMetadata and Photo is unidirectional.
-The owner of the relation is PhotoMetadata, and Photo doesn't know anything about PhotoMetadata.
-This makes it complicated to access PhotoMetadata from the Photo side.
-To fix this issue, we should add an inverse relation, and make relations between PhotoMetadata and Photo bidirectional.
-Let's modify our entities:
+关系可为单向或双向。
+当前 PhotoMetadata 和 Photo 关系为单向。
+关系拥有者是 PhotoMetadata，Photo 不知道 PhotoMetadata。
+这导致难以从 Photo 访问 PhotoMetadata。
+解决办法是添加反向关系，使关系双向。
+修改实体如下：
 
 ```typescript
 import {
@@ -775,7 +760,7 @@ import { Photo } from "./Photo"
 
 @Entity()
 export class PhotoMetadata {
-    /* ... other columns */
+    /* ... 其他列 ... */
 
     @OneToOne(() => Photo, (photo) => photo.metadata)
     @JoinColumn()
@@ -789,26 +774,24 @@ import { PhotoMetadata } from "./PhotoMetadata"
 
 @Entity()
 export class Photo {
-    /* ... other columns */
+    /* ... 其他列 ... */
 
     @OneToOne(() => PhotoMetadata, (photoMetadata) => photoMetadata.photo)
     metadata: PhotoMetadata
 }
 ```
 
-`photo => photo.metadata` is a function that returns the name of the inverse side of the relation.
-Here we show that the metadata property of the Photo class is where we store PhotoMetadata in the Photo class.
-Instead of passing a function that returns a property of the photo, you could alternatively pass a string to `@OneToOne` decorator, like `"metadata"`.
-But we used this function-typed approach to make our refactoring easier.
+`photo => photo.metadata` 是返回关系反向属性名的函数。
+这里表明 Photo 类的 `metadata` 属性保存其 PhotoMetadata。
+你也可直接传字符串如 `"metadata"` 给 `@OneToOne`。
+使用函数形式有助于重构。
 
-Note that we should use the `@JoinColumn` decorator only on one side of a relation.
-Whichever side you put this decorator on will be the owning side of the relationship.
-The owning side of a relationship contains a column with a foreign key in the database.
+`@JoinColumn` 装饰器只能用在关系一侧，装饰所在为关系拥有者，数据库中此侧会存外键列。
 
-### Relations in ESM projects
+### ESM 项目中的关系
 
-If you use ESM in your TypeScript project, you should use the `Relation` wrapper type in relation properties to avoid circular dependency issues.
-Let's modify our entities:
+在 TypeScript ESM 项目中，应使用 `Relation` 包装类型声明关系属性，
+以避免循环依赖。示例：
 
 ```typescript
 import {
@@ -823,7 +806,7 @@ import { Photo } from "./Photo"
 
 @Entity()
 export class PhotoMetadata {
-    /* ... other columns */
+    /* ... 其他列 ... */
 
     @OneToOne(() => Photo, (photo) => photo.metadata)
     @JoinColumn()
@@ -843,19 +826,17 @@ import { PhotoMetadata } from "./PhotoMetadata"
 
 @Entity()
 export class Photo {
-    /* ... other columns */
+    /* ... 其他列 ... */
 
     @OneToOne(() => PhotoMetadata, (photoMetadata) => photoMetadata.photo)
     metadata: Relation<PhotoMetadata>
 }
 ```
 
-### Loading objects with their relations
+### 加载相关联的对象
 
-Now let's load our photo and its photo metadata in a single query.
-There are two ways to do it - using `find*` methods or using `QueryBuilder` functionality.
-Let's use `find*` method first.
-`find*` methods allow you to specify an object with the `FindOneOptions` / `FindManyOptions` interface.
+加载照片及其元数据，可用 `find*` 方法或 `QueryBuilder`。
+先用 `find*` ，传递 `FindOneOptions` / `FindManyOptions`：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -870,11 +851,10 @@ const photos = await photoRepository.find({
 })
 ```
 
-Here, photos will contain an array of photos from the database, and each photo will contain its photo metadata.
-Learn more about Find Options in [this documentation](./working-with-entity-manager/3-find-options.md).
+如此，photos 中每个照片都包含其元数据。
+更多查找选项请看[文档](./working-with-entity-manager/3-find-options.md)。
 
-Using find options is good and dead simple, but if you need a more complex query, you should use `QueryBuilder` instead.
-`QueryBuilder` allows more complex queries to be used elegantly:
+如果查询复杂，建议用 `QueryBuilder`：
 
 ```typescript
 import { Photo } from "./entity/Photo"
@@ -887,19 +867,17 @@ const photos = await AppDataSource.getRepository(Photo)
     .getMany()
 ```
 
-`QueryBuilder` allows the creation and execution of SQL queries of almost any complexity.
-When you work with `QueryBuilder`, think like you are creating an SQL query.
-In this example, "photo" and "metadata" are aliases applied to selected photos.
-You use aliases to access columns and properties of the selected data.
+`QueryBuilder` 允许构造复杂 SQL 查询。
+示例中 `"photo"` 和 `"metadata"` 是查询别名。
 
-### Using cascades to automatically save related objects
+### 使用级联自动保存关联对象
 
-We can set up cascade options in our relations, in the cases when we want our related object to be saved whenever the other object is saved.
-Let's change our photo's `@OneToOne` decorator a bit:
+可以给关系加 cascade 选项，实现保存主对象时自动保存关联对象。
+修改 Photo 实体中的 `@OneToOne`：
 
 ```typescript
 export class Photo {
-    // ... other columns
+    // ... 其他列
 
     @OneToOne(() => PhotoMetadata, (metadata) => metadata.photo, {
         cascade: true,
@@ -908,20 +886,21 @@ export class Photo {
 }
 ```
 
-Using `cascade` allows us not to separately save photos and separately save metadata objects now.
-Now we can simply save a photo object, and the metadata object will be saved automatically because of cascade options.
+开启 cascade 后，保存一个 Photo 对象时，关联的 metadata 会自动保存。
+
+示例：
 
 ```typescript
 import { AppDataSource } from "./index"
 
-// create photo object
+// 创建照片对象
 const photo = new Photo()
 photo.name = "Me and Bears"
 photo.description = "I am near polar bears"
 photo.filename = "photo-with-bears.jpg"
 photo.isPublished = true
 
-// create photo metadata object
+// 创建元数据对象
 const metadata = new PhotoMetadata()
 metadata.height = 640
 metadata.width = 480
@@ -929,24 +908,24 @@ metadata.compressed = true
 metadata.comment = "cybershoot"
 metadata.orientation = "portrait"
 
-photo.metadata = metadata // this way we connect them
+photo.metadata = metadata // 关联
 
-// get repository
 const photoRepository = AppDataSource.getRepository(Photo)
 
-// saving a photo also save the metadata
+// 保存照片时同时保存元数据
 await photoRepository.save(photo)
 
-console.log("Photo is saved, photo metadata is saved too.")
+console.log("照片与照片元数据均已保存。")
 ```
 
-Notice that we now set the photo's `metadata` property, instead of the metadata's `photo` property as before. The `cascade` feature only works if you connect the photo to its metadata from the photo's side. If you set the metadata side, the metadata would not be saved automatically.
+注意，此处将 metadata 设置给 photo 的 `metadata` 属性，而不是反过来。
+cascade 仅对拥有方生效。
 
-### Creating a many-to-one / one-to-many relation
+### 创建多对一 / 一对多关系
 
-Let's create a many-to-one/one-to-many relation.
-Let's say a photo has one author, and each author can have many photos.
-First, let's create an `Author` class:
+创建多对一/一对多关系。
+假设照片有一个作者，作者可有多张照片。
+新建 `Author`：
 
 ```typescript
 import {
@@ -954,7 +933,6 @@ import {
     Column,
     PrimaryGeneratedColumn,
     OneToMany,
-    JoinColumn,
 } from "typeorm"
 import { Photo } from "./Photo"
 
@@ -966,34 +944,33 @@ export class Author {
     @Column()
     name: string
 
-    @OneToMany(() => Photo, (photo) => photo.author) // note: we will create author property in the Photo class below
+    @OneToMany(() => Photo, (photo) => photo.author) // 注意这里，Photo 类稍后添加 author 属性
     photos: Photo[]
 }
 ```
 
-`Author` contains an inverse side of a relation.
-`OneToMany` is always an inverse side of the relation, and it can't exist without `ManyToOne` on the other side of the relation.
+`Author` 是关系反向端。
+`OneToMany` 总是关系反向，必须配合 `ManyToOne` 存在。
 
-Now let's add the owner side of the relation into the Photo entity:
+添加关系拥有方到 `Photo`：
 
 ```typescript
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm"
-import { PhotoMetadata } from "./PhotoMetadata"
 import { Author } from "./Author"
 
 @Entity()
 export class Photo {
-    /* ... other columns */
+    /* ... 其他列 ... */
 
     @ManyToOne(() => Author, (author) => author.photos)
     author: Author
 }
 ```
 
-In many-to-one / one-to-many relations, the owner side is always many-to-one.
-It means that the class that uses `@ManyToOne` will store the id of the related object.
+在多对一/一对多中，拥有关系是多对一端，
+即持有 `ManyToOne` 的类会保存关联对象的 id。
 
-After you run the application, the ORM will create the `author` table:
+运行应用后，ORM 会创建 `author` 表：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -1004,7 +981,7 @@ After you run the application, the ORM will create the `author` table:
 +-------------+--------------+----------------------------+
 ```
 
-It will also modify the `photo` table, adding a new `author` column and creating a foreign key for it:
+还会在 `photo` 表添加 `authorId` 外键列：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -1019,11 +996,10 @@ It will also modify the `photo` table, adding a new `author` column and creating
 +-------------+--------------+----------------------------+
 ```
 
-### Creating a many-to-many relation
+### 创建多对多关系
 
-Let's create a many-to-many relation.
-Let's say a photo can be in many albums, and each album can contain many photos.
-Let's create an `Album` class:
+假设照片可属于多个相册，且相册可含多张照片。
+创建 `Album`：
 
 ```typescript
 import {
@@ -1048,20 +1024,20 @@ export class Album {
 }
 ```
 
-`@JoinTable` is required to specify that this is the owner side of the relationship.
+`@JoinTable` 标记该端为关系拥有侧。
 
-Now let's add the inverse side of our relation to the `Photo` class:
+在 `Photo` 类添加关系反向：
 
 ```typescript
 export class Photo {
-    // ... other columns
+    // ... 其他列
 
     @ManyToMany(() => Album, (album) => album.photos)
     albums: Album[]
 }
 ```
 
-After you run the application, the ORM will create an **album_photos_photo_albums** _junction table_:
+运行后，会自动生成中间关联表 **album_photos_photo_albums**：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -1072,21 +1048,21 @@ After you run the application, the ORM will create an **album_photos_photo_album
 +-------------+--------------+----------------------------+
 ```
 
-Remember to register the `Album` class with your connection in the ORM:
+记得在连接配置中注册 `Album` 实体：
 
 ```typescript
 const options: DataSourceOptions = {
-    // ... other options
+    // ... 其他选项
     entities: [Photo, PhotoMetadata, Author, Album],
 }
 ```
 
-Now let's insert albums and photos into our database:
+插入相册和照片示例：
 
 ```typescript
 import { AppDataSource } from "./index"
 
-// create a few albums
+// 创建几个相册
 const album1 = new Album()
 album1.name = "Bears"
 await AppDataSource.manager.save(album1)
@@ -1095,7 +1071,7 @@ const album2 = new Album()
 album2.name = "Me"
 await AppDataSource.manager.save(album2)
 
-// create a few photos
+// 创建照片
 const photo = new Photo()
 photo.name = "Me and Bears"
 photo.description = "I am near polar bears"
@@ -1105,8 +1081,7 @@ photo.isPublished = true
 photo.albums = [album1, album2]
 await AppDataSource.manager.save(photo)
 
-// now our photo is saved and albums are attached to it
-// now lets load them:
+// 载入照片及关联的相册
 const loadedPhoto = await AppDataSource.getRepository(Photo).findOne({
     where: {
         id: 1,
@@ -1117,7 +1092,7 @@ const loadedPhoto = await AppDataSource.getRepository(Photo).findOne({
 })
 ```
 
-`loadedPhoto` will be equal to:
+`loadedPhoto` 类似于：
 
 ```typescript
 {
@@ -1135,13 +1110,15 @@ const loadedPhoto = await AppDataSource.getRepository(Photo).findOne({
 }
 ```
 
-### Using QueryBuilder
+### 使用 QueryBuilder
 
-You can use QueryBuilder to build SQL queries of almost any complexity. For example, you can do this:
+你可以用 QueryBuilder 构造几乎任意复杂的 SQL 查询。
+
+示例：
 
 ```typescript
 const photos = await AppDataSource.getRepository(Photo)
-    .createQueryBuilder("photo") // First argument is an alias. Alias is what you are selecting - photos. You must specify it.
+    .createQueryBuilder("photo") // "photo" 是别名，必须指定
     .innerJoinAndSelect("photo.metadata", "metadata")
     .leftJoinAndSelect("photo.albums", "album")
     .where("photo.isPublished = true")
@@ -1153,68 +1130,67 @@ const photos = await AppDataSource.getRepository(Photo)
     .getMany()
 ```
 
-This query selects all published photos with "My" or "Mishka" names.
-It will select results from position 5 (pagination offset)
-and will select only 10 results (pagination limit).
-The selection result will be ordered by id in descending order.
-The photo albums will be left joined and their metadata will be inner-joined.
+该查询选取所有已发布且名称为 "My" 或 "Mishka" 的照片，
+分页从第 5 条到第 15 条，
+结果按 id 降序排列，
+照片的元数据做内连接，相册做左连接。
 
-You'll use the query builder in your application a lot.
-Learn more about QueryBuilder [here](./query-builder/1-select-query-builder.md).
+你将经常使用 QueryBuilder，详见[文档](./query-builder/1-select-query-builder.md)。
 
-## Samples
+## 示例
 
-Take a look at the samples in [sample](https://github.com/typeorm/typeorm/tree/master/sample) for examples of usage.
+请查看 [sample](https://github.com/typeorm/typeorm/tree/master/sample) 目录获取使用示例。
 
-There are a few repositories that you can clone and start with:
+下面是几个可供克隆并启动的仓库：
 
-- [Example how to use TypeORM with TypeScript](https://github.com/typeorm/typescript-example)
-- [Example how to use TypeORM with JavaScript](https://github.com/typeorm/javascript-example)
-- [Example how to use TypeORM with JavaScript and Babel](https://github.com/typeorm/babel-example)
-- [Example how to use TypeORM with TypeScript and SystemJS in Browser](https://github.com/typeorm/browser-example)
-- [Example how to use TypeORM with TypeScript and React in Browser](https://github.com/ItayGarin/typeorm-react-swc)
-- [Example how to use Express and TypeORM](https://github.com/typeorm/typescript-express-example)
-- [Example how to use Koa and TypeORM](https://github.com/typeorm/typescript-koa-example)
-- [Example how to use TypeORM with MongoDB](https://github.com/typeorm/mongo-typescript-example)
-- [Example how to use TypeORM in a Cordova app](https://github.com/typeorm/cordova-example)
-- [Example how to use TypeORM with an Ionic app](https://github.com/typeorm/ionic-example)
-- [Example how to use TypeORM with React Native](https://github.com/typeorm/react-native-example)
-- [Example how to use TypeORM with Nativescript-Vue](https://github.com/typeorm/nativescript-vue-typeorm-sample)
-- [Example how to use TypeORM with Nativescript-Angular](https://github.com/betov18x/nativescript-angular-typeorm-example)
-- [Example how to use TypeORM with Electron using JavaScript](https://github.com/typeorm/electron-javascript-example)
-- [Example how to use TypeORM with Electron using TypeScript](https://github.com/typeorm/electron-typescript-example)
+- [TypeScript 版 TypeORM 示例](https://github.com/typeorm/typescript-example)
+- [JavaScript 版 TypeORM 示例](https://github.com/typeorm/javascript-example)
+- [JavaScript + Babel 版示例](https://github.com/typeorm/babel-example)
+- [TypeScript + SystemJS 浏览器示例](https://github.com/typeorm/browser-example)
+- [TypeScript + React 浏览器示例](https://github.com/ItayGarin/typeorm-react-swc)
+- [Express + TypeORM 示例](https://github.com/typeorm/typescript-express-example)
+- [Koa + TypeORM 示例](https://github.com/typeorm/typescript-koa-example)
+- [MongoDB + TypeORM 示例](https://github.com/typeorm/mongo-typescript-example)
+- [Cordova + TypeORM 示例](https://github.com/typeorm/cordova-example)
+- [Ionic + TypeORM 示例](https://github.com/typeorm/ionic-example)
+- [React Native + TypeORM 示例](https://github.com/typeorm/react-native-example)
+- [Nativescript-Vue + TypeORM 示例](https://github.com/typeorm/nativescript-vue-typeorm-sample)
+- [Nativescript-Angular + TypeORM 示例](https://github.com/betov18x/nativescript-angular-typeorm-example)
+- [Electron + JavaScript + TypeORM 示例](https://github.com/typeorm/electron-javascript-example)
+- [Electron + TypeScript + TypeORM 示例](https://github.com/typeorm/electron-typescript-example)
 
-## Extensions
+## 扩展
 
-There are several extensions that simplify working with TypeORM and integrating it with other modules:
+这里有一些简化 TypeORM 工作及与其他模块集成的扩展：
 
-- [TypeORM integration](https://github.com/typeorm/typeorm-typedi-extensions) with [TypeDI](https://github.com/pleerock/typedi)
-- [TypeORM integration](https://github.com/typeorm/typeorm-routing-controllers-extensions) with [routing-controllers](https://github.com/pleerock/routing-controllers)
-- Models generation from the existing database - [typeorm-model-generator](https://github.com/Kononnable/typeorm-model-generator)
-- Fixtures loader - [typeorm-fixtures-cli](https://github.com/RobinCK/typeorm-fixtures)
-- ER Diagram generator - [typeorm-uml](https://github.com/eugene-manuilov/typeorm-uml/)
-- another ER Diagram generator - [erdia](https://www.npmjs.com/package/erdia/)
-- Create, drop and seed database - [typeorm-extension](https://github.com/tada5hi/typeorm-extension)
-- Automatically update `data-source.ts` after generating [migrations](/docs/migrations/why)/entities - [typeorm-codebase-sync](https://www.npmjs.com/package/typeorm-codebase-sync)
-- Easy manipulation of `relations` objects - [typeorm-relations](https://npmjs.com/package/typeorm-relations)
-- Automatically generate `relations` based on a GraphQL query - [typeorm-relations-graphql](https://npmjs.com/package/typeorm-relations-graphql)
+- 与 [TypeDI](https://github.com/pleerock/typedi) 集成的 [TypeORM 扩展](https://github.com/typeorm/typeorm-typedi-extensions)
+- 与 [routing-controllers](https://github.com/pleerock/routing-controllers) 集成的 [TypeORM 扩展](https://github.com/typeorm/typeorm-routing-controllers-extensions)
+- 根据现有数据库生成模型 - [typeorm-model-generator](https://github.com/Kononnable/typeorm-model-generator)
+- 夹具加载器 - [typeorm-fixtures-cli](https://github.com/RobinCK/typeorm-fixtures)
+- ER图生成器 - [typeorm-uml](https://github.com/eugene-manuilov/typeorm-uml/)
+- 另一款 ER 图生成器 - [erdia](https://www.npmjs.com/package/erdia/)
+- 创建、删除和填充数据库 - [typeorm-extension](https://github.com/tada5hi/typeorm-extension)
+- 生成迁移/实体后自动更新 `data-source.ts` - [typeorm-codebase-sync](https://www.npmjs.com/package/typeorm-codebase-sync)
+- 方便操作 relations - [typeorm-relations](https://npmjs.com/package/typeorm-relations)
+- 根据 GraphQL 查询自动生成 relations - [typeorm-relations-graphql](https://npmjs.com/package/typeorm-relations-graphql)
 
-## Contributing
+## 贡献
 
-Learn about contribution [here](https://github.com/typeorm/typeorm/blob/master/CONTRIBUTING.md) and how to set up your development environment [here](https://github.com/typeorm/typeorm/blob/master/DEVELOPER.md).
+了解贡献指南请看 [贡献说明](https://github.com/typeorm/typeorm/blob/master/CONTRIBUTING.md)；
+开发环境搭建请看 [开发者文档](https://github.com/typeorm/typeorm/blob/master/DEVELOPER.md)。
 
-This project exists thanks to all the people who contribute:
+此项目感谢所有贡献者：
 
 <a href="https://github.com/typeorm/typeorm/graphs/contributors"><img src="https://opencollective.com/typeorm/contributors.svg?width=890&showBtn=false" /></a>
 
-## Sponsors
+## 赞助者
 
-Open source is hard and time-consuming. If you want to invest in TypeORM's future, you can become a sponsor and allow our core team to spend more time on TypeORM's improvements and new features. [Become a sponsor](https://opencollective.com/typeorm)
+开源工作繁重并消耗时间，如果你想投资 TypeORM 的未来，可以成为赞助者，使核心团队能投入更多时间改进和增加新功能。[成为赞助者](https://opencollective.com/typeorm)
 
 <a href="https://opencollective.com/typeorm" target="_blank"><img src="https://opencollective.com/typeorm/tiers/sponsor.svg?width=890"/></a>
 
-## Gold Sponsors
+## 金牌赞助者
 
-Become a gold sponsor and get premium technical support from our core contributors. [Become a gold sponsor](https://opencollective.com/typeorm)
+成为金牌赞助者，获得我们核心贡献者的高级技术支持。[成为金牌赞助者](https://opencollective.com/typeorm)
 
 <a href="https://opencollective.com/typeorm" target="_blank"><img src="https://opencollective.com/typeorm/tiers/gold-sponsor.svg?width=890"/></a>

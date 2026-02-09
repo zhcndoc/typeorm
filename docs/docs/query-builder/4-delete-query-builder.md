@@ -1,9 +1,9 @@
-# Delete using Query Builder
+# 使用查询构建器删除
 
 ## `Delete`
 
-You can create `DELETE` queries using `QueryBuilder`.
-Examples:
+你可以使用 `QueryBuilder` 创建 `DELETE` 查询。
+示例：
 
 ```typescript
 await myDataSource
@@ -14,17 +14,17 @@ await myDataSource
     .execute()
 ```
 
-This is the most efficient way in terms of performance to delete entities from your database.
+这是从数据库中删除实体在性能方面最有效的方法。
 
-## `Soft-Delete`
+## `软删除`
 
-Applying Soft Delete to QueryBuilder
+在 QueryBuilder 中应用软删除
 
 ```typescript
 await dataSource.getRepository(Entity).createQueryBuilder().softDelete()
 ```
 
-Examples:
+示例：
 
 ```typescript
 await myDataSource
@@ -35,15 +35,15 @@ await myDataSource
     .execute()
 ```
 
-## `Restore-Soft-Delete`
+## `恢复软删除`
 
-Alternatively, You can recover the soft deleted rows by using the `restore()` method:
+另外，你可以使用 `restore()` 方法恢复软删除的记录：
 
 ```typescript
 await dataSource.getRepository(Entity).createQueryBuilder().restore()
 ```
 
-Examples:
+示例：
 
 ```typescript
 await myDataSource

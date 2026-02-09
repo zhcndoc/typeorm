@@ -1,12 +1,10 @@
-# Separating Entity Definition
+# 分离实体定义
 
-## Defining Schemas
+## 定义 Schema
 
-You can define an entity and its columns right in the model, using decorators.
-But some people prefer to define an entity and its columns inside separate files
-which are called "entity schemas" in TypeORM.
+你可以直接在模型中使用装饰器定义实体及其列。但有些人更喜欢在单独的文件中定义实体及其列，在 TypeORM 中称为“实体 schema”。
 
-Simple definition example:
+简单定义示例：
 
 ```ts
 import { EntitySchema } from "typeorm"
@@ -26,7 +24,7 @@ export const CategoryEntity = new EntitySchema({
 })
 ```
 
-Example with relations:
+带关联关系的示例：
 
 ```ts
 import { EntitySchema } from "typeorm"
@@ -55,7 +53,7 @@ export const PostEntity = new EntitySchema({
 })
 ```
 
-Complex example:
+复杂示例：
 
 ```ts
 import { EntitySchema } from "typeorm"
@@ -123,7 +121,7 @@ export const PersonSchema = new EntitySchema({
 })
 ```
 
-If you want to make your entity typesafe, you can define a model and specify it in schema definition:
+如果你想让实体类型安全，可以定义一个模型并在 schema 定义中指定它：
 
 ```ts
 import { EntitySchema } from "typeorm"
@@ -148,17 +146,13 @@ export const CategoryEntity = new EntitySchema<Category>({
 })
 ```
 
-## Extending Schemas
+## 扩展 Schema
 
-When using the `Decorator` approach it is easy to `extend` basic columns to an abstract class and simply extend this.
-For example, your `id`, `createdAt` and `updatedAt` columns may be defined in such a `BaseEntity`. For more details, see
-the documentation on [concrete table inheritance](./3-entity-inheritance.md#concrete-table-inheritance).
+使用 `Decorator` 方式时，可以很方便地将基本列扩展到一个抽象类，并简单继承它。例如，你的 `id`、`createdAt` 和 `updatedAt` 列可以定义在这样的 `BaseEntity` 中。更多细节，请参见[具体表继承](./3-entity-inheritance.md#concrete-table-inheritance)章节。
 
-When using the `EntitySchema` approach, this is not possible. However, you can use the `Spread Operator` (`...`) to your
-advantage.
+使用 `EntitySchema` 方式时则不行。不过，你可以利用“扩展运算符”(Spread Operator) (`...`)。
 
-Reconsider the `Category` example from above. You may want to `extract` basic column descriptions and reuse it across
-your other schemas. This may be done in the following way:
+重新考虑上面的 `Category` 例子。你可能想提取基本列描述，并在其他 schema 中重用。可以这样做：
 
 ```ts
 import { EntitySchemaColumnOptions } from "typeorm"
@@ -182,15 +176,15 @@ export const BaseColumnSchemaPart = {
 }
 ```
 
-Now you can use the `BaseColumnSchemaPart` in your other schema models, like this:
+现在你可以在其他 schema 模型中使用 `BaseColumnSchemaPart`，例如：
 
 ```ts
 export const CategoryEntity = new EntitySchema<Category>({
     name: "category",
     columns: {
         ...BaseColumnSchemaPart,
-        // the CategoryEntity now has the defined id, createdAt, updatedAt columns!
-        // in addition, the following NEW fields are defined
+        // CategoryEntity 现在有了定义的 id、createdAt、updatedAt 列！
+        // 另外，定义了以下新的字段
         name: {
             type: String,
         },
@@ -198,7 +192,7 @@ export const CategoryEntity = new EntitySchema<Category>({
 })
 ```
 
-You can use embedded entities in schema models, like this:
+你可以在 schema 模型中使用嵌入实体，示例如下：
 
 ```ts
 export interface Name {
@@ -245,16 +239,14 @@ export const UserEntitySchema = new EntitySchema<User>({
 })
 ```
 
-Be sure to add the `extended` columns also to the `Category` interface (e.g., via `export interface Category extend BaseEntity`).
+请确保也将“扩展”的列添加到 `Category` 接口里（例如通过 `export interface Category extends BaseEntity`）。
 
-### Single Table Inheritance
+### 单表继承
 
-In order to use [Single Table Inheritance](./3-entity-inheritance.md#single-table-inheritance):
+要使用[单表继承](./3-entity-inheritance.md#single-table-inheritance)：
 
-1. Add the `inheritance` option to the **parent** class schema, specifying the inheritance pattern ("STI") and the
-   **discriminator** column, which will store the name of the _child_ class on each row
-2. Set the `type: "entity-child"` option for all **children** classes' schemas, while extending the _parent_ class
-   columns using the spread operator syntax described above
+1. 在父类 schema 中添加 `inheritance` 选项，指定继承模式 ("STI") 及用于存储子类名称的 **区分列**（discriminator column）
+2. 所有子类 schema 设置 `type: "entity-child"` 选项，同时通过上面介绍的扩展运算符语法继承父类列
 
 ```ts
 // entity.ts
@@ -309,7 +301,7 @@ const BaseSchema = new EntitySchema<Base>({
             updateDate: true,
         },
     },
-    // NEW: Inheritance options
+    // 新增：继承选项
     inheritance: {
         pattern: "STI",
         column: "type",
@@ -320,8 +312,7 @@ const ASchema = new EntitySchema<A>({
     target: A,
     name: "A",
     type: "entity-child",
-    // When saving instances of 'A', the "type" column will have the value
-    // specified on the 'discriminatorValue' property
+    // 保存 'A' 实例时，"type" 列会被赋予此 discriminatorValue
     discriminatorValue: "my-custom-discriminator-value-for-A",
     columns: {
         ...BaseSchema.options.columns,
@@ -335,7 +326,7 @@ const BSchema = new EntitySchema<B>({
     target: B,
     name: "B",
     type: "entity-child",
-    discriminatorValue: undefined, // Defaults to the class name (e.g. "B")
+    discriminatorValue: undefined, // 默认为类名 (如 "B")
     columns: {
         ...BaseSchema.options.columns,
         b: {
@@ -358,22 +349,20 @@ const CSchema = new EntitySchema<C>({
 })
 ```
 
-## Using Schemas to Query / Insert Data
+## 使用 Schema 查询 / 插入数据
 
-Of course, you can use the defined schemas in your repositories or entity manager as you would use the decorators.
-Consider the previously defined `Category` example (with its `Interface` and `CategoryEntity` schema) in order to get
-some data or manipulate the database.
+当然，你可以在仓库或实体管理器中像使用装饰器一样使用定义好的 schema。考虑之前定义的 `Category` 示例（包括其接口和 `CategoryEntity` schema），用来获取数据或操作数据库。
 
 ```ts
-// request data
+// 请求数据
 const categoryRepository = dataSource.getRepository<Category>(CategoryEntity)
 const category = await categoryRepository.findOneBy({
     id: 1,
-}) // category is properly typed!
+}) // category 类型正确！
 
-// insert a new category into the database
+// 向数据库插入新类别
 const categoryDTO = {
-    // note that the ID is autogenerated; see the schema above
+    // 注意 ID 是自动生成的，参见上面的 schema
     name: "new category",
 }
 const newCategory = await categoryRepository.save(categoryDTO)

@@ -1,6 +1,6 @@
-# Query Runner API
+# 查询执行器 API
 
-In order to use an API to change a database schema you can use `QueryRunner`.
+为了使用 API 更改数据库架构，你可以使用 `QueryRunner`。
 
 ```ts
 import {
@@ -102,7 +102,7 @@ export class QuestionRefactoringTIMESTAMP implements MigrationInterface {
 getDatabases(): Promise<string[]>
 ```
 
-Returns all available database names including system databases.
+返回所有可用的数据库名称，包括系统数据库。
 
 ---
 
@@ -110,9 +110,9 @@ Returns all available database names including system databases.
 getSchemas(database?: string): Promise<string[]>
 ```
 
-- `database` - If database parameter specified, returns schemas of that database
+- `database` - 如果指定了数据库参数，则返回该数据库的架构列表
 
-Returns all available schema names including system schemas. Useful for SQLServer and Postgres only.
+返回所有可用的架构名称，包括系统架构。仅适用于 SQLServer 和 Postgres。
 
 ---
 
@@ -120,9 +120,9 @@ Returns all available schema names including system schemas. Useful for SQLServe
 getTable(tableName: string): Promise<Table|undefined>
 ```
 
-- `tableName` - name of a table to be loaded
+- `tableName` - 需要加载的表名
 
-Loads a table by a given name from the database.
+根据给定名称从数据库中加载表。
 
 ---
 
@@ -130,9 +130,9 @@ Loads a table by a given name from the database.
 getTables(tableNames: string[]): Promise<Table[]>
 ```
 
-- `tableNames` - name of a tables to be loaded
+- `tableNames` - 需要加载的表名数组
 
-Loads a tables by a given names from the database.
+根据给定名称数组从数据库中加载多个表。
 
 ---
 
@@ -140,9 +140,9 @@ Loads a tables by a given names from the database.
 hasDatabase(database: string): Promise<boolean>
 ```
 
-- `database` - name of a database to be checked
+- `database` - 需要检查的数据库名
 
-Checks if database with the given name exist.
+检查指定名称的数据库是否存在。
 
 ---
 
@@ -150,9 +150,9 @@ Checks if database with the given name exist.
 hasSchema(schema: string): Promise<boolean>
 ```
 
-- `schema` - name of a schema to be checked
+- `schema` - 需要检查的架构名
 
-Checks if schema with the given name exist. Used only for SqlServer and Postgres.
+检查指定名称的架构是否存在。仅用于 SqlServer 和 Postgres。
 
 ---
 
@@ -160,9 +160,9 @@ Checks if schema with the given name exist. Used only for SqlServer and Postgres
 hasTable(table: Table|string): Promise<boolean>
 ```
 
-- `table` - Table object or name
+- `table` - 表对象或表名
 
-Checks if table exist.
+检查表是否存在。
 
 ---
 
@@ -170,10 +170,10 @@ Checks if table exist.
 hasColumn(table: Table|string, columnName: string): Promise<boolean>
 ```
 
-- `table` - Table object or name
-- `columnName` - name of a column to be checked
+- `table` - 表对象或表名
+- `columnName` - 需要检查的列名
 
-Checks if column exist in the table.
+检查表中列是否存在。
 
 ---
 
@@ -181,10 +181,10 @@ Checks if column exist in the table.
 createDatabase(database: string, ifNotExist?: boolean): Promise<void>
 ```
 
-- `database` - database name
-- `ifNotExist` - skips creation if `true`, otherwise throws error if database already exist
+- `database` - 数据库名称
+- `ifNotExist` - 如果为 `true`，则当数据库已存在时跳过创建，否则抛出错误
 
-Creates a new database.
+创建一个新数据库。
 
 ---
 
@@ -192,10 +192,10 @@ Creates a new database.
 dropDatabase(database: string, ifExist?: boolean): Promise<void>
 ```
 
-- `database` - database name
-- `ifExist` - skips deletion if `true`, otherwise throws error if database was not found
+- `database` - 数据库名称
+- `ifExist` - 如果为 `true`，则当数据库不存在时跳过删除，否则抛出错误
 
-Drops database.
+删除数据库。
 
 ---
 
@@ -203,11 +203,11 @@ Drops database.
 createSchema(schemaPath: string, ifNotExist?: boolean): Promise<void>
 ```
 
-- `schemaPath` - schema name. For SqlServer can accept schema path (e.g. 'dbName.schemaName') as parameter.
-  If schema path passed, it will create schema in specified database
-- `ifNotExist` - skips creation if `true`, otherwise throws error if schema already exist
+- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。
+  如果传入架构路径，则将在指定数据库中创建架构
+- `ifNotExist` - 如果为 `true`，当架构已存在时跳过创建，否则抛出错误
 
-Creates a new table schema.
+创建一个新的表架构。
 
 ---
 
@@ -215,13 +215,13 @@ Creates a new table schema.
 dropSchema(schemaPath: string, ifExist?: boolean, isCascade?: boolean): Promise<void>
 ```
 
-- `schemaPath` - schema name. For SqlServer can accept schema path (e.g. 'dbName.schemaName') as parameter.
-  If schema path passed, it will drop schema in specified database
-- `ifExist` - skips deletion if `true`, otherwise throws error if schema was not found
-- `isCascade` - If `true`, automatically drop objects (tables, functions, etc.) that are contained in the schema.
-  Used only in Postgres.
+- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。
+  如果传入架构路径，则将在指定数据库中删除架构
+- `ifExist` - 如果为 `true`，当架构未找到时跳过删除，否则抛出错误
+- `isCascade` - 如果为 `true`，自动删除架构中的对象（表、函数等）。
+  仅适用于 Postgres。
 
-Drops a table schema.
+删除一个表架构。
 
 ---
 
@@ -229,12 +229,12 @@ Drops a table schema.
 createTable(table: Table, ifNotExist?: boolean, createForeignKeys?: boolean, createIndices?: boolean): Promise<void>
 ```
 
-- `table` - Table object.
-- `ifNotExist` - skips creation if `true`, otherwise throws error if table already exist. Default `false`
-- `createForeignKeys` - indicates whether foreign keys will be created on table creation. Default `true`
-- `createIndices` - indicates whether indices will be created on table creation. Default `true`
+- `table` - 表对象。
+- `ifNotExist` - 如果为 `true`，当表已存在时跳过创建，否则抛出错误。默认 `false`
+- `createForeignKeys` - 指示是否在创建表时创建外键。默认 `true`
+- `createIndices` - 指示是否在创建表时创建索引。默认 `true`
 
-Creates a new table.
+创建一个新表。
 
 ---
 
@@ -242,12 +242,12 @@ Creates a new table.
 dropTable(table: Table|string, ifExist?: boolean, dropForeignKeys?: boolean, dropIndices?: boolean): Promise<void>
 ```
 
-- `table` - Table object or table name to be dropped
-- `ifExist` - skips dropping if `true`, otherwise throws error if table does not exist
-- `dropForeignKeys` - indicates whether foreign keys will be dropped on table deletion. Default `true`
-- `dropIndices` - indicates whether indices will be dropped on table deletion. Default `true`
+- `table` - 要删除的表对象或表名
+- `ifExist` - 如果为 `true`，当表不存在时跳过删除，否则抛出错误
+- `dropForeignKeys` - 指示是否在删除表时删除外键。默认 `true`
+- `dropIndices` - 指示是否在删除表时删除索引。默认 `true`
 
-Drops a table.
+删除一个表。
 
 ---
 
@@ -255,10 +255,10 @@ Drops a table.
 renameTable(oldTableOrName: Table|string, newTableName: string): Promise<void>
 ```
 
-- `oldTableOrName` - old Table object or name to be renamed
-- `newTableName` - new table name
+- `oldTableOrName` - 要重命名的旧表对象或名称
+- `newTableName` - 新表名
 
-Renames a table.
+重命名一个表。
 
 ---
 
@@ -266,10 +266,10 @@ Renames a table.
 addColumn(table: Table|string, column: TableColumn): Promise<void>
 ```
 
-- `table` - Table object or name
-- `column` - new column
+- `table` - 表对象或名称
+- `column` - 新列
 
-Adds a new column.
+添加一个新列。
 
 ---
 
@@ -277,10 +277,10 @@ Adds a new column.
 addColumns(table: Table|string, columns: TableColumn[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `columns` - new columns
+- `table` - 表对象或名称
+- `columns` - 新列数组
 
-Adds a new column.
+添加多个新列。
 
 ---
 
@@ -288,11 +288,11 @@ Adds a new column.
 renameColumn(table: Table|string, oldColumnOrName: TableColumn|string, newColumnOrName: TableColumn|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `oldColumnOrName` - old column. Accepts TableColumn object or column name
-- `newColumnOrName` - new column. Accepts TableColumn object or column name
+- `table` - 表对象或名称
+- `oldColumnOrName` - 旧列。可以是 TableColumn 对象或列名
+- `newColumnOrName` - 新列。可以是 TableColumn 对象或列名
 
-Renames a column.
+重命名一个列。
 
 ---
 
@@ -300,11 +300,11 @@ Renames a column.
 changeColumn(table: Table|string, oldColumn: TableColumn|string, newColumn: TableColumn): Promise<void>
 ```
 
-- `table` - Table object or name
-- `oldColumn` - old column. Accepts TableColumn object or column name
-- `newColumn` - new column. Accepts TableColumn object
+- `table` - 表对象或名称
+- `oldColumn` - 旧列。可以是 TableColumn 对象或列名
+- `newColumn` - 新列。必须是 TableColumn 对象
 
-Changes a column in the table.
+修改表中的列。
 
 ---
 
@@ -312,12 +312,12 @@ Changes a column in the table.
 changeColumns(table: Table|string, changedColumns: { oldColumn: TableColumn, newColumn: TableColumn }[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `changedColumns` - array of changed columns.
-    - `oldColumn` - old TableColumn object
-    - `newColumn` - new TableColumn object
+- `table` - 表对象或名称
+- `changedColumns` - 修改列数组。
+    - `oldColumn` - 旧 TableColumn 对象
+    - `newColumn` - 新 TableColumn 对象
 
-Changes a columns in the table.
+修改表中的多个列。
 
 ---
 
@@ -325,10 +325,10 @@ Changes a columns in the table.
 dropColumn(table: Table|string, column: TableColumn|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `column` - TableColumn object or column name to be dropped
+- `table` - 表对象或名称
+- `column` - 要删除的 TableColumn 对象或列名
 
-Drops a column in the table.
+删除表中的一个列。
 
 ---
 
@@ -336,10 +336,10 @@ Drops a column in the table.
 dropColumns(table: Table|string, columns: TableColumn[]|string[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `columns` - array of TableColumn objects or column names to be dropped
+- `table` - 表对象或名称
+- `columns` - 要删除的 TableColumn 对象数组或列名数组
 
-Drops a columns in the table.
+删除表中的多个列。
 
 ---
 
@@ -347,10 +347,10 @@ Drops a columns in the table.
 createPrimaryKey(table: Table|string, columnNames: string[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `columnNames` - array of column names which will be primary
+- `table` - 表对象或名称
+- `columnNames` - 将作为主键的列名数组
 
-Creates a new primary key.
+创建一个新的主键。
 
 ---
 
@@ -358,10 +358,10 @@ Creates a new primary key.
 updatePrimaryKeys(table: Table|string, columns: TableColumn[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `columns` - array of TableColumn objects which will be updated
+- `table` - 表对象或名称
+- `columns` - 将被更新的 TableColumn 对象数组
 
-Updates composite primary keys.
+更新复合主键。
 
 ---
 
@@ -369,9 +369,9 @@ Updates composite primary keys.
 dropPrimaryKey(table: Table|string): Promise<void>
 ```
 
-- `table` - Table object or name
+- `table` - 表对象或名称
 
-Drops a primary key.
+删除主键。
 
 ---
 
@@ -379,12 +379,12 @@ Drops a primary key.
 createUniqueConstraint(table: Table|string, uniqueConstraint: TableUnique): Promise<void>
 ```
 
-- `table` - Table object or name
-- `uniqueConstraint` - TableUnique object to be created
+- `table` - 表对象或名称
+- `uniqueConstraint` - 要创建的 TableUnique 对象
 
-Creates new unique constraint.
+创建新的唯一约束。
 
-> Note: does not work for MySQL, because MySQL stores unique constraints as unique indices. Use `createIndex()` method instead.
+> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `createIndex()` 方法。
 
 ---
 
@@ -392,12 +392,12 @@ Creates new unique constraint.
 createUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `uniqueConstraints` - array of TableUnique objects to be created
+- `table` - 表对象或名称
+- `uniqueConstraints` - 要创建的 TableUnique 对象数组
 
-Creates new unique constraints.
+创建新的唯一约束。
 
-> Note: does not work for MySQL, because MySQL stores unique constraints as unique indices. Use `createIndices()` method instead.
+> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `createIndices()` 方法。
 
 ---
 
@@ -405,12 +405,12 @@ Creates new unique constraints.
 dropUniqueConstraint(table: Table|string, uniqueOrName: TableUnique|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `uniqueOrName` - TableUnique object or unique constraint name to be dropped
+- `table` - 表对象或名称
+- `uniqueOrName` - 要删除的 TableUnique 对象或唯一约束名称
 
-Drops a unique constraint.
+删除唯一约束。
 
-> Note: does not work for MySQL, because MySQL stores unique constraints as unique indices. Use `dropIndex()` method instead.
+> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `dropIndex()` 方法。
 
 ---
 
@@ -418,12 +418,12 @@ Drops a unique constraint.
 dropUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `uniqueConstraints` - array of TableUnique objects to be dropped
+- `table` - 表对象或名称
+- `uniqueConstraints` - 要删除的 TableUnique 对象数组
 
-Drops unique constraints.
+删除唯一约束。
 
-> Note: does not work for MySQL, because MySQL stores unique constraints as unique indices. Use `dropIndices()` method instead.
+> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `dropIndices()` 方法。
 
 ---
 
@@ -431,12 +431,12 @@ Drops unique constraints.
 createCheckConstraint(table: Table|string, checkConstraint: TableCheck): Promise<void>
 ```
 
-- `table` - Table object or name
-- `checkConstraint` - TableCheck object
+- `table` - 表对象或名称
+- `checkConstraint` - TableCheck 对象
 
-Creates a new check constraint.
+创建新的检查约束。
 
-> Note: MySQL does not support check constraints.
+> 注意：MySQL 不支持检查约束。
 
 ---
 
@@ -444,12 +444,12 @@ Creates a new check constraint.
 createCheckConstraints(table: Table|string, checkConstraints: TableCheck[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `checkConstraints` - array of TableCheck objects
+- `table` - 表对象或名称
+- `checkConstraints` - TableCheck 对象数组
 
-Creates a new check constraint.
+创建新的检查约束。
 
-> Note: MySQL does not support check constraints.
+> 注意：MySQL 不支持检查约束。
 
 ---
 
@@ -457,12 +457,12 @@ Creates a new check constraint.
 dropCheckConstraint(table: Table|string, checkOrName: TableCheck|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `checkOrName` - TableCheck object or check constraint name
+- `table` - 表对象或名称
+- `checkOrName` - TableCheck 对象或检查约束名称
 
-Drops check constraint.
+删除检查约束。
 
-> Note: MySQL does not support check constraints.
+> 注意：MySQL 不支持检查约束。
 
 ---
 
@@ -470,12 +470,12 @@ Drops check constraint.
 dropCheckConstraints(table: Table|string, checkConstraints: TableCheck[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `checkConstraints` - array of TableCheck objects
+- `table` - 表对象或名称
+- `checkConstraints` - TableCheck 对象数组
 
-Drops check constraints.
+删除检查约束。
 
-> Note: MySQL does not support check constraints.
+> 注意：MySQL 不支持检查约束。
 
 ---
 
@@ -483,10 +483,10 @@ Drops check constraints.
 createForeignKey(table: Table|string, foreignKey: TableForeignKey): Promise<void>
 ```
 
-- `table` - Table object or name
-- `foreignKey` - TableForeignKey object
+- `table` - 表对象或名称
+- `foreignKey` - TableForeignKey 对象
 
-Creates a new foreign key.
+创建新的外键。
 
 ---
 
@@ -494,10 +494,10 @@ Creates a new foreign key.
 createForeignKeys(table: Table|string, foreignKeys: TableForeignKey[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `foreignKeys` - array of TableForeignKey objects
+- `table` - 表对象或名称
+- `foreignKeys` - TableForeignKey 对象数组
 
-Creates a new foreign keys.
+创建新的外键。
 
 ---
 
@@ -505,10 +505,10 @@ Creates a new foreign keys.
 dropForeignKey(table: Table|string, foreignKeyOrName: TableForeignKey|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `foreignKeyOrName` - TableForeignKey object or foreign key name
+- `table` - 表对象或名称
+- `foreignKeyOrName` - TableForeignKey 对象或外键名称
 
-Drops a foreign key.
+删除外键。
 
 ---
 
@@ -516,10 +516,10 @@ Drops a foreign key.
 dropForeignKeys(table: Table|string, foreignKeys: TableForeignKey[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `foreignKeys` - array of TableForeignKey objects
+- `table` - 表对象或名称
+- `foreignKeys` - TableForeignKey 对象数组
 
-Drops a foreign keys.
+删除多个外键。
 
 ---
 
@@ -527,10 +527,10 @@ Drops a foreign keys.
 createIndex(table: Table|string, index: TableIndex): Promise<void>
 ```
 
-- `table` - Table object or name
-- `index` - TableIndex object
+- `table` - 表对象或名称
+- `index` - TableIndex 对象
 
-Creates a new index.
+创建新的索引。
 
 ---
 
@@ -538,10 +538,10 @@ Creates a new index.
 createIndices(table: Table|string, indices: TableIndex[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `indices` - array of TableIndex objects
+- `table` - 表对象或名称
+- `indices` - TableIndex 对象数组
 
-Creates a new indices.
+创建多个索引。
 
 ---
 
@@ -549,10 +549,10 @@ Creates a new indices.
 dropIndex(table: Table|string, index: TableIndex|string): Promise<void>
 ```
 
-- `table` - Table object or name
-- `index` - TableIndex object or index name
+- `table` - 表对象或名称
+- `index` - TableIndex 对象或索引名称
 
-Drops an index.
+删除索引。
 
 ---
 
@@ -560,10 +560,10 @@ Drops an index.
 dropIndices(table: Table|string, indices: TableIndex[]): Promise<void>
 ```
 
-- `table` - Table object or name
-- `indices` - array of TableIndex objects
+- `table` - 表对象或名称
+- `indices` - TableIndex 对象数组
 
-Drops an indices.
+删除多个索引。
 
 ---
 
@@ -571,11 +571,11 @@ Drops an indices.
 clearTable(tableName: string): Promise<void>
 ```
 
-- `tableName` - table name
+- `tableName` - 表名
 
-Clears all table contents.
+清空表的所有内容。
 
-> Note: this operation uses SQL's TRUNCATE query which cannot be reverted in transactions.
+> 注意：该操作使用 SQL 的 TRUNCATE 语句，无法在事务中回滚。
 
 ---
 
@@ -583,8 +583,8 @@ Clears all table contents.
 enableSqlMemory(): void
 ```
 
-Enables special query runner mode in which sql queries won't be executed, instead they will be memorized into a special variable inside query runner.
-You can get memorized sql using `getMemorySql()` method.
+启用一种特殊的查询执行器模式，在该模式下 SQL 查询不会被执行，而是会被存储到查询执行器内部的特殊变量中。
+你可以使用 `getMemorySql()` 方法获取存储的 SQL。
 
 ---
 
@@ -592,7 +592,7 @@ You can get memorized sql using `getMemorySql()` method.
 disableSqlMemory(): void
 ```
 
-Disables special query runner mode in which sql queries won't be executed. Previously memorized sql will be flushed.
+禁用上述特殊查询执行器模式，之前存储的 SQL 会被清空。
 
 ---
 
@@ -600,7 +600,7 @@ Disables special query runner mode in which sql queries won't be executed. Previ
 clearSqlMemory(): void
 ```
 
-Flushes all memorized sql statements.
+清空所有存储的 SQL 语句。
 
 ---
 
@@ -608,9 +608,9 @@ Flushes all memorized sql statements.
 getMemorySql(): SqlInMemory
 ```
 
-- returns `SqlInMemory` object with array of `upQueries` and `downQueries` sql statements
+- 返回一个 `SqlInMemory` 对象，包含了 `upQueries` 和 `downQueries` SQL 语句数组
 
-Gets sql stored in the memory. Parameters in the sql are already replaced.
+获取存储在内存中的 SQL，SQL 中的参数已被替换。
 
 ---
 
@@ -618,7 +618,7 @@ Gets sql stored in the memory. Parameters in the sql are already replaced.
 executeMemoryUpSql(): Promise<void>
 ```
 
-Executes memorized up sql queries.
+执行存储的上行（up）SQL 查询。
 
 ---
 
@@ -626,6 +626,6 @@ Executes memorized up sql queries.
 executeMemoryDownSql(): Promise<void>
 ```
 
-Executes memorized down sql queries.
+执行存储的下行（down）SQL 查询。
 
 ---

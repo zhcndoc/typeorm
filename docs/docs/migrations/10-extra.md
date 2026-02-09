@@ -1,16 +1,16 @@
-# Extra options
+# 额外选项
 
-## Timestamp
+## 时间戳
 
-If you need to specify a timestamp for the migration name, use the `-t` (alias for `--timestamp`) and pass the timestamp (should be a non-negative number)
+如果你需要为迁移名称指定时间戳，使用 `-t`（`--timestamp` 的别名）并传入时间戳（应为非负数）
 
 ```shell
 typeorm -t <specific-timestamp> migration:{create|generate}
 ```
 
-You can get a timestamp from:
+你可以通过以下方式获取时间戳：
 
 ```js
 Date.now()
-/* OR */ new Date().getTime()
+/* 或者 */ new Date().getTime()
 ```

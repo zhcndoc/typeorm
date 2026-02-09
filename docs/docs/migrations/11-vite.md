@@ -1,10 +1,9 @@
 # Vite
 
-Using TypeORM in a [Vite](https://vite.dev) project is pretty straight forward. However, when you use [migrations](../migrations/01-why.md), you will run into "...migration name is wrong. Migration class name should have a
-JavaScript timestamp appended." errors when running the production build.
-On production builds, files are [optimized by default](https://vite.dev/config/build-options#build-minify) which includes mangling your code in order to minimize file sizes.
+在 [Vite](https://vite.dev) 项目中使用 TypeORM 非常简单。然而，当你使用[迁移](../migrations/01-why.md)时，在运行生产构建时会遇到“...迁移名称错误。迁移类名应附加一个 JavaScript 时间戳。”的错误。
+在生产构建中，文件默认会被[优化](https://vite.dev/config/build-options#build-minify)，其中包括对代码进行混淆以尽量减小文件大小。
 
-You have 3 options to mitigate this. The 3 options are shown below as diff to this basic `vite.config.ts`
+你有三种方案来缓解这个问题。下面以对基础 `vite.config.ts` 的差异形式展示这三种方案。
 
 ```typescript
 import legacy from "@vitejs/plugin-legacy"
@@ -26,9 +25,9 @@ export default defineConfig({
 })
 ```
 
-## Option 1: Disable minify
+## 方案 1：禁用代码混淆（minify）
 
-This is the most crude option and will result in significantly larger files. Add `build.minify = false` to your config.
+这是最粗暴的方案，会导致文件体积显著增大。在配置中添加 `build.minify = false`。
 
 ```diff
 --- basic vite.config.ts
@@ -43,10 +42,10 @@ This is the most crude option and will result in significantly larger files. Add
    resolve: {
 ```
 
-## Option 2: Disable esbuild minify identifiers
+## 方案 2：禁用 esbuild 的标识符混淆
 
-Vite uses esbuild as the default minifier. You can disable mangling of identifiers by adding `esbuild.minifyIdentifiers = false` to your config.
-This will result in smaller file sizes, but depending on your code base you will get diminishing returns as all identifiers will be kept at full length.
+Vite 使用 esbuild 作为默认的压缩器。通过在配置中添加 `esbuild.minifyIdentifiers = false` 禁用标识符混淆。
+这种方式会生成比方案 1 小的文件，但由于所有标识符都不会被缩短，收益会随代码规模减少而降低。
 
 ```diff
 --- basic vite.config.ts
@@ -60,13 +59,13 @@ This will result in smaller file sizes, but depending on your code base you will
    resolve: {
 ```
 
-## Option 3: Use terser as minifier while keeping only the migration class names
+## 方案 3：使用 terser 作为压缩器，只对迁移类名保持不变
 
-Vite supports using terser as minifier. Terser is slower then esbuild, but offers more fine grained control over what to minify.
-Add `minify: 'terser'` with `terserOptions.mangle.keep_classnames: /^Migrations\d+$/` and `terserOptions.compress.keep_classnames: /^Migrations\d+$/` to your config.
-These options will make sure classnames that start with "Migrations" and end with numbers are not renamed during minification.
+Vite 支持使用 terser 作为压缩器。terser 比 esbuild 慢，但提供了更精细的混淆控制。
+在配置中添加 `minify: 'terser'`，再加上 `terserOptions.mangle.keep_classnames: /^Migrations\d+$/` 和 `terserOptions.compress.keep_classnames: /^Migrations\d+$/`。
+这些选项确保以 “Migrations” 开头且以数字结尾的类名在压缩过程中不被重命名。
 
-Make sure terser is available as dev dependency in your project: `npm add -D terser`.
+确保项目中已作为开发依赖安装 terser：`npm add -D terser`。
 
 ```diff
 --- basic vite.config.ts

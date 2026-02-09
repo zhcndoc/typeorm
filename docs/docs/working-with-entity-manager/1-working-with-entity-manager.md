@@ -1,10 +1,10 @@
 # EntityManager
 
-Using `EntityManager` you can manage (insert, update, delete, load, etc.) any entity.
-EntityManager is just like a collection of all entity repositories in a single place.
+使用 `EntityManager` 你可以管理（插入、更新、删除、加载等）任何实体。  
+EntityManager 就像是将所有实体仓库集合在一个地方。
 
-You can access the entity manager via DataSource.
-Example how to use it:
+你可以通过 DataSource 访问实体管理器。  
+使用示例：
 
 ```typescript
 import { DataSource } from "typeorm"

@@ -1,10 +1,10 @@
-# Many-to-many relations
+# 多对多关系
 
-## What are many-to-many relations?
+## 什么是多对多关系？
 
-Many-to-many is a relation where A contains multiple instances of B, and B contains multiple instances of A.
-Let's take for example `Question` and `Category` entities.
-A question can have multiple categories, and each category can have multiple questions.
+多对多是一种关系，其中 A 包含多个 B 实例，B 也包含多个 A 实例。  
+我们以 `Question` 和 `Category` 实体为例。  
+一个问题可以有多个分类，每个分类也可以有多个问题。
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -46,10 +46,10 @@ export class Question {
 }
 ```
 
-`@JoinTable()` is required for `@ManyToMany` relations.
-You must put `@JoinTable` on one (owning) side of relation.
+`@JoinTable()` 是 `@ManyToMany` 关系必须的。  
+你必须在关系的一方（拥有方）上放置 `@JoinTable`。
 
-This example will produce following tables:
+该示例会生成如下表：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -75,9 +75,9 @@ This example will produce following tables:
 +-------------+--------------+----------------------------+
 ```
 
-## Saving many-to-many relations
+## 保存多对多关系
 
-With [cascades](./1-relations.md#cascades) enabled, you can save this relation with only one `save` call.
+启用 [级联操作](./1-relations.md#cascades) 后，你可以只用一次 `save` 调用保存该关系。
 
 ```typescript
 const category1 = new Category()
@@ -95,11 +95,11 @@ question.categories = [category1, category2]
 await dataSource.manager.save(question)
 ```
 
-## Deleting many-to-many relations
+## 删除多对多关系
 
-With [cascades](./1-relations.md#cascades) enabled, you can delete this relation with only one `save` call.
+启用 [级联操作](./1-relations.md#cascades) 后，你可以只用一次 `save` 调用删除该关系。
 
-To delete a many-to-many relationship between two records, remove it from the corresponding field and save the record.
+要删除两个记录之间的多对多关系，从对应字段中移除对应记录并保存即可。
 
 ```typescript
 const question = await dataSource.getRepository(Question).findOne({
@@ -114,11 +114,11 @@ question.categories = question.categories.filter((category) => {
 await dataSource.manager.save(question)
 ```
 
-This will only remove the record in the join table. The `question` and `categoryToRemove` records will still exist.
+这只会删除连接表中的记录，`question` 和 `categoryToRemove` 记录仍然存在。
 
-## Soft Deleting a relationship with cascade
+## 使用级联软删除关系
 
-This example shows how the cascading soft delete behaves:
+此示例展示了级联软删除的行为：
 
 ```typescript
 const category1 = new Category()
@@ -134,7 +134,7 @@ const newQuestion = await dataSource.manager.save(question)
 await dataSource.manager.softRemove(newQuestion)
 ```
 
-In this example we did not call save or softRemove for category1 and category2, but they will be automatically saved and soft-deleted when the cascade of relation options is set to true like this:
+在此示例中，我们没有调用 `save` 或 `softRemove` 来处理 `category1` 和 `category2`，但当关系选项的级联设置为 `true` 时，它们会被自动保存并进行软删除，如下所示：
 
 ```typescript
 import {
@@ -159,9 +159,9 @@ export class Question {
 }
 ```
 
-## Loading many-to-many relations
+## 加载多对多关系
 
-To load questions with categories inside you must specify the relation in `FindOptions`:
+要加载包含分类的题目，必须在 `FindOptions` 中指定关系：
 
 ```typescript
 const questionRepository = dataSource.getRepository(Question)
@@ -172,7 +172,7 @@ const questions = await questionRepository.find({
 })
 ```
 
-Or using `QueryBuilder` you can join them:
+或者使用 `QueryBuilder` 连接它们：
 
 ```typescript
 const questions = await dataSource
@@ -182,15 +182,15 @@ const questions = await dataSource
     .getMany()
 ```
 
-With eager loading enabled on a relation, you don't have to specify relations in the find command as it will ALWAYS be loaded automatically. If you use QueryBuilder eager relations are disabled, you have to use `leftJoinAndSelect` to load the relation.
+启用急切加载（eager loading）时，你无需在 find 命令中指定关系，因为它会自动加载。但如果你使用 QueryBuilder，急切加载则被禁用，必须使用 `leftJoinAndSelect` 才能加载关系。
 
-## Bi-directional relations
+## 双向关系
 
-Relations can be uni-directional and bi-directional.
-Uni-directional relations are relations with a relation decorator only on one side.
-Bi-directional relations are relations with decorators on both sides of a relation.
+关系可以是单向或双向的。  
+单向关系指仅在一方使用关系装饰器的关系。  
+双向关系指在关系两端都使用装饰器的关系。
 
-We just created a uni-directional relation. Let's make it bi-directional:
+我们刚创建的是单向关系。下面将其改为双向关系：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm"
@@ -236,10 +236,10 @@ export class Question {
 }
 ```
 
-We just made our relation bi-directional. Note that the inverse relation does not have a `@JoinTable`.
-`@JoinTable` must be only on one side of the relation.
+我们刚刚让关系变成了双向的。注意反向关系没有 `@JoinTable`，  
+`@JoinTable` 只能放在关系的一侧。
 
-Bi-directional relations allow you to join relations from both sides using `QueryBuilder`:
+双向关系允许你用 `QueryBuilder` 从两端进行关联查询：
 
 ```typescript
 const categoriesWithQuestions = await dataSource
@@ -249,10 +249,10 @@ const categoriesWithQuestions = await dataSource
     .getMany()
 ```
 
-## Many-to-many relations with custom properties
+## 带有自定义属性的多对多关系
 
-In case you need to have additional properties in your many-to-many relationship, you have to create a new entity yourself.
-For example, if you would like entities `Question` and `Category` to have a many-to-many relationship with an additional `order` column, then you need to create an entity `QuestionToCategory` with two `ManyToOne` relations pointing in both directions and with custom columns in it:
+如果你需要在多对多关系中添加额外属性，你需要自己创建一个新的实体。  
+例如，如果你希望实体 `Question` 和 `Category` 之间的多对多关系带有一个额外的 `order` 列，那么你需要创建一个带有两个指向双方的 `ManyToOne` 关系和自定义列的实体 `QuestionToCategory`：
 
 ```typescript
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
@@ -281,7 +281,7 @@ export class QuestionToCategory {
 }
 ```
 
-Additionally you will have to add a relationship like the following to `Question` and `Category`:
+此外，你需要在 `Question` 和 `Category` 中添加类似如下的关系：
 
 ```typescript
 // category.ts

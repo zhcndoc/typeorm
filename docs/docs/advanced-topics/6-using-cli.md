@@ -1,27 +1,27 @@
-# Using CLI
+# 使用 CLI
 
-## Installing CLI
+## 安装 CLI
 
-### If entities files are in javascript
+### 如果实体文件是 JavaScript
 
-If you have a local typeorm version, make sure it matches the global version we are going to install.
+如果你有本地的 typeorm 版本，确保它与我们将要安装的全局版本匹配。
 
-You can install typeorm globally with `npm i -g typeorm`.
-You can also choose to use `npx typeorm <params>` for each command if you prefer not having to install it.
+你可以通过 `npm i -g typeorm` 全局安装 typeorm。
+如果你不想安装它，也可以选择每次用命令时使用 `npx typeorm <参数>`。
 
-### If entities files are in typescript
+### 如果实体文件是 TypeScript
 
-This CLI tool is written in javascript and to be run on node. If your entity files are in typescript, you will need to transpile them to javascript before using CLI. You may skip this section if you only use javascript.
+此 CLI 工具是用 JavaScript 编写的，并在 node 上运行。如果你的实体文件是 TypeScript，你需要在使用 CLI 前将它们转译为 JavaScript。如果你只使用 JavaScript，可以跳过此部分。
 
-You may setup ts-node in your project to ease the operation as follows:
+你可以在项目中设置 ts-node 以简化操作，如下：
 
-Install ts-node:
+安装 ts-node：
 
 ```shell
 npm install ts-node --save-dev
 ```
 
-Add typeorm command under scripts section in package.json
+在 package.json 的 scripts 部分添加 typeorm 命令：
 
 ```json
 "scripts": {
@@ -30,7 +30,7 @@ Add typeorm command under scripts section in package.json
 }
 ```
 
-For ESM projects add this instead:
+对于 ESM 项目，改为添加：
 
 ```json
 "scripts": {
@@ -39,27 +39,27 @@ For ESM projects add this instead:
 }
 ```
 
-If you want to load more modules like [module-alias](https://github.com/ilearnio/module-alias) you can add more `--require my-module-supporting-register`
+如果你想加载更多模块，比如 [module-alias](https://github.com/ilearnio/module-alias)，可以添加更多 `--require my-module-supporting-register`
 
-Then you may run the command like this:
+然后你可以这样运行命令：
 
 ```shell
 npm run typeorm migration:run -- -d path-to-datasource-config
 ```
 
-### How to read the documentation?
+### 如何阅读文档？
 
-To reduce verbosity of the documentation, the following sections are using a globally installed typeorm CLI. Depending on how you installed the CLI, you may replace `typeorm` at the start of the command, by either `npx typeorm` or `npm run typeorm`.
+为了减少文档的冗长，以下章节使用全局安装的 typeorm CLI。根据你安装 CLI 的方式，你可以将命令开头的 `typeorm` 替换为 `npx typeorm` 或 `npm run typeorm`。
 
-## Initialize a new TypeORM project
+## 初始化一个新的 TypeORM 项目
 
-You can create a new project with everything already setup:
+你可以创建一个预先配置好的新项目：
 
 ```shell
 typeorm init
 ```
 
-It creates all files needed for a basic project with TypeORM:
+它会创建一个包含 TypeORM 基础所需的全部文件：
 
 - .gitignore
 - package.json
@@ -68,122 +68,122 @@ It creates all files needed for a basic project with TypeORM:
 - src/entity/User.ts
 - src/index.ts
 
-Then you can run `npm install` to install all dependencies.
-After that, you can run your application by running `npm start`.
+然后你可以运行 `npm install` 安装所有依赖。
+接着通过运行 `npm start` 启动你的应用程序。
 
-All files are generated in the current directory.
-If you want to generate them in a special directory you can use `--name`:
+所有文件均生成在当前目录。
+如果你想在特定目录生成，可以使用 `--name`：
 
 ```shell
 typeorm init --name my-project
 ```
 
-To specify a specific database you use you can use `--database`:
+如果你想指定特定数据库，可以使用 `--database`：
 
 ```shell
 typeorm init --database mssql
 ```
 
-To generate an ESM base project you can use `--module esm`:
+生成基于 ESM 的项目可以使用 `--module esm`：
 
 ```shell
 typeorm init --name my-project --module esm
 ```
 
-You can also generate a base project with Express:
+你也可以生成带有 Express 的基础项目：
 
 ```shell
 typeorm init --name my-project --express
 ```
 
-If you are using docker you can generate a `docker-compose.yml` file using:
+如果你使用 docker，可以生成 `docker-compose.yml` 文件：
 
 ```shell
 typeorm init --docker
 ```
 
-`typeorm init` is the easiest and fastest way to setup a TypeORM project.
+`typeorm init` 是设置 TypeORM 项目最简单快捷的方式。
 
-## Create a new entity
+## 创建新实体
 
-You can create a new entity using CLI:
+你可以使用 CLI 创建新实体：
 
 ```shell
 typeorm entity:create path-to-entity-dir/entity
 ```
 
-Learn more about [entities](../entity/1-entities.md).
+更多关于 [实体](../entity/1-entities.md) 的内容。
 
-## Create a new subscriber
+## 创建新的订阅者
 
-You can create a new subscriber using CLI:
+你可以使用 CLI 新建订阅者：
 
 ```shell
 typeorm subscriber:create path-to-subscriber-dir/subscriber
 ```
 
-Learn more about [Subscribers](./4-listeners-and-subscribers.md).
+更多关于 [订阅者](./4-listeners-and-subscribers.md) 的内容。
 
-## Manage migrations
+## 管理迁移
 
-- `typeorm migration:create` - [create](../migrations/03-creating.md) empty migration
-- `typeorm migration:generate` - [generate](../migrations/04-generating.md) migration comparing entities with actual database schema
-- `typeorm migration:run` - [execute](../migrations/05-executing.md) all migrations
-- `typeorm migration:revert` - [revert](../migrations/06-reverting.md) last migration
-- `typeorm migration:show` - [list](../migrations/07-status.md) all migrations with their execution status
+- `typeorm migration:create` - [创建](../migrations/03-creating.md) 空迁移
+- `typeorm migration:generate` - [生成](../migrations/04-generating.md) 迁移，比较实体与当前数据库结构
+- `typeorm migration:run` - [执行](../migrations/05-executing.md) 所有迁移
+- `typeorm migration:revert` - [回滚](../migrations/06-reverting.md) 上一次迁移
+- `typeorm migration:show` - [列出](../migrations/07-status.md) 所有迁移及其执行状态
 
-Learn more about [Migrations](../migrations/01-why.md).
+更多关于 [迁移](../migrations/01-why.md) 的内容。
 
-## Sync database schema
+## 同步数据库模式
 
-To synchronize a database schema use:
+同步数据库架构使用：
 
 ```shell
 typeorm schema:sync
 ```
 
-Be careful running this command in production -
-schema sync may cause data loss if you don't use it wisely.
-Check which sql queries it will run before running on production.
+在生产环境运行此命令时需谨慎——
+如果不谨慎使用，schema sync 可能导致数据丢失。
+务必先检查要运行哪些 SQL 查询，再在生产环境执行。
 
-## Log sync database schema queries without actual running them
+## 记录同步数据库模式的查询但不实际执行
 
-To check what sql queries `schema:sync` is going to run use:
+查看 `schema:sync` 将执行哪些 SQL 查询使用：
 
 ```shell
 typeorm schema:log
 ```
 
-## Drop database schema
+## 删除数据库模式
 
-To completely drop a database schema use:
+完全删除数据库架构使用：
 
 ```shell
 typeorm schema:drop -- -d path-to-datasource-config
 ```
 
-Be careful with this command on production since it completely removes data from your database.
+在生产环境使用此命令需十分小心，因为它会彻底删除数据库中的数据。
 
-## Run any SQL query
+## 执行任意 SQL 查询
 
-You can execute any SQL query you want directly in the database using:
+你可以直接在数据库中执行任何 SQL 查询：
 
 ```shell
 typeorm query "SELECT * FROM USERS"
 ```
 
-## Clear cache
+## 清除缓存
 
-If you are using `QueryBuilder` caching, sometimes you may want to clear everything stored in the cache.
-You can do it using the following command:
+如果你使用了 `QueryBuilder` 缓存，有时需要清空缓存中的所有内容。
+你可以使用以下命令完成：
 
 ```shell
 typeorm cache:clear
 ```
 
-## Check version
+## 查看版本
 
-You can check what typeorm version you have installed (both local and global) by running:
+你可以通过运行以下命令查看已安装的 typeorm 版本（包括本地和全局）：
 
 ```shell
 typeorm version

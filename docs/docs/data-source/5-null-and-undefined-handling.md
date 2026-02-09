@@ -1,26 +1,25 @@
-# Handling null and undefined values in where conditions
+# 在 where 条件中处理 null 和 undefined 值
 
-In 'WHERE' conditions the values `null` and `undefined` are not strictly valid values in TypeORM.
+在 `WHERE` 条件中，`null` 和 `undefined` 的值在 TypeORM 中并不是严格有效的值。
 
-Passing a known `null` value is disallowed by TypeScript (when you've enabled `strictNullChecks` in tsconfig.json) at compile time. But the default behavior is for `null` values encountered at runtime to be ignored. Similarly, `undefined` values are allowed by TypeScript and ignored at runtime.
+传递已知的 `null` 值在 TypeScript 中是不允许的（当你在 tsconfig.json 中启用了 `strictNullChecks` 时）编译时会报错。但是默认行为是在运行时遇到 `null` 值时会被忽略。同样，TypeScript 允许 `undefined` 值，但在运行时也会被忽略。
 
-The acceptance of `null` and `undefined` values can sometimes cause unexpected results and requires caution. This is especially a concern when values are passed from user input without adequate validation.
+接受 `null` 和 `undefined` 值有时会导致意想不到的结果，需要谨慎对待。尤其是在值来自用户输入且没有进行充分验证时，这一点尤为重要。
 
-For example, calling `Repository.findOneBy({ id: undefined })` returns the first row from the table, and `Repository.findBy({ userId: null })` is unfiltered and returns all rows.
+例如，调用 `Repository.findOneBy({ id: undefined })` 会返回表中的第一行，而 `Repository.findBy({ userId: null })` 则是不带过滤条件的，返回所有行。
 
-The way in which `null` and `undefined` values are handled can be customised through the `invalidWhereValuesBehavior` configuration option in your data source options. This applies to all operations that support 'WHERE' conditions, including find operations, query builders, and repository methods.
+`null` 和 `undefined` 值的处理方式可以通过数据源配置中的 `invalidWhereValuesBehavior` 选项自定义。该选项适用于所有支持 `WHERE` 条件的操作，包括查询操作、查询构建器和仓库方法。
 
 :::note
-The current behavior will be changing in future versions of TypeORM,
-we recommend setting both `null` and `undefined` behaviors to throw to prepare for these changes
+未来版本的 TypeORM 将修改当前行为，建议将 `null` 和 `undefined` 行为都设置为抛出错误，以便提前适配这些变化。
 :::
 
-## Default Behavior
+## 默认行为
 
-By default, TypeORM skips both `null` and `undefined` values in where conditions. This means that if you include a property with a `null` or `undefined` value in your where clause, it will be ignored:
+默认情况下，TypeORM 会跳过 where 条件中的 `null` 和 `undefined` 值。这意味着如果你在 where 条件中包含 `null` 或 `undefined` 的属性，该属性将被忽略：
 
 ```typescript
-// Both queries will return all posts, ignoring the text property
+// 这两个查询都会返回所有帖子，忽略 text 属性
 const posts1 = await repository.find({
     where: {
         text: null,
@@ -34,7 +33,7 @@ const posts2 = await repository.find({
 })
 ```
 
-The correct way to match null values in where conditions is to use the `IsNull` operator (for details see [Find Options](../working-with-entity-manager/3-find-options.md)):
+正确匹配 where 条件中的 null 值应使用 `IsNull` 操作符（详情见 [查找选项](../working-with-entity-manager/3-find-options.md)）：
 
 ```typescript
 const posts = await repository.find({
@@ -44,13 +43,13 @@ const posts = await repository.find({
 })
 ```
 
-## Configuration
+## 配置
 
-You can customize how null and undefined values are handled using the `invalidWhereValuesBehavior` option in your connection configuration:
+你可以通过连接配置中的 `invalidWhereValuesBehavior` 选项来自定义对 `null` 和 `undefined` 值的处理：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         null: "ignore" | "sql-null" | "throw",
         undefined: "ignore" | "throw",
@@ -58,23 +57,23 @@ const dataSource = new DataSource({
 })
 ```
 
-### Null Behavior Options
+### null 行为选项
 
-The `null` behavior can be set to one of three values:
+`null` 的行为可以设置为以下三个值之一：
 
-#### `'ignore'` (default)
+#### `'ignore'`（默认）
 
-JavaScript `null` values in where conditions are ignored and the property is skipped:
+where 条件中的 JavaScript `null` 值会被忽略，该属性会被跳过：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         null: "ignore",
     },
 })
 
-// This will return all posts, ignoring the text property
+// 这会返回所有帖子，忽略 text 属性
 const posts = await repository.find({
     where: {
         text: null,
@@ -84,17 +83,17 @@ const posts = await repository.find({
 
 #### `'sql-null'`
 
-JavaScript `null` values are transformed into SQL `NULL` conditions:
+JavaScript `null` 值会被转换为 SQL 的 `NULL` 条件：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         null: "sql-null",
     },
 })
 
-// This will only return posts where the text column is NULL in the database
+// 这将只返回数据库中 text 列为 NULL 的帖子
 const posts = await repository.find({
     where: {
         text: null,
@@ -104,44 +103,44 @@ const posts = await repository.find({
 
 #### `'throw'`
 
-JavaScript `null` values cause a TypeORMError to be thrown:
+JavaScript `null` 值会导致抛出 TypeORMError：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         null: "throw",
     },
 })
 
-// This will throw an error
+// 这将抛出错误
 const posts = await repository.find({
     where: {
         text: null,
     },
 })
-// Error: Null value encountered in property 'text' of a where condition.
-// To match with SQL NULL, the IsNull() operator must be used.
-// Set 'invalidWhereValuesBehavior.null' to 'ignore' or 'sql-null' in connection options to skip or handle null values.
+// 错误信息: 在 where 条件的 'text' 属性中遇到了 null 值。
+// 若想匹配 SQL 的 NULL，应使用 IsNull() 操作符。
+// 可在连接选项中将 'invalidWhereValuesBehavior.null' 设置为 'ignore' 或 'sql-null' 以跳过或处理 null 值。
 ```
 
-### Undefined Behavior Options
+### undefined 行为选项
 
-The `undefined` behavior can be set to one of two values:
+`undefined` 的行为可以设置为以下两个值之一：
 
-#### `'ignore'` (default)
+#### `'ignore'`（默认）
 
-JavaScript `undefined` values in where conditions are ignored and the property is skipped:
+where 条件中的 JavaScript `undefined` 值会被忽略，该属性会被跳过：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         undefined: "ignore",
     },
 })
 
-// This will return all posts, ignoring the text property
+// 这会返回所有帖子，忽略 text 属性
 const posts = await repository.find({
     where: {
         text: undefined,
@@ -151,35 +150,35 @@ const posts = await repository.find({
 
 #### `'throw'`
 
-JavaScript `undefined` values cause a TypeORMError to be thrown:
+JavaScript `undefined` 值会导致抛出 TypeORMError：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         undefined: "throw",
     },
 })
 
-// This will throw an error
+// 这将抛出错误
 const posts = await repository.find({
     where: {
         text: undefined,
     },
 })
-// Error: Undefined value encountered in property 'text' of a where condition.
-// Set 'invalidWhereValuesBehavior.undefined' to 'ignore' in connection options to skip properties with undefined values.
+// 错误信息: 在 where 条件的 'text' 属性中遇到了 undefined 值。
+// 可在连接选项中将 'invalidWhereValuesBehavior.undefined' 设置为 'ignore' 以跳过 undefined 值的属性。
 ```
 
-Note that this only applies to explicitly set `undefined` values, not omitted properties.
+注意，这仅适用于显式设置为 `undefined` 的值，不适用于属性被省略的情况。
 
-## Using Both Options Together
+## 同时使用两个选项
 
-You can configure both behaviors independently for comprehensive control:
+你可以独立配置这两个行为，以实现全面控制：
 
 ```typescript
 const dataSource = new DataSource({
-    // ... other options
+    // ... 其他选项
     invalidWhereValuesBehavior: {
         null: "sql-null",
         undefined: "throw",
@@ -187,22 +186,22 @@ const dataSource = new DataSource({
 })
 ```
 
-This configuration will:
+此配置将：
 
-1. Transform JavaScript `null` values to SQL `NULL` in where conditions
-2. Throw an error if any `undefined` values are encountered
-3. Still ignore properties that are not provided in the where clause
+1. 将 JavaScript 的 `null` 值转换为 SQL 的 `NULL` 条件
+2. 发现任何 `undefined` 值时抛出错误
+3. 忽略 where 条件中未提供的属性
 
-This combination is useful when you want to:
+该组合适用于你想要：
 
-- Be explicit about searching for NULL values in the database
-- Catch potential programming errors where undefined values might slip into your queries
+- 明确地在数据库中查找 NULL 值
+- 捕获可能滑入查询中的 undefined 值的编程错误
 
-## Works with all where operations
+## 适用于所有 where 操作
 
-The `invalidWhereValuesBehavior` configuration applies to **all TypeORM operations** that support where conditions, not just repository find methods:
+`invalidWhereValuesBehavior` 配置适用于**所有支持 where 条件的 TypeORM 操作**，不仅限于仓库的 find 方法：
 
-### Query Builders
+### 查询构建器
 
 ```typescript
 // UpdateQueryBuilder
@@ -210,7 +209,7 @@ await dataSource
     .createQueryBuilder()
     .update(Post)
     .set({ title: "Updated" })
-    .where({ text: null }) // Respects invalidWhereValuesBehavior
+    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
     .execute()
 
 // DeleteQueryBuilder
@@ -218,7 +217,7 @@ await dataSource
     .createQueryBuilder()
     .delete()
     .from(Post)
-    .where({ text: null }) // Respects invalidWhereValuesBehavior
+    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
     .execute()
 
 // SoftDeleteQueryBuilder
@@ -226,27 +225,27 @@ await dataSource
     .createQueryBuilder()
     .softDelete()
     .from(Post)
-    .where({ text: null }) // Respects invalidWhereValuesBehavior
+    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
     .execute()
 ```
 
-### Repository Methods
+### 仓库方法
 
 ```typescript
 // Repository.update()
-await repository.update({ text: null }, { title: "Updated" }) // Respects invalidWhereValuesBehavior
+await repository.update({ text: null }, { title: "Updated" }) // 尊重 invalidWhereValuesBehavior 设置
 
 // Repository.delete()
-await repository.delete({ text: null }) // Respects invalidWhereValuesBehavior
+await repository.delete({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
 
 // EntityManager.update()
-await manager.update(Post, { text: null }, { title: "Updated" }) // Respects invalidWhereValuesBehavior
+await manager.update(Post, { text: null }, { title: "Updated" }) // 尊重 invalidWhereValuesBehavior 设置
 
 // EntityManager.delete()
-await manager.delete(Post, { text: null }) // Respects invalidWhereValuesBehavior
+await manager.delete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 设置
 
 // EntityManager.softDelete()
-await manager.softDelete(Post, { text: null }) // Respects invalidWhereValuesBehavior
+await manager.softDelete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 设置
 ```
 
-All these operations will consistently apply your configured `invalidWhereValuesBehavior` settings.
+所有这些操作都会一致地应用你配置的 `invalidWhereValuesBehavior` 设置。

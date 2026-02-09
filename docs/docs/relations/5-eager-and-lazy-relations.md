@@ -1,9 +1,9 @@
-# Eager and Lazy Relations
+# 急切关联和懒加载关联
 
-## Eager relations
+## 急切关联
 
-Eager relations are loaded automatically each time you load entities from the database.
-For example:
+急切关联在每次从数据库加载实体时都会自动加载。
+例如：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm"
@@ -51,26 +51,26 @@ export class Question {
 }
 ```
 
-Now when you load questions you don't need to join or specify relations you want to load.
-They will be loaded automatically:
+现在当你加载问题时，不需要使用 join 或指定想要加载的关联。
+它们会自动加载：
 
 ```typescript
 const questionRepository = dataSource.getRepository(Question)
 
-// questions will be loaded with its categories
+// questions 会自动加载其 categories
 const questions = await questionRepository.find()
 ```
 
-Eager relations only work when you use `find*` methods.
-If you use `QueryBuilder` eager relations are disabled and have to use `leftJoinAndSelect` to load the relation.
-Eager relations can only be used on one side of the relationship,
-using `eager: true` on both sides of relationship is disallowed.
+急切关联只在使用 `find*` 方法时有效。
+如果使用 `QueryBuilder`，急切关联将被禁用，必须使用 `leftJoinAndSelect` 来加载关联。
+急切关联只能用于关系的一方，
+两边都使用 `eager: true` 是不允许的。
 
-## Lazy relations
+## 懒加载关联
 
-Entities in lazy relations are loaded once you access them.
-Such relations must have `Promise` as type - you store your value in a promise,
-and when you load them a promise is returned as well. Example:
+懒加载关联中的实体会在你访问它们时加载。
+这类关联的类型必须是 `Promise` — 你将值存储在一个 Promise 中，
+加载时也会返回一个 Promise。示例：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm"
@@ -116,8 +116,8 @@ export class Question {
 }
 ```
 
-`categories` is a Promise. It means it is lazy and it can store only a promise with a value inside.
-Example how to save such relation:
+`categories` 是一个 Promise。这意味着它是懒加载的，只能存储一个包含值的 Promise。
+下面是保存这类关联的示例：
 
 ```typescript
 const category1 = new Category()
@@ -133,15 +133,15 @@ question.categories = Promise.resolve([category1, category2])
 await dataSource.manager.save(question)
 ```
 
-Example how to load objects inside lazy relations:
+下面是如何加载懒加载关联内部对象的示例：
 
 ```typescript
 const [question] = await dataSource.getRepository(Question).find()
 const categories = await question.categories
-// you'll have all question's categories inside "categories" variable now
+// 现在变量 "categories" 中包含了该 question 的所有类别
 ```
 
-Note: if you come from other languages (Java, PHP, etc.) and are used to using lazy relations everywhere - be careful.
-Those languages aren't asynchronous, and lazy loading is achieved in a different way, without the use of promises.
-In JavaScript and Node.JS, you have to use promises if you want to have lazy-loaded relations.
-This is a non-standard technique and considered experimental in TypeORM.
+注意：如果你来自其他语言（如 Java、PHP 等），并习惯到处使用懒加载关联——请小心。
+那些语言是同步的，懒加载是以不同方式实现的，不依赖 Promise。
+在 JavaScript 和 Node.JS 中，如果想实现懒加载关联，必须使用 Promise。
+这是一种非标准技术，在 TypeORM 中被视为实验性功能。

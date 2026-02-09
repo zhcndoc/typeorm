@@ -1,11 +1,11 @@
-# Reverting
+# 回滚
 
-If for some reason you want to revert the changes, you can run:
+如果出于某种原因你想回滚更改，可以运行：
 
 ```shell
 typeorm migration:revert -- -d path-to-datasource-config
 ```
 
-This command will execute `down` in the latest executed migration.
+此命令将执行最新已执行迁移中的 `down` 方法。
 
-If you need to revert multiple migrations you must call this command multiple times.
+如果需要回滚多个迁移，则必须多次调用此命令。

@@ -1,0 +1,6 @@
+{
+  "app_dir": "/",
+  "build_command": "cd docs && pnpm run build",
+  "install_command": "cd docs && pnpm install",
+  "output_dir": "docs/build"
+}

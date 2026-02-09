@@ -1,8 +1,8 @@
-# Migration from Sequelize to TypeORM
+# 从 Sequelize 迁移到 TypeORM
 
-## Setting up a data source
+## 设置数据源
 
-In sequelize you create a data source this way:
+在 sequelize 中，你这样创建数据源：
 
 ```javascript
 const sequelize = new Sequelize("database", "username", "password", {
@@ -20,7 +20,7 @@ sequelize
     })
 ```
 
-In TypeORM you create a data source following way:
+在 TypeORM 中，你这样创建数据源：
 
 ```typescript
 import { DataSource } from "typeorm"
@@ -42,20 +42,20 @@ dataSource
     })
 ```
 
-Then you can use `dataSource` instance from anywhere in your app.
+之后你可以在应用的任何地方使用 `dataSource` 实例。
 
-Learn more about [Data Source](../data-source/1-data-source.md)
+了解更多关于 [数据源](../data-source/1-data-source.md)
 
-## Schema synchronization
+## 模式同步
 
-In sequelize you do schema synchronization this way:
+在 sequelize 中你这样做模式同步：
 
 ```javascript
 Project.sync({ force: true })
 Task.sync({ force: true })
 ```
 
-In TypeORM you just add `synchronize: true` in the data source options:
+在 TypeORM 中，只需在数据源选项中添加 `synchronize: true`：
 
 ```typescript
 const dataSource = new DataSource({
@@ -67,9 +67,9 @@ const dataSource = new DataSource({
 })
 ```
 
-## Creating a models
+## 创建模型
 
-This is how models are defined in sequelize:
+在 sequelize 中模型的定义方式如下：
 
 ```javascript
 module.exports = function (sequelize, DataTypes) {
@@ -94,7 +94,7 @@ module.exports = function (sequelize, DataTypes) {
 }
 ```
 
-In TypeORM these models are called entities and you can define them the following way:
+在 TypeORM 中，这些模型称为实体，定义方式如下：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -131,75 +131,73 @@ export class Task {
 }
 ```
 
-It's highly recommended defining one entity class per file.
-TypeORM allows you to use your classes as database models
-and provides a declarative way to define what part of your model
-will become part of your database table.
-The power of TypeScript gives you type hinting and other useful features that you can use in classes.
+强烈建议每个实体类单独放一个文件。  
+TypeORM 允许你使用类作为数据库模型，并提供声明式的方式定义模型中哪些部分将成为数据库表的一部分。  
+TypeScript 的强大之处在于提供类型提示和其他有用的特性，你可以在类中使用。
 
-Learn more about [Entities and columns](../entity/1-entities.md)
+了解更多关于 [实体和列](../entity/1-entities.md)
 
-## Other model settings
+## 其他模型设置
 
-The following in sequelize:
+在 sequelize 中：
 
 ```javascript
 flag: { type: Sequelize.BOOLEAN, allowNull: true, defaultValue: true },
 ```
 
-Can be achieved in TypeORM like this:
+在 TypeORM 中可以这样实现：
 
 ```typescript
 @Column({ nullable: true, default: true })
 flag: boolean;
 ```
 
-Following in sequelize:
+sequelize 中：
 
 ```javascript
 flag: { type: Sequelize.DATE, defaultValue: Sequelize.NOW }
 ```
 
-Is written like this in TypeORM:
+在 TypeORM 中写法为：
 
 ```typescript
 @Column({ default: () => "NOW()" })
 myDate: Date;
 ```
 
-Following in sequelize:
+sequelize 中：
 
 ```javascript
 someUnique: { type: Sequelize.STRING, unique: true },
 ```
 
-Can be achieved this way in TypeORM:
+在 TypeORM 中这样写：
 
 ```typescript
 @Column({ unique: true })
 someUnique: string;
 ```
 
-Following in sequelize:
+sequelize 中：
 
 ```javascript
 fieldWithUnderscores: { type: Sequelize.STRING, field: "field_with_underscores" },
 ```
 
-Translates to this in TypeORM:
+在 TypeORM 中对应：
 
 ```typescript
 @Column({ name: "field_with_underscores" })
 fieldWithUnderscores: string;
 ```
 
-Following in sequelize:
+sequelize 中：
 
 ```javascript
 incrementMe: { type: Sequelize.INTEGER, autoIncrement: true },
 ```
 
-Can be achieved this way in TypeORM:
+TypeORM 中这样实现：
 
 ```typescript
 @Column()
@@ -207,20 +205,20 @@ Can be achieved this way in TypeORM:
 incrementMe: number;
 ```
 
-Following in sequelize:
+sequelize 中：
 
 ```javascript
 identifier: { type: Sequelize.STRING, primaryKey: true },
 ```
 
-Can be achieved this way in TypeORM:
+在 TypeORM 中：
 
 ```typescript
 @Column({ primary: true })
 identifier: string;
 ```
 
-To create `createDate` and `updateDate`-like columns you need to defined two columns (name it what you want) in your entity:
+要创建类似 `createDate` 和 `updateDate` 的列，你需要在实体中定义两个列（名字随你）：
 
 ```typescript
 @CreateDateColumn();
@@ -230,9 +228,9 @@ createDate: Date;
 updateDate: Date;
 ```
 
-### Working with models
+### 使用模型
 
-To create and save a new model in sequelize you write:
+在 sequelize 中创建并保存新模型：
 
 ```javascript
 const employee = await Employee.create({
@@ -241,43 +239,43 @@ const employee = await Employee.create({
 })
 ```
 
-In TypeORM there are several ways to create and save a new model:
+在 TypeORM 中有几种方法创建并保存新模型：
 
 ```typescript
-const employee = new Employee() // you can use constructor parameters as well
+const employee = new Employee() // 你也可以使用构造函数参数
 employee.name = "John Doe"
 employee.title = "senior engineer"
 await dataSource.getRepository(Employee).save(employee)
 ```
 
-or active record pattern
+或者使用 Active Record 模式：
 
 ```typescript
 const employee = Employee.create({ name: "John Doe", title: "senior engineer" })
 await employee.save()
 ```
 
-if you want to load an existing entity from the database and replace some of its properties you can use the following method:
+如果你想从数据库加载已有实体并替换其部分属性，可以使用：
 
 ```typescript
 const employee = await Employee.preload({ id: 1, name: "John Doe" })
 ```
 
-Learn more about [Active Record vs Data Mapper](./1-active-record-data-mapper.md) and [Repository API](../working-with-entity-manager/6-repository-api.md).
+了解更多关于 [Active Record 与 Data Mapper](./1-active-record-data-mapper.md) 以及 [Repository API](../working-with-entity-manager/6-repository-api.md)。
 
-To access properties in sequelize you do the following:
+在 sequelize 中访问属性：
 
 ```typescript
 console.log(employee.get("name"))
 ```
 
-In TypeORM you simply do:
+在 TypeORM 中你直接这样：
 
 ```typescript
 console.log(employee.name)
 ```
 
-To create an index in sequelize you do:
+在 sequelize 中创建索引：
 
 ```typescript
 sequelize.define(
@@ -294,7 +292,7 @@ sequelize.define(
 )
 ```
 
-In TypeORM you do:
+在 TypeORM 中：
 
 ```typescript
 @Entity()
@@ -302,4 +300,4 @@ In TypeORM you do:
 export class User {}
 ```
 
-Learn more about [Indices](../advanced-topics/3-indices.md)
+了解更多关于 [索引](../advanced-topics/3-indices.md)

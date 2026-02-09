@@ -1,32 +1,32 @@
-# Generating
+# 生成
 
-TypeORM is able to automatically generate migration files based on the changes you made to the entities, comparing them with existing database schema on the server.
+TypeORM 能够根据你对实体所做的更改，自动生成迁移文件，比较它们与服务器上现有的数据库架构。
 
-Automatic migration generation creates a new migration file and writes all sql queries that must be executed to update the database. If no changes are detected, the command will exit with code `1`.
+自动迁移生成会创建一个新的迁移文件，并写入所有必须执行的 SQL 查询以更新数据库。如果未检测到任何更改，该命令将以代码 `1` 退出。
 
-Let's say you have a `Post` entity with a `title` column, and you have changed the name `title` to `name`.
+假设你有一个包含 `title` 列的 `Post` 实体，你将 `title` 的名称更改为了 `name`。
 
-You can generate migration with of the following command:
+你可以使用以下命令之一生成迁移：
 
 ```shell
 typeorm migration:generate -d <path/to/datasource> <migration-name>
 ```
 
-The `-d` argument value should specify the path where your [DataSource](../data-source/1-data-source.md) instance is defined.
+`-d` 参数的值应指定你定义 [DataSource](../data-source/1-data-source.md) 实例的路径。
 
-Alternatively you can also specify name with `--name` param
+另外，你也可以使用 `--name` 参数指定名称：
 
 ```shell
 typeorm migration:generate -- -d <path/to/datasource> --name=<migration-name>
 ```
 
-or use a full path:
+或者使用完整路径：
 
 ```shell
 typeorm migration:generate -d <path/to/datasource> <path/to/migrations>/<migration-name>
 ```
 
-Assuming you used `post-refactoring` as a name, it will generate a new file called `{TIMESTAMP}-post-refactoring.ts` with the following content:
+假设你使用了 `post-refactoring` 作为名称，它将生成一个名为 `{TIMESTAMP}-post-refactoring.ts` 的新文件，内容如下：
 
 ```typescript
 import { MigrationInterface, QueryRunner } from "typeorm"
@@ -46,7 +46,7 @@ export class PostRefactoringTIMESTAMP implements MigrationInterface {
 }
 ```
 
-Alternatively, you can also output your migrations as Javascript files using the `o` (alias for `--outputJs`) flag. This is useful for Javascript only projects in which TypeScript additional packages are not installed. This command, will generate a new migration file `{TIMESTAMP}-PostRefactoring.js` with the following content:
+另外，你还可以使用 `o`（`--outputJs` 的别名）参数将迁移输出为 JavaScript 文件。这对于仅使用 JavaScript、未安装 TypeScript 相关包的项目非常有用。此命令将生成一个新迁移文件 `{TIMESTAMP}-PostRefactoring.js`，内容如下：
 
 ```javascript
 /**
@@ -79,7 +79,7 @@ module.exports = class PostRefactoringTIMESTAMP {
 }
 ```
 
-By default, it generates CommonJS JavaScript code with the `o` (alias for `--outputJs`) flag, but you can also generate ESM code with the `esm` flag. This is useful for Javascript projects that use ESM:
+默认情况下，使用 `o`（`--outputJs`）参数生成的是 CommonJS 格式的 JavaScript 代码，但你也可以使用 `esm` 参数生成 ESM 代码。这对于使用 ESM 的 JavaScript 项目非常有用：
 
 ```javascript
 /**
@@ -112,6 +112,6 @@ export class PostRefactoringTIMESTAMP {
 }
 ```
 
-See, you don't need to write the queries on your own.
+看吧，你不需要自己编写查询语句。
 
-The rule of thumb for generating migrations is that you generate them after **each** change you made to your models. To apply multi-line formatting to your generated migration queries, use the `p` (alias for `--pretty`) flag.
+生成迁移的经验法则是：每次对模型做出更改后，都要生成相应的迁移。要对生成的迁移查询应用多行格式，可以使用 `p`（`--pretty` 的别名）参数。

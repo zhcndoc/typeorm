@@ -1,35 +1,35 @@
-# Repository APIs
+# 仓库 API
 
 ## `Repository` API
 
-- `manager` - The `EntityManager` used by this repository.
+- `manager` - 此仓库使用的 `EntityManager`。
 
 ```typescript
 const manager = repository.manager
 ```
 
-- `metadata` - The `EntityMetadata` of the entity managed by this repository.
+- `metadata` - 此仓库管理的实体的 `EntityMetadata`。
 
 ```typescript
 const metadata = repository.metadata
 ```
 
-- `queryRunner` - The query runner used by `EntityManager`.
-  Used only in transactional instances of EntityManager.
+- `queryRunner` - `EntityManager` 使用的查询运行器。
+  仅用于事务性实例的 EntityManager。
 
 ```typescript
 const queryRunner = repository.queryRunner
 ```
 
-- `target` - The target entity class managed by this repository.
-  Used only in transactional instances of EntityManager.
+- `target` - 此仓库管理的目标实体类。
+  仅用于事务性实例的 EntityManager。
 
 ```typescript
 const target = repository.target
 ```
 
-- `createQueryBuilder` - Creates a query builder use to build SQL queries.
-  Learn more about [QueryBuilder](../query-builder/1-select-query-builder.md).
+- `createQueryBuilder` - 创建用于构建 SQL 查询的查询构建器。
+  了解更多关于 [QueryBuilder](../query-builder/1-select-query-builder.md)。
 
 ```typescript
 const users = await repository
@@ -38,46 +38,45 @@ const users = await repository
     .getMany()
 ```
 
-- `hasId` - Checks if the given entity's primary column property is defined.
+- `hasId` - 检查给定实体的主键列属性是否已定义。
 
 ```typescript
 if (repository.hasId(user)) {
-    // ... do something
+    // ... 执行某些操作
 }
 ```
 
-- `getId` - Gets the primary column property values of the given entity.
-  If entity has composite primary keys then the returned value will be an object with names and values of primary columns.
+- `getId` - 获取给定实体的主键列属性值。
+  如果实体有复合主键，则返回值是一个包含主键列名称和值的对象。
 
 ```typescript
 const userId = repository.getId(user) // userId === 1
 ```
 
-- `create` - Creates a new instance of `User`. Optionally accepts an object literal with user properties
-  which will be written into newly created user object
+- `create` - 创建一个新的 `User` 实例。可选地接受一个包含用户属性的对象字面量，
+  这些属性将写入新创建的用户对象。
 
 ```typescript
-const user = repository.create() // same as const user = new User();
+const user = repository.create() // 等同于 const user = new User();
 const user = repository.create({
     id: 1,
     firstName: "Timber",
     lastName: "Saw",
-}) // same as const user = new User(); user.firstName = "Timber"; user.lastName = "Saw";
+}) // 等同于 const user = new User(); user.firstName = "Timber"; user.lastName = "Saw";
 ```
 
-- `merge` - Merges multiple entities into a single entity.
+- `merge` - 将多个实体合并成一个实体。
 
 ```typescript
 const user = new User()
-repository.merge(user, { firstName: "Timber" }, { lastName: "Saw" }) // same as user.firstName = "Timber"; user.lastName = "Saw";
+repository.merge(user, { firstName: "Timber" }, { lastName: "Saw" }) // 等同于 user.firstName = "Timber"; user.lastName = "Saw";
 ```
 
-- `preload` - Creates a new entity from the given plain javascript object. If the entity already exists in the database, then
-  it loads it (and everything related to it), replaces all values with the new ones from the given object,
-  and returns the new entity. The new entity is actually an entity loaded from the database with all properties
-  replaced from the new object.
+- `preload` - 根据给定的普通 JavaScript 对象创建一个新实体。如果实体已存在于数据库中，
+  则加载它（及其所有关联），用给定对象的新值替换所有属性，并返回新的实体。新的实体实际上是从数据库加载的实体，
+  其所有属性都被新对象的值替换。
 
-    > Note that given entity-like object must have an entity id / primary key to find entity by. Returns undefined if entity with given id was not found.
+> 注意：给定的类实体对象必须包含实体 ID / 主键用于查找。若未找到对应 ID 的实体，则返回 undefined。
 
 ```typescript
 const partialUser = {
@@ -88,32 +87,32 @@ const partialUser = {
     },
 }
 const user = await repository.preload(partialUser)
-// user will contain all missing data from partialUser with partialUser property values:
+// user 将包含 partialUser 缺失的所有数据以及 partialUser 中的属性值：
 // { id: 1, firstName: "Rizzrak", lastName: "Saw", profile: { id: 1, ... } }
 ```
 
-- `save` - Saves a given entity or array of entities.
-  If the entity already exist in the database, it is updated.
-  If the entity does not exist in the database, it is inserted.
-  It saves all given entities in a single transaction (in the case of entity, manager is not transactional).
-  Also supports partial updating since all undefined properties are skipped.
-  Returns the saved entity/entities.
+- `save` - 保存给定的实体或实体数组。
+  如果实体已存在于数据库中，则执行更新。
+  如果实体不存在数据库中，则执行插入。
+  会在单一事务中保存所有给定实体（当实体的 manager 非事务状态时）。
+  同时支持部分更新，因为所有未定义属性都会被跳过。
+  返回已保存的实体/实体数组。
 
 ```typescript
 await repository.save(user)
 await repository.save([category1, category2, category3])
 ```
 
-- `remove` - Removes a given entity or array of entities.
-  It removes all given entities in a single transaction (in the case of entity, manager is not transactional).
-  Returns the removed entity/entities.
+- `remove` - 删除给定的实体或实体数组。
+  会在单一事务中删除所有给定实体（当实体的 manager 非事务状态时）。
+  返回被删除的实体/实体数组。
 
 ```typescript
 await repository.remove(user)
 await repository.remove([category1, category2, category3])
 ```
 
-- `insert` - Inserts a new entity, or array of entities.
+- `insert` - 插入新的实体或实体数组。
 
 ```typescript
 await repository.insert({
@@ -133,16 +132,16 @@ await repository.insert([
 ])
 ```
 
-- `update` - Updates entities by entity id, ids or given conditions. Sets fields from supplied partial entity.
+- `update` - 通过实体 ID、IDs 或给定条件更新实体。设置来自部分实体的字段。
 
 ```typescript
 await repository.update({ age: 18 }, { category: "ADULT" })
-// executes UPDATE user SET category = ADULT WHERE age = 18
+// 执行 UPDATE user SET category = ADULT WHERE age = 18
 
 await repository.update(1, { firstName: "Rizzrak" })
-// executes UPDATE user SET firstName = Rizzrak WHERE id = 1
+// 执行 UPDATE user SET firstName = Rizzrak WHERE id = 1
 
-// optionally request RETURNING / OUTPUT values (supported drivers only)
+// 可选请求 RETURNING / OUTPUT 值（仅支持部分驱动）
 const result = await repository.update(
     1,
     { firstName: "Rizzrak" },
@@ -151,21 +150,21 @@ const result = await repository.update(
 console.log(result.raw) // [{ id: 1, firstName: "Rizzrak" }]
 ```
 
-- `updateAll` - Updates _all_ entities of target type (without WHERE clause). Sets fields from supplied partial entity.
+- `updateAll` - 更新目标类型的 _所有_ 实体（无 WHERE 子句）。设置来自部分实体的字段。
 
 ```typescript
 await repository.updateAll({ category: "ADULT" })
-// executes UPDATE user SET category = ADULT
+// 执行 UPDATE user SET category = ADULT
 
 await repository.updateAll(
     { category: "ADULT" },
-    { returning: "*" }, // limited to drivers that support returning clauses
+    { returning: "*" }, // 限于支持返回（returning）子句的驱动
 )
 ```
 
-- `upsert` - Inserts a new entity or array of entities unless they already exist in which case they are updated instead. Supported by AuroraDataApi, Cockroach, Mysql, Postgres, and Sqlite database drivers.
+- `upsert` - 如果实体不存在则插入新的实体或实体数组，否则执行更新。AuroraDataApi、Cockroach、Mysql、Postgres 和 Sqlite 数据库驱动支持此功能。
 
-When an upsert operation results in an update (due to a conflict), special columns like `@UpdateDateColumn` and `@VersionColumn` are automatically updated to their current values.
+当 upsert 操作因冲突导致更新时，像 `@UpdateDateColumn` 和 `@VersionColumn` 这样的特殊列会自动更新为当前值。
 
 ```typescript
 await repository.upsert(
@@ -175,7 +174,7 @@ await repository.upsert(
     ],
     ["externalId"],
 )
-/** executes
+/** 执行
  *  INSERT INTO user
  *  VALUES
  *      (externalId = abc123, firstName = Rizzrak),
@@ -187,7 +186,7 @@ await repository.upsert(
  **/
 ```
 
-You can also request values to be returned from an upsert (supported on drivers with RETURNING / OUTPUT support):
+你还可以请求从 upsert 操作返回值（仅支持含 RETURNING / OUTPUT 的驱动）：
 
 ```typescript
 const { raw } = await repository.upsert(
@@ -208,11 +207,11 @@ await repository.upsert(
     ],
     {
         conflictPaths: ["externalId"],
-        skipUpdateIfNoValuesChanged: true, // supported by postgres, skips update if it would not change row values
-        upsertType: "upsert", //  "on-conflict-do-update" | "on-duplicate-key-update" | "upsert" - optionally provide an UpsertType - 'upsert' is currently only supported by CockroachDB
+        skipUpdateIfNoValuesChanged: true, // postgres 支持，如果更新不会改变行则跳过更新
+        upsertType: "upsert", // "on-conflict-do-update" | "on-duplicate-key-update" | "upsert" - 可选指定 Upsert 类型 - 目前 'upsert' 仅 CockroachDB 支持
     },
 )
-/** executes
+/** 执行
  *  INSERT INTO user
  *  VALUES
  *      (externalId = abc123, firstName = Rizzrak),
@@ -231,11 +230,11 @@ await repository.upsert(
     ],
     {
         conflictPaths: ["externalId"],
-        skipUpdateIfNoValuesChanged: true, // supported by postgres, skips update if it would not change row values
-        indexPredicate: "dateAdded > 2020-01-01", // supported by postgres, allows for partial indexes
+        skipUpdateIfNoValuesChanged: true, // postgres 支持，如果更新不会改变行则跳过更新
+        indexPredicate: "dateAdded > 2020-01-01", // postgres 支持，允许部分索引
     },
 )
-/** executes
+/** 执行
  *  INSERT INTO user
  *  VALUES
  *      (externalId = abc123, firstName = Rizzrak, dateAdded = 2020-01-01),
@@ -247,7 +246,7 @@ await repository.upsert(
  **/
 ```
 
-- `delete` - Deletes entities by entity id, ids or given conditions:
+- `delete` - 通过实体 ID、IDs 或给定条件删除实体：
 
 ```typescript
 await repository.delete(1)
@@ -255,53 +254,53 @@ await repository.delete([1, 2, 3])
 await repository.delete({ firstName: "Timber" })
 ```
 
-- `deleteAll` - Deletes _all_ entities of target type (without WHERE clause).
+- `deleteAll` - 删除目标类型的 _所有_ 实体（无 WHERE 子句）。
 
 ```typescript
 await repository.deleteAll()
-// executes DELETE FROM user
+// 执行 DELETE FROM user
 ```
 
-Refer also to the `clear` method, which performs database `TRUNCATE TABLE` operation instead.
+另请参阅 `clear` 方法，它执行数据库的 `TRUNCATE TABLE` 操作。
 
-- `softDelete` and `restore` - Soft deleting and restoring a row by id, ids, or given conditions:
+- `softDelete` 和 `restore` - 通过 ID、IDs 或给定条件软删除和恢复行：
 
 ```typescript
 const repository = dataSource.getRepository(Entity)
-// Soft delete an entity
+// 软删除一个实体
 await repository.softDelete(1)
-// And you can restore it using restore;
+// 你也可以使用 restore 恢复它;
 await repository.restore(1)
-// Soft delete multiple entities
+// 软删除多个实体
 await repository.softDelete([1, 2, 3])
-// Or soft delete by other attribute
+// 或通过其他属性软删除
 await repository.softDelete({ firstName: "Jake" })
 ```
 
-- `softRemove` and `recover` - This is alternative to `softDelete` and `restore`.
+- `softRemove` 和 `recover` - 这是 `softDelete` 和 `restore` 的另一种方式。
 
 ```typescript
-// You can soft-delete them using softRemove
+// 你可以使用 softRemove 软删除它们
 const entities = await repository.find()
 const entitiesAfterSoftRemove = await repository.softRemove(entities)
 
-// And You can recover them using recover;
+// 并且你可以使用 recover 恢复它们;
 await repository.recover(entitiesAfterSoftRemove)
 ```
 
-- `increment` - Increments some column by provided value of entities that match given options.
+- `increment` - 对符合给定选项的实体的某字段递增指定值。
 
 ```typescript
 await repository.increment({ firstName: "Timber" }, "age", 3)
 ```
 
-- `decrement` - Decrements some column by provided value that match given options.
+- `decrement` - 对符合给定选项的实体的某字段递减指定值。
 
 ```typescript
 await repository.decrement({ firstName: "Timber" }, "age", 3)
 ```
 
-- `exists` - Check whether any entity exists that matches `FindOptions`.
+- `exists` - 检查是否存在任何符合 `FindOptions` 的实体。
 
 ```typescript
 const exists = await repository.exists({
@@ -311,13 +310,13 @@ const exists = await repository.exists({
 })
 ```
 
-- `existsBy` - Checks whether any entity exists that matches `FindOptionsWhere`.
+- `existsBy` - 检查是否存在任何符合 `FindOptionsWhere` 的实体。
 
 ```typescript
 const exists = await repository.existsBy({ firstName: "Timber" })
 ```
 
-- `count` - Counts entities that match `FindOptions`. Useful for pagination.
+- `count` - 计算符合 `FindOptions` 的实体数量。对于分页很有用。
 
 ```typescript
 const count = await repository.count({
@@ -327,37 +326,37 @@ const count = await repository.count({
 })
 ```
 
-- `countBy` - Counts entities that match `FindOptionsWhere`. Useful for pagination.
+- `countBy` - 计算符合 `FindOptionsWhere` 的实体数量。对于分页很有用。
 
 ```typescript
 const count = await repository.countBy({ firstName: "Timber" })
 ```
 
-- `sum` - Returns the sum of a numeric field for all entities that match `FindOptionsWhere`.
+- `sum` - 返回所有符合 `FindOptionsWhere` 的实体指定数值字段的总和。
 
 ```typescript
 const sum = await repository.sum("age", { firstName: "Timber" })
 ```
 
-- `average` - Returns the average of a numeric field for all entities that match `FindOptionsWhere`.
+- `average` - 返回所有符合 `FindOptionsWhere` 的实体指定数值字段的平均值。
 
 ```typescript
 const average = await repository.average("age", { firstName: "Timber" })
 ```
 
-- `minimum` - Returns the minimum of a numeric field for all entities that match `FindOptionsWhere`.
+- `minimum` - 返回所有符合 `FindOptionsWhere` 的实体指定数值字段的最小值。
 
 ```typescript
 const minimum = await repository.minimum("age", { firstName: "Timber" })
 ```
 
-- `maximum` - Returns the maximum of a numeric field for all entities that match `FindOptionsWhere`.
+- `maximum` - 返回所有符合 `FindOptionsWhere` 的实体指定数值字段的最大值。
 
 ```typescript
 const maximum = await repository.maximum("age", { firstName: "Timber" })
 ```
 
-- `find` - Finds entities that match given `FindOptions`.
+- `find` - 查找符合给定 `FindOptions` 的实体。
 
 ```typescript
 const timbers = await repository.find({
@@ -367,7 +366,7 @@ const timbers = await repository.find({
 })
 ```
 
-- `findBy` - Finds entities that match given `FindWhereOptions`.
+- `findBy` - 查找符合给定 `FindWhereOptions` 的实体。
 
 ```typescript
 const timbers = await repository.findBy({
@@ -375,9 +374,9 @@ const timbers = await repository.findBy({
 })
 ```
 
-- `findAndCount` - Finds entities that match given `FindOptions`.
-  Also counts all entities that match given conditions,
-  but ignores pagination settings (from and take options).
+- `findAndCount` - 查找符合给定 `FindOptions` 的实体。
+  同时计数所有符合条件的实体数，
+  但忽略分页设置（from 和 take 选项）。
 
 ```typescript
 const [timbers, timbersCount] = await repository.findAndCount({
@@ -387,9 +386,9 @@ const [timbers, timbersCount] = await repository.findAndCount({
 })
 ```
 
-- `findAndCountBy` - Finds entities that match given `FindOptionsWhere`.
-  Also counts all entities that match given conditions,
-  but ignores pagination settings (from and take options).
+- `findAndCountBy` - 查找符合给定 `FindOptionsWhere` 的实体。
+  同时计数所有符合条件的实体数，
+  但忽略分页设置（from 和 take 选项）。
 
 ```typescript
 const [timbers, timbersCount] = await repository.findAndCountBy({
@@ -397,7 +396,7 @@ const [timbers, timbersCount] = await repository.findAndCountBy({
 })
 ```
 
-- `findOne` - Finds the first entity that matches given `FindOptions`.
+- `findOne` - 查找第一个符合给定 `FindOptions` 的实体。
 
 ```typescript
 const timber = await repository.findOne({
@@ -407,14 +406,14 @@ const timber = await repository.findOne({
 })
 ```
 
-- `findOneBy` - Finds the first entity that matches given `FindOptionsWhere`.
+- `findOneBy` - 查找第一个符合给定 `FindOptionsWhere` 的实体。
 
 ```typescript
 const timber = await repository.findOneBy({ firstName: "Timber" })
 ```
 
-- `findOneOrFail` - Finds the first entity that matches some id or find options.
-  Rejects the returned promise if nothing matches.
+- `findOneOrFail` - 查找第一个符合某 ID 或查找选项的实体。
+  若无匹配项则返回拒绝的 Promise。
 
 ```typescript
 const timber = await repository.findOneOrFail({
@@ -424,20 +423,20 @@ const timber = await repository.findOneOrFail({
 })
 ```
 
-- `findOneByOrFail` - Finds the first entity that matches given `FindOptions`.
-  Rejects the returned promise if nothing matches.
+- `findOneByOrFail` - 查找第一个符合给定 `FindOptions` 的实体。
+  若无匹配项则返回拒绝的 Promise。
 
 ```typescript
 const timber = await repository.findOneByOrFail({ firstName: "Timber" })
 ```
 
-- `query` - Executes a raw SQL query.
+- `query` - 执行原始 SQL 查询。
 
 ```typescript
 const rawData = await repository.query(`SELECT * FROM USERS`)
 
-// You can also use parameters to avoid SQL injection
-// The syntax differs between the drivers
+// 你也可以使用参数来避免 SQL 注入
+// 语法因驱动而异
 
 // aurora-mysql, better-sqlite3, capacitor, cordova,
 // expo, mariadb, mysql, nativescript, react-native,
@@ -472,36 +471,36 @@ const rawData = await repository.query(
 )
 ```
 
-- `clear` - Clears all the data from the given table (truncates/drops it).
+- `clear` - 清空指定表中的所有数据（截断或删除该表）。
 
 ```typescript
 await repository.clear()
 ```
 
-### Additional Options
+### 额外选项
 
-Optional `SaveOptions` can be passed as parameter for `save`.
+可选的 `SaveOptions` 可作为参数传给 `save` 方法。
 
-- `data` - Additional data to be passed with persist method. This data can be used in subscribers then.
-- `listeners`: boolean - Indicates if listeners and subscribers are called for this operation. By default they are enabled, you can disable them by setting `{ listeners: false }` in save/remove options.
-- `transaction`: boolean - By default transactions are enabled and all queries in persistence operation are wrapped into the transaction. You can disable this behaviour by setting `{ transaction: false }` in the persistence options.
-- `chunk`: number - Breaks save execution into multiple groups of chunks. For example, if you want to save 100.000 objects but you have issues with saving them, you can break them into 10 groups of 10.000 objects (by setting `{ chunk: 10000 }`) and save each group separately. This option is needed to perform very big insertions when you have issues with underlying driver parameter number limitation.
-- `reload`: boolean - Flag to determine whether the entity that is being persisted should be reloaded during the persistence operation. It will work only on databases which do not support RETURNING / OUTPUT statement. Enabled by default.
+- `data` - 额外的数据，随持久化方法传递，可在订阅者中使用。
+- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。
+- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。
+- `chunk`: number - 将保存操作分为多个批次执行。例如，若需保存 100,000 个对象但遇到问题，可通过设置 `{ chunk: 10000 }` 分成 10 批，每批保存 10,000 个。此选项适用于处理大量插入时驱动参数数量有限制的情况。
+- `reload`: boolean - 标识在持久化操作期间是否应重新加载正在持久化的实体。仅对不支持 RETURNING / OUTPUT 语句的数据库有效。默认启用。
 
-Example:
+示例：
 
 ```typescript
 userRepository.save(users, { chunk: 1000 })
 ```
 
-Optional `RemoveOptions` can be passed as parameter for `remove` and `delete`.
+可选的 `RemoveOptions` 可作为参数传给 `remove` 和 `delete` 方法。
 
-- `data` - Additional data to be passed with remove method. This data can be used in subscribers then.
-- `listeners`: boolean - Indicates if listeners and subscribers are called for this operation. By default they are enabled, you can disable them by setting `{ listeners: false }` in save/remove options.
-- `transaction`: boolean - By default transactions are enabled and all queries in persistence operation are wrapped into the transaction. You can disable this behaviour by setting `{ transaction: false }` in the persistence options.
-- `chunk`: number - Breaks removal execution into multiple groups of chunks. For example, if you want to remove 100.000 objects but you have issues doing so, you can break them into 10 groups of 10.000 objects, by setting `{ chunk: 10000 }`, and remove each group separately. This option is needed to perform very big deletions when you have issues with underlying driver parameter number limitation.
+- `data` - 额外的数据，随删除方法传递，可在订阅者中使用。
+- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。
+- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。
+- `chunk`: number - 将删除操作分为多个批次执行。例如，若需删除 100,000 个对象遇到问题，可通过设置 `{ chunk: 10000 }` 分成 10 批，每批删除 10,000 个。此选项适用于处理大量删除时驱动参数数量有限制的情况。
 
-Example:
+示例：
 
 ```typescript
 userRepository.remove(users, { chunk: 1000 })
@@ -509,8 +508,8 @@ userRepository.remove(users, { chunk: 1000 })
 
 ## `TreeRepository` API
 
-For `TreeRepository` API refer to [the Tree Entities documentation](../entity/4-tree-entities.md#working-with-tree-entities).
+关于 `TreeRepository` API，请参阅 [树形实体文档](../entity/4-tree-entities.md#working-with-tree-entities)。
 
 ## `MongoRepository` API
 
-For `MongoRepository` API refer to [the MongoDB documentation](../drivers/mongodb.md).
+关于 `MongoRepository` API，请参阅 [MongoDB 文档](../drivers/mongodb.md)。

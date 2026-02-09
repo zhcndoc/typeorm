@@ -1,11 +1,11 @@
-# FAQ
+# 常见问题解答
 
-## How do I update a database schema?
+## 如何更新数据库模式？
 
-One of the main responsibilities of TypeORM is to keep your database tables in sync with your entities.
-There are two ways that help you achieve this:
+TypeORM 的主要职责之一是保持数据库表与实体同步。
+有两种方式可以实现：
 
-- Use `synchronize: true` in data source options:
+- 在数据源选项中使用 `synchronize: true`：
 
     ```typescript
     import { DataSource } from "typeorm"
@@ -16,53 +16,53 @@ There are two ways that help you achieve this:
     })
     ```
 
-    This option automatically syncs your database tables with the given entities each time you run this code.
-    This option is perfect during development, but in production you may not want this option to be enabled.
+    该选项会在每次运行此代码时自动将数据库表与给定实体同步。
+    该选项非常适合开发环境，但在生产环境中通常不建议启用。
 
-- Use command line tools and run schema sync manually in the command line:
+- 使用命令行工具，手动执行模式同步：
 
     ```shell
     typeorm schema:sync
     ```
 
-    This command will execute schema synchronization.
+    此命令将执行模式同步。
 
-Schema sync is extremely fast.
-If you are considering to disable synchronize option during development because of performance issues,
-first check how fast it is.
+模式同步非常快速。
+如果你考虑在开发时因为性能问题禁用 synchronize 选项，
+请先检查它的执行速度。
 
-## How do I change a column name in the database?
+## 如何更改数据库中的列名？
 
-By default, column names are generated from property names.
-You can simply change it by specifying a `name` column option:
+默认情况下，列名是从属性名生成的。
+你可以通过指定 `name` 列选项来轻松更改：
 
 ```typescript
 @Column({ name: "is_active" })
 isActive: boolean;
 ```
 
-## How can I set the default value to some function, for example `NOW()`?
+## 如何将默认值设置为某个函数，例如 `NOW()`？
 
-`default` column option supports a function.
-If you are passing a function which returns a string,
-it will use that string as a default value without escaping it.
-For example:
+`default` 列选项支持函数。
+如果你传入一个返回字符串的函数，
+将直接使用该字符串作为默认值，不会对其进行转义。
+例如：
 
 ```typescript
 @Column({ default: () => "NOW()" })
 date: Date;
 ```
 
-## How to do validation?
+## 如何进行验证？
 
-Validation is not part of TypeORM because validation is a separate process
-not really related to what TypeORM does.
-If you want to use validation use [class-validator](https://github.com/pleerock/class-validator) - it works perfectly with TypeORM.
+验证不是 TypeORM 的一部分，因为验证是一个独立的过程，
+并不直接关联 TypeORM 的职责。
+如果需要使用验证，可以使用 [class-validator](https://github.com/pleerock/class-validator) —— 它与 TypeORM 完美配合。
 
-## What does "owner side" in a relations mean or why we need to use `@JoinColumn` and `@JoinTable`?
+## 关系中的“拥有方”是什么意思？为什么需要使用 `@JoinColumn` 和 `@JoinTable`？
 
-Let's start with `one-to-one` relation.
-Let's say we have two entities: `User` and `Photo`:
+从 `one-to-one` 关系开始。
+假设有两个实体：`User` 和 `Photo`：
 
 ```typescript
 @Entity()
@@ -92,48 +92,48 @@ export class Photo {
 }
 ```
 
-This example does not have a `@JoinColumn` which is incorrect.
-Why? Because to make a real relation, we need to create a column in the database.
-We need to create a column `userId` in `photo` or `photoId` in `user`.
-But which column should be created - `userId` or `photoId`?
-TypeORM cannot decide for you.
-To make a decision, you must use `@JoinColumn` on one of the sides.
-If you put `@JoinColumn` in `Photo` then a column called `userId` will be created in the `photo` table.
-If you put `@JoinColumn` in `User` then a column called `photoId` will be created in the `user` table.
-The side with `@JoinColumn` will be called the "owner side of the relationship".
-The other side of the relation, without `@JoinColumn`, is called the "inverse (non-owner) side of relationship".
+这个例子中没有 `@JoinColumn`，这是不正确的。
+为什么？因为为了实现真正的关联，我们需要在数据库中创建一个列。
+需要在 `photo` 表中创建 `userId` 列，或者在 `user` 表中创建 `photoId` 列。
+但是应该创建哪个列呢 - `userId` 还是 `photoId`？
+TypeORM 无法自动决定。
+要做出决定，必须在其中一方使用 `@JoinColumn`。
+如果你在 `Photo` 中使用 `@JoinColumn`，则会在 `photo` 表中创建 `userId` 列。
+如果在 `User` 中使用 `@JoinColumn`，则会在 `user` 表中创建 `photoId` 列。
+带有 `@JoinColumn` 的一方被称为“拥有方（owner side）”。
+另一方没有 `@JoinColumn`，称为“反向方（inverse，非拥有方）”。
 
-It is the same in a `@ManyToMany` relation. You use `@JoinTable` to show the owner side of the relation.
+在 `@ManyToMany` 关系中也是类似的。使用 `@JoinTable` 来标识关系的拥有方。
 
-In `@ManyToOne` or `@OneToMany` relations, `@JoinColumn` is not necessary because
-both decorators are different, and the table where you put the `@ManyToOne` decorator will have the relational column.
+在 `@ManyToOne` 或 `@OneToMany` 关系中，不需要 `@JoinColumn`，
+因为两个装饰器本质不同，带有 `@ManyToOne` 装饰器的表会自动拥有关联列。
 
-`@JoinColumn` and `@JoinTable` decorators can also be used to specify additional
-join column / junction table settings, like join column name or junction table name.
+`@JoinColumn` 和 `@JoinTable` 装饰器也可用于指定额外的
+连接列或连接表的设置，比如连接列名或连接表名。
 
-## How do I add extra columns into many-to-many (junction) table?
+## 如何在多对多（关联）表中添加额外列？
 
-It's not possible to add extra columns into a table created by a many-to-many relation.
-You'll need to create a separate entity and bind it using two many-to-one relations with the target entities
-(the effect will be same as creating a many-to-many table),
-and add extra columns in there. You can read more about this in [Many-to-Many relations](../relations/4-many-to-many-relations.md#many-to-many-relations-with-custom-properties).
+无法在由多对多关系自动创建的表中添加额外列。
+你需要创建一个单独的实体，并通过两个多对一关系与目标实体关联
+（效果等同于创建一个多对多表），
+然后在该实体中添加额外列。详情请参阅[多对多关系](../relations/4-many-to-many-relations.md#many-to-many-relations-with-custom-properties)。
 
-## How to handle outDir TypeScript compiler option?
+## 如何处理 TypeScript 编译器的 outDir 选项？
 
-When you are using the `outDir` compiler option, don't forget to copy assets and resources your app is using into the output directory.
-Otherwise, make sure to setup correct paths to those assets.
+使用 `outDir` 编译选项时，别忘了将应用使用的资源和静态文件复制到输出目录，
+否则需要确保这些资源的路径设置正确。
 
-One important thing to know is that when you remove or move entities, the old entities are left untouched inside the output directory.
-For example, you create a `Post` entity and rename it to `Blog`,
-you no longer have `Post.ts` in your project. However, `Post.js` is left inside the output directory.
-Now, when TypeORM reads entities from your output directory, it sees two entities - `Post` and `Blog`.
-This may be a source of bugs.
-That's why when you remove and move entities with `outDir` enabled, it's strongly recommended to remove your output directory and recompile the project again.
+还有一点很重要：当你删除或移动实体时，输出目录中的旧实体文件不会被自动删除。
+例如，你创建了一个 `Post` 实体并重命名为 `Blog`，
+项目中不再存在 `Post.ts`，但 `Post.js` 文件依然留在输出目录里。
+当 TypeORM 读取输出目录中的实体时，会同时看到 `Post` 和 `Blog` 两个实体，
+这可能导致错误。
+因此，启用 `outDir` 时，建议在删除或移动实体后删除输出目录并重新编译项目。
 
-## How to use TypeORM with ts-node?
+## 如何在 ts-node 中使用 TypeORM？
 
-You can prevent compiling files each time using [ts-node](https://github.com/TypeStrong/ts-node).
-If you are using ts-node, you can specify `ts` entities inside data source options:
+你可以使用 [ts-node](https://github.com/TypeStrong/ts-node) 防止每次都编译文件。
+使用 ts-node 时，可以在数据源配置中指定 `ts` 实体：
 
 ```typescript
 {
@@ -142,25 +142,26 @@ If you are using ts-node, you can specify `ts` entities inside data source optio
 }
 ```
 
-Also, if you are compiling js files into the same folder where your typescript files are,
-make sure to use the `outDir` compiler option to prevent
-[this issue](https://github.com/TypeStrong/ts-node/issues/432).
+另外，如果你将 JavaScript 文件编译到和 TypeScript 文件同一目录，
+请务必使用 `outDir` 选项以避免
+[这个问题](https://github.com/TypeStrong/ts-node/issues/432)。
 
-Also, if you want to use the ts-node CLI, you can execute TypeORM the following way:
+如果想使用 ts-node CLI，可以这样执行 TypeORM：
 
 ```shell
 npx typeorm-ts-node-commonjs schema:sync
 ```
 
-For ESM projects use this instead:
+对于 ESM 项目，使用：
 
 ```shell
 npx typeorm-ts-node-esm schema:sync
 ```
 
-## How to use Webpack for the backend?
+## 如何为后端使用 Webpack？
 
-Webpack produces warnings due to what it views as missing require statements -- require statements for all drivers supported by TypeORM. To suppress these warnings for unused drivers, you will need to edit your webpack config file.
+Webpack 可能会因缺失某些 require 语句（如 TypeORM 支持的所有驱动）而产生警告。
+为抑制这些未用驱动的警告，你需要编辑 webpack 配置：
 
 ```javascript
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
@@ -168,7 +169,7 @@ const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 module.exports = {
     ...
     plugins: [
-        // ignore the drivers you don't want. This is the complete list of all drivers -- remove the suppressions for drivers you want to use.
+        // 忽略不想使用的驱动。这是所有驱动的完整列表——想用哪个就移除对应的屏蔽。
         new FilterWarningsPlugin({
             exclude: [/mongodb/, /mssql/, /mysql2/, /oracledb/, /pg/, /pg-native/, /pg-query-stream/, /react-native-sqlite-storage/, /redis/, /sqlite3/, /sql.js/, /typeorm-aurora-data-api-driver/]
         })
@@ -176,18 +177,20 @@ module.exports = {
 };
 ```
 
-### Bundling Migration Files
+### 打包迁移文件
 
-By default Webpack tries to bundle everything into one file. This can be problematic when your project has migration files which are meant to be executed after bundled code is deployed to production. To make sure all your [migrations](../migrations/01-why.md) can be recognized and executed by TypeORM, you may need to use "Object Syntax" for the `entry` configuration for the migration files only.
+Webpack 默认会把所有东西打包成一个文件。
+如果项目中有迁移文件，须在发布后执行，它们不能被全部打包进单一文件。
+为确保所有 [迁移文件](../migrations/01-why.md) 能被 TypeORM 识别和执行，需要对迁移文件单独使用“对象语法”配置 `entry`。
 
 ```javascript
 const { globSync } = require("node:fs")
 const path = require("node:path")
 
 module.exports = {
-    // ... your webpack configurations here...
-    // Dynamically generate a `{ [name]: sourceFileName }` map for the `entry` option
-    // change `src/db/migrations` to the relative path to your migrations folder
+    // ... 你的webpack配置 ...
+    // 动态生成 { [name]: sourceFileName } 键值对用于 entry 选项
+    // 将 `src/db/migrations` 改为你迁移文件夹的相对路径
     entry: globSync(path.resolve("src/db/migrations/*.ts")).reduce(
         (entries, filename) => {
             const migrationName = path.basename(filename, ".ts")
@@ -198,37 +201,39 @@ module.exports = {
         {},
     ),
     resolve: {
-        // assuming all your migration files are written in TypeScript
+        // 假设所有迁移文件都是 TypeScript
         extensions: [".ts"],
     },
     output: {
-        // change `path` to where you want to put transpiled migration files.
+        // 改成你想放置编译后迁移文件的路径
         path: __dirname + "/dist/db/migrations",
-        // this is important - we want UMD (Universal Module Definition) for migration files.
+        // 重点是使用 UMD（通用模块定义）格式
         libraryTarget: "umd",
         filename: "[name].js",
     },
 }
 ```
 
-Also, since Webpack 4, when using `mode: 'production'`, files are optimized by default which includes mangling your code in order to minimize file sizes. This breaks the [migrations](../migrations/01-why.md) because TypeORM relies on their names to determine which has already been executed. You may disable minimization completely by adding:
+此外，自 Webpack 4 起，使用 `mode: 'production'` 时，会默认开启代码优化，包括混淆压缩，这会破坏
+[迁移文件](../migrations/01-why.md)，因为 TypeORM 依赖迁移文件名来判断执行状态。
+你可以通过配置停用最小化：
 
 ```javascript
 module.exports = {
-    // ... other Webpack configurations here
+    // ... 其他配置 ...
     optimization: {
         minimize: false,
     },
 }
 ```
 
-Alternatively, if you are using the `UglifyJsPlugin`, you can tell it to not change class or function names like so:
+或者，如果你使用 `UglifyJsPlugin`，可以让它保留类名和函数名：
 
 ```javascript
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 
 module.exports = {
-    // ... other Webpack configurations here
+    // ... 其他配置 ...
     optimization: {
         minimizer: [
             new UglifyJsPlugin({
@@ -242,21 +247,21 @@ module.exports = {
 }
 ```
 
-Lastly, make sure in your data source options, the transpiled migration files are included:
+最后，确保你的数据源配置包含了编译后的迁移文件路径：
 
 ```javascript
-// TypeORM Configurations
+// TypeORM 配置
 module.exports = {
     // ...
     migrations: [__dirname + "/migrations/**/*{.js,.ts}"],
 }
 ```
 
-## How to use TypeORM in ESM projects?
+## 如何在 ESM 项目中使用 TypeORM？
 
-Make sure to add `"type": "module"` in the `package.json` of your project so TypeORM will know to use `import( ... )` on files.
+确保在项目的 `package.json` 中添加 `"type": "module"`，这样 TypeORM 才会使用 `import(...)` 语法导入文件。
 
-To avoid circular dependency import issues use the `Relation` wrapper type for relation type definitions in entities:
+为避免循环依赖问题，实体中关系属性的类型定义请使用 `Relation` 包装类型：
 
 ```typescript
 @Entity()
@@ -266,8 +271,8 @@ export class User {
 }
 ```
 
-Doing this prevents the type of the property from being saved in the transpiled code in the property metadata, preventing circular dependency issues.
+这样可以防止属性类型在编译后的代码元数据中被保存，从而避免循环依赖。
 
-Since the type of the column is already defined using the `@OneToOne` decorator, there's no use of the additional type metadata saved by TypeScript.
+由于关系类型已经通过 `@OneToOne` 装饰器定义，TypeScript 附加保存的类型元数据变得没有必要。
 
-> Important: Do not use `Relation` on non-relation column types
+> 重要提示：不要在非关系列类型上使用 `Relation`

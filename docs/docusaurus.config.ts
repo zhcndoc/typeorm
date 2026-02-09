@@ -7,12 +7,12 @@ import { redirects } from "./redirects"
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-    title: "TypeORM",
-    tagline: "Code with Confidence. Query with Power.",
+    title: "TypeORM 中文文档",
+    tagline: "优雅管理数据库交互，告别原生 SQL 编写",
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: "https://typeorm.io",
+    url: "https://typeorm.zhcndoc.com",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: "/",
@@ -28,26 +28,30 @@ const config: Config = {
     // useful metadata like html lang. For example, if your site is Chinese, you
     // may want to replace "en" with "zh-Hans".
     i18n: {
-        defaultLocale: "en",
-        locales: ["en"],
+        defaultLocale: "zh-CN",
+        locales: ["zh-CN"],
     },
 
     // Plausible cookieless analytics for tracking site usage while respecting privacy
     scripts:
         process.env.NODE_ENV === "production"
             ? [
+                //   {
+                //       src: "https://plausible.io/js/script.hash.js",
+                //       defer: true,
+                //       "data-domain": "typeorm.io",
+                //   },
+                //   {
+                //       src: "https://widget.kapa.ai/kapa-widget.bundle.js",
+                //       "data-website-id": "a9979852-2282-4862-87b3-b3631fb63d46",
+                //       "data-project-name": "TypeORM",
+                //       "data-project-color": "#d94400",
+                //       "data-project-logo":
+                //           "https://typeorm.io/img/typeorm-icon-colored.png",
+                //       async: true,
+                //   },
                   {
-                      src: "https://plausible.io/js/script.hash.js",
-                      defer: true,
-                      "data-domain": "typeorm.io",
-                  },
-                  {
-                      src: "https://widget.kapa.ai/kapa-widget.bundle.js",
-                      "data-website-id": "a9979852-2282-4862-87b3-b3631fb63d46",
-                      "data-project-name": "TypeORM",
-                      "data-project-color": "#d94400",
-                      "data-project-logo":
-                          "https://typeorm.io/img/typeorm-icon-colored.png",
+                      src: 'https://www.zhcndoc.com/js/common.js',
                       async: true,
                   },
               ]
@@ -62,7 +66,7 @@ const config: Config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        "https://github.com/typeorm/typeorm/tree/master/docs/",
+                        "https://github.com/zhcndoc/typeorm/tree/main/docs/",
                 },
                 sitemap: {
                     lastmod: "datetime",
@@ -86,13 +90,13 @@ const config: Config = {
         announcementBar: {
             id: "future_of_typeorm",
             content:
-                '📣 <b>Announcement: The Future of TypeORM</b> &mdash; We\'re excited to share our vision for a revitalized TypeORM! <a rel="noopener noreferrer" href="/docs/future-of-typeorm">Read the full announcement</a>',
+                '📣 <a href="https://www.rainyun.com/mm_?s=zhcndoc" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">雨云 RainYun - 企业级云计算服务提供商：新用户注册立享五折！</a>',
             backgroundColor: "#180028",
             textColor: "#FFFFFF",
-            isCloseable: true,
+            isCloseable: false,
         },
         navbar: {
-            title: "TypeORM",
+            title: "TypeORM 中文文档",
             logo: {
                 alt: "TypeORM Logo",
                 src: "img/typeorm-icon-colored.png",
@@ -105,11 +109,11 @@ const config: Config = {
                     type: "docSidebar",
                     sidebarId: "tutorialSidebar",
                     position: "left",
-                    label: "Docs",
+                    label: "快速开始",
                 },
                 {
                     type: "dropdown",
-                    label: "Version",
+                    label: "版本",
                     position: "right",
                     items: [
                         {
@@ -133,16 +137,16 @@ const config: Config = {
             style: "dark",
             links: [
                 {
-                    title: "Docs",
+                    title: "文档",
                     items: [
                         {
-                            label: "Getting started",
+                            label: "开始使用",
                             to: "/docs/getting-started",
                         },
                     ],
                 },
                 {
-                    title: "Community",
+                    title: "社区",
                     items: [
                         {
                             label: "Discord",
@@ -155,7 +159,7 @@ const config: Config = {
                     ],
                 },
                 {
-                    title: "More",
+                    title: "更多",
                     items: [
                         {
                             label: "GitHub",
@@ -168,7 +172,7 @@ const config: Config = {
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} TypeORM. Built with Docusaurus.`,
+            copyright: `<a target="_blank" style="text-decoration: none;" href="https://www.zhcndoc.com">简中文档</a>｜<a rel="nofollow" target="_blank" style="text-decoration: none;" href="https://beian.miit.gov.cn">沪ICP备2024070610号-3</a>`,
         },
         prism: {
             theme: prismThemes.github,

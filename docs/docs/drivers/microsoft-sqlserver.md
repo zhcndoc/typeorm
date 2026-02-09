@@ -1,181 +1,150 @@
 # Microsoft SQLServer
 
-## Installation
+## 安装
 
 ```shell
 npm install mssql
 ```
 
-## Data Source Options
+## 数据源选项
 
-See [Data Source Options](../data-source/2-data-source-options.md) for the common data source options.
+有关通用数据源选项，请参见[数据源选项](../data-source/2-data-source-options.md)。
 
-Based on [tedious](https://tediousjs.github.io/node-mssql/) MSSQL implementation. See [SqlServerConnectionOptions.ts](https://github.com/typeorm/typeorm/tree/master/src/driver/sqlserver/SqlServerConnectionOptions.ts) for details on exposed attributes.
+基于 [tedious](https://tediousjs.github.io/node-mssql/) 的 MSSQL 实现。有关公开属性的详细信息，请参见 [SqlServerConnectionOptions.ts](https://github.com/typeorm/typeorm/tree/master/src/driver/sqlserver/SqlServerConnectionOptions.ts)。
 
-- `url` - Connection url where the connection is performed. Please note that other data source options will override parameters set from url.
+- `url` - 连接执行的连接 URL。请注意，其他数据源选项将覆盖从 URL 设置的参数。
 
-- `host` - Database host.
+- `host` - 数据库主机。
 
-- `port` - Database host port. Default mssql port is `1433`.
+- `port` - 数据库主机端口。默认的 mssql 端口是 `1433`。
 
-- `username` - Database username.
+- `username` - 数据库用户名。
 
-- `password` - Database password.
+- `password` - 数据库密码。
 
-- `database` - Database name.
+- `database` - 数据库名称。
 
-- `schema` - Schema name. Default is "dbo".
+- `schema` - 模式名称。默认是 "dbo"。
 
-- `domain` - Once you set domain, the driver will connect to SQL Server using domain login.
+- `domain` - 设置域后，驱动程序将使用域登录连接到 SQL Server。
 
-- `connectionTimeout` - Connection timeout in ms (default: `15000`).
+- `connectionTimeout` - 连接超时（毫秒）（默认：`15000`）。
 
-- `requestTimeout` - Request timeout in ms (default: `15000`). NOTE: msnodesqlv8 driver doesn't support
-  timeouts < 1 second.
+- `requestTimeout` - 请求超时（毫秒）（默认：`15000`）。注意：msnodesqlv8 驱动不支持低于 1 秒的超时。
 
-- `stream` - Stream record sets/rows instead of returning them all at once as an argument of callback (default: `false`).
-  You can also enable streaming for each request independently (`request.stream = true`). Always set to `true` if you plan to
-  work with a large number of rows.
+- `stream` - 以流方式返回记录集/行，而不是一次性通过回调参数返回（默认：`false`）。你也可以为每个请求独立启用流（`request.stream = true`）。如果计划处理大量行，请始终设置为 `true`。
 
-- `pool.max` - The maximum number of connections there can be in the pool (default: `10`).
+- `pool.max` - 连接池中最大连接数（默认：`10`）。
 
-- `pool.min` - The minimum of connections there can be in the pool (default: `0`).
+- `pool.min` - 连接池中最小连接数（默认：`0`）。
 
-- `pool.maxWaitingClients` - maximum number of queued requests allowed, additional acquire calls will be called back with
-  an error in a future cycle of the event loop.
+- `pool.maxWaitingClients` - 允许排队的最大请求数，额外的 acquire 调用将在事件循环的未来周期中以错误回调。
 
-- `pool.acquireTimeoutMillis` - max milliseconds an `acquire` call will wait for a resource before timing out.
-  (default no limit), if supplied should non-zero positive integer.
+- `pool.acquireTimeoutMillis` - acquire 调用等待资源的最长毫秒数，超时后放弃（默认无限制），如果指定，必须是非零正整数。
 
-- `pool.fifo` - if true the oldest resources will be first to be allocated. If false, the most recently released resources
-  will be the first to be allocated. This, in effect, turns the pool's behaviour from a queue into a stack. boolean,
-  (default `true`).
+- `pool.fifo` - 若为 true，最旧的资源将优先分配；若为 false，最近释放的资源将优先分配。这实际上将连接池的行为由队列变为栈。布尔类型，默认 `true`。
 
-- `pool.priorityRange` - int between 1 and x - if set, borrowers can specify their relative priority in the queue if no
-  resources are available. see example. (default `1`).
+- `pool.priorityRange` - 介于 1 和 x 之间的整数——若设置，借用者在无可用资源时可以指定其队列中的相对优先级。参见示例。（默认：`1`）。
 
-- `pool.evictionRunIntervalMillis` - How often to run eviction checks. Default: `0` (does not run).
+- `pool.evictionRunIntervalMillis` - 运行驱逐检查的间隔时间。默认：`0`（不运行）。
 
-- `pool.numTestsPerRun` - Number of resources to check each eviction run. Default: `3`.
+- `pool.numTestsPerRun` - 每次驱逐运行检查的资源数量。默认：`3`。
 
-- `pool.softIdleTimeoutMillis` - amount of time an object may sit idle in the pool before it is eligible for eviction by
-  the idle object evictor (if any), with the extra condition that at least "min idle" object instances remain in the pool.
-  Default `-1` (nothing can get evicted).
+- `pool.softIdleTimeoutMillis` - 对象在池中空闲多长时间后可由空闲对象驱逐器（如果有）驱逐，但会保留至少“最小空闲”对象实例。默认 `-1`（不驱逐任何对象）。
 
-- `pool.idleTimeoutMillis` - the minimum amount of time that an object may sit idle in the pool before it is eligible for
-  eviction due to idle time. Supersedes `softIdleTimeoutMillis`. Default: `30000`.
+- `pool.idleTimeoutMillis` - 对象在池中空闲到可因空闲时间被驱逐的最小时间，覆盖 `softIdleTimeoutMillis`。默认：`30000`。
 
-- `pool.errorHandler` - A function that gets called when the underlying pool emits `'error'` event. Takes a single parameter (error instance) and defaults to logging with `warn` level.
+- `pool.errorHandler` - 当底层连接池发出 `'error'` 事件时调用的函数。接收单一参数（错误实例），默认以 `warn` 级别记录。
 
-- `options.fallbackToDefaultDb` - By default, if the database requested by `options.database` cannot be accessed, the connection will fail with an error. However, if `options.fallbackToDefaultDb` is set to `true`, then the user's default database will be used instead (Default: `false`).
+- `options.fallbackToDefaultDb` - 默认情况下，如果 `options.database` 请求的数据库无法访问，连接将失败并报错。若设置为 `true`，将使用用户默认数据库代替（默认：`false`）。
 
-- `options.instanceName` - The instance name to connect to. The SQL Server Browser service must be running on the database server, and UDP port 1434 on the database server must be reachable. Mutually exclusive with `port`. (no default).
+- `options.instanceName` - 要连接的实例名称。数据库服务器上必须运行 SQL Server 浏览器服务，且数据库服务器的 UDP 端口 1434 必须可达。与 `port` 互斥。（无默认值）。
 
-- `options.enableAnsiNullDefault` - If true, `SET ANSI_NULL_DFLT_ON ON` will be set in the initial SQL. This means new
-  columns will be nullable by default. See the [T-SQL documentation](https://msdn.microsoft.com/en-us/library/ms187375.aspx)
-  for more details. (Default: `true`).
+- `options.enableAnsiNullDefault` - 若为 true，将在初始 SQL 中设置 `SET ANSI_NULL_DFLT_ON ON`，这意味着新列默认可为空。详见 [T-SQL 文档](https://msdn.microsoft.com/en-us/library/ms187375.aspx)（默认：`true`）。
 
-- `options.cancelTimeout` - The number of milliseconds before the cancel (abort) of a request is considered failed (default: `5000`).
+- `options.cancelTimeout` - 请求取消（中止）被视为失败之前的毫秒数（默认：`5000`）。
 
-- `options.packetSize` - The size of TDS packets (subject to negotiation with the server). Should be a power of 2. (default: `4096`).
+- `options.packetSize` - TDS 包的大小（与服务器协商）。应为 2 的幂次方。（默认：`4096`）。
 
-- `options.useUTC` - A boolean determining whether to pass time values in UTC or local time. (default: `false`).
+- `options.useUTC` - 布尔值，决定是否以 UTC 传输时间值，还是本地时间。（默认：`false`）。
 
-- `options.abortTransactionOnError` - A boolean determining whether to roll back a transaction automatically if any
-  error is encountered during the given transaction's execution. This sets the value for `SET XACT_ABORT` during the
-  initial SQL phase of a connection ([documentation](http://msdn.microsoft.com/en-us/library/ms188792.aspx)).
+- `options.abortTransactionOnError` - 布尔值，决定在事务执行过程中遇到任何错误时是否自动回滚事务。该选项设置连接初始 SQL 阶段的 `SET XACT_ABORT` 取值（[文档](http://msdn.microsoft.com/en-us/library/ms188792.aspx)）。
 
-- `options.localAddress` - A string indicating which network interface (ip address) to use when connecting to SQL Server.
+- `options.localAddress` - 连接 SQL Server 时使用的网络接口（IP 地址）。
 
-- `options.useColumnNames` - A boolean determining whether to return rows as arrays or key-value collections. (default: `false`).
+- `options.useColumnNames` - 布尔值，决定返回的行是数组还是键值集合。（默认：`false`）。
 
-- `options.camelCaseColumns` - A boolean, controlling whether the column names returned will have the first letter
-  converted to lower case (`true`) or not. This value is ignored if you provide a `columnNameReplacer`. (default: `false`).
+- `options.camelCaseColumns` - 布尔值，控制返回的列名首字母是否转为小写（`true`）。如果提供了 `columnNameReplacer`，该值将被忽略。（默认：`false`）。
 
-- `options.isolationLevel` - The default isolation level that transactions will be run with. The isolation levels are
-  available from `require('tedious').ISOLATION_LEVEL`.
+- `options.isolationLevel` - 事务的默认隔离级别。隔离级别由 `require('tedious').ISOLATION_LEVEL` 提供：
+
     - `READ_UNCOMMITTED`
     - `READ_COMMITTED`
     - `REPEATABLE_READ`
     - `SERIALIZABLE`
     - `SNAPSHOT`
 
-    (default: `READ_COMMITTED`)
+    （默认：`READ_COMMITTED`）
 
-- `options.connectionIsolationLevel` - The default isolation level for new connections. All out-of-transaction queries
-  are executed with this setting. The isolation levels are available from `require('tedious').ISOLATION_LEVEL`.
-    - `READ_UNCOMMITTED`
-    - `READ_COMMITTED`
-    - `REPEATABLE_READ`
-    - `SERIALIZABLE`
-    - `SNAPSHOT`
+- `options.connectionIsolationLevel` - 新连接的默认隔离级别。所有无事务查询均使用此设置。隔离级别同上。
 
-    (default: `READ_COMMITTED`)
+    （默认：`READ_COMMITTED`）
 
-- `options.readOnlyIntent` - A boolean, determining whether the connection will request read-only access from a
-  SQL Server Availability Group. For more information, see here. (default: `false`).
+- `options.readOnlyIntent` - 布尔值，决定连接是否向 SQL Server 可用性组请求只读访问权限。详情请见此处。（默认：`false`）。
 
-- `options.encrypt` - A boolean determining whether the connection will be encrypted. Set to true if you're on Windows Azure. (default: `true`).
+- `options.encrypt` - 布尔值，决定连接是否加密。若在 Windows Azure 上，应设置为 true。（默认：`true`）。
 
-- `options.cryptoCredentialsDetails` - When encryption is used, an object may be supplied that will be used for the
-  first argument when calling [tls.createSecurePair](http://nodejs.org/docs/latest/api/tls.html#tls_tls_createsecurepair_credentials_isserver_requestcert_rejectunauthorized)
-  (default: `{}`).
+- `options.cryptoCredentialsDetails` - 使用加密时，可提供的对象，将作为调用 [tls.createSecurePair](http://nodejs.org/docs/latest/api/tls.html#tls_tls_createsecurepair_credentials_isserver_requestcert_rejectunauthorized) 的第一个参数。（默认：`{}`）。
 
-- `options.rowCollectionOnDone` - A boolean, that when true will expose received rows in Requests' `done*` events.
-  See done, [doneInProc](http://tediousjs.github.io/tedious/api-request.html#event_doneInProc)
-  and [doneProc](http://tediousjs.github.io/tedious/api-request.html#event_doneProc). (default: `false`)
+- `options.rowCollectionOnDone` - 布尔值，若为 true，将在请求的 `done*` 事件中暴露接收到的行。参见 done，[`doneInProc`](http://tediousjs.github.io/tedious/api-request.html#event_doneInProc) 和 [`doneProc`](http://tediousjs.github.io/tedious/api-request.html#event_doneProc)。（默认：`false`）
 
-    Caution: If many rows are received, enabling this option could result in excessive memory usage.
+    注意：若接收到大量行，启用此选项可能导致占用过多内存。
 
-- `options.rowCollectionOnRequestCompletion` - A boolean, that when true will expose received rows
-  in Requests' completion callback. See [new Request](http://tediousjs.github.io/tedious/api-request.html#function_newRequest). (default: `false`)
+- `options.rowCollectionOnRequestCompletion` - 布尔值，若为 true，将在请求完成回调中暴露接收到的行。见 [`new Request`](http://tediousjs.github.io/tedious/api-request.html#function_newRequest)。（默认：`false`）
 
-    Caution: If many rows are received, enabling this option could result in excessive memory usage.
+    注意：若接收到大量行，启用此选项可能导致占用过多内存。
 
-- `options.tdsVersion` - The version of TDS to use. If the server doesn't support the specified version, a negotiated version
-  is used instead. The versions are available from `require('tedious').TDS_VERSION`.
+- `options.tdsVersion` - 使用的 TDS 版本。如果服务器不支持指定版本，将使用协商后的版本。版本由 `require('tedious').TDS_VERSION` 提供：
+
     - `7_1`
     - `7_2`
     - `7_3_A`
     - `7_3_B`
     - `7_4`
 
-    (default: `7_4`)
+    （默认：`7_4`）
 
-- `options.appName` - Application name used for identifying a specific application in profiling, logging or tracing tools of SQL Server. (default: `node-mssql`)
+- `options.appName` - 用于在 SQL Server 的分析、日志或跟踪工具中标识特定应用的应用名称。（默认：`node-mssql`）
 
-- `options.trustServerCertificate` - A boolean, controlling whether encryption occurs if there is no verifiable server certificate. (default: `false`)
+- `options.trustServerCertificate` - 布尔值，控制当无可验证服务器证书时是否进行加密。（默认：`false`）
 
-- `options.multiSubnetFailover` - A boolean, controlling whether the driver should connect to all IPs returned from DNS in parallel. (default: `false`)
+- `options.multiSubnetFailover` - 布尔值，控制驱动是否应并行连接 DNS 返回的所有 IP。（默认：`false`）
 
-- `options.debug.packet` - A boolean, controlling whether `debug` events will be emitted with text describing packet
-  details (default: `false`).
+- `options.debug.packet` - 布尔值，控制是否发出带有包详情文本的 `debug` 事件。（默认：`false`）
 
-- `options.debug.data` - A boolean, controlling whether `debug` events will be emitted with text describing packet data
-  details (default: `false`).
+- `options.debug.data` - 布尔值，控制是否发出带有包数据详情文本的 `debug` 事件。（默认：`false`）
 
-- `options.debug.payload` - A boolean, controlling whether `debug` events will be emitted with text describing packet
-  payload details (default: `false`).
+- `options.debug.payload` - 布尔值，控制是否发出带有包负载详情文本的 `debug` 事件。（默认：`false`）
 
-- `options.debug.token` - A boolean, controlling whether `debug` events will be emitted with text describing token stream
-  tokens (default: `false`).
+- `options.debug.token` - 布尔值，控制是否发出带有令牌流令牌描述文本的 `debug` 事件。（默认：`false`）
 
-## Column Types
+
+## 列类型
 
 `int`, `bigint`, `bit`, `decimal`, `money`, `numeric`, `smallint`, `smallmoney`, `tinyint`, `float`, `real`, `date`, `datetime2`, `datetime`, `datetimeoffset`, `smalldatetime`, `time`, `char`, `varchar`, `text`, `nchar`, `nvarchar`, `ntext`, `binary`, `image`, `varbinary`, `hierarchyid`, `sql_variant`, `timestamp`, `uniqueidentifier`, `xml`, `geometry`, `geography`, `rowversion`, `vector`
 
-### Vector Type (vector)
+### 向量类型（vector）
 
-The `vector` data type is available in SQL Server for storing high-dimensional vectors, commonly used for:
+SQL Server 支持用来存储高维向量的 `vector` 数据类型，常用于：
 
-- Semantic search with embeddings
-- Recommendation systems
-- Similarity matching
-- Machine learning applications
+- 带嵌入的语义搜索
+- 推荐系统
+- 相似度匹配
+- 机器学习应用
 
-NOTE: general `halfvec` type support is unavailable because this feature is still in preview. See the Microsoft docs: [Vector data type](https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type).
+注意：通用的 `halfvec` 类型支持不可用，因为该功能仍处于预览状态。详情见微软文档：[Vector data type](https://learn.microsoft.com/en-us/sql/t-sql/data-types/vector-data-type)。
 
-#### Usage
+#### 用法
 
 ```typescript
 @Entity()
@@ -186,19 +155,19 @@ export class DocumentChunk {
     @Column("varchar")
     content: string
 
-    // Vector column with 1998 dimensions
+    // 向量列，维度为 1998
     @Column("vector", { length: 1998 })
     embedding: number[]
 }
 ```
 
-#### Vector Similarity Search
+#### 向量相似度搜索
 
-SQL Server provides the `VECTOR_DISTANCE` function for calculating distances between vectors:
+SQL Server 提供了 `VECTOR_DISTANCE` 函数用于计算向量间距离：
 
 ```typescript
 const queryEmbedding = [
-    /* your query vector */
+    /* 你的查询向量 */
 ]
 
 const results = await dataSource.query(
@@ -213,13 +182,13 @@ const results = await dataSource.query(
 )
 ```
 
-**Distance Metrics:**
+**距离度量方式：**
 
-- `'cosine'` - Cosine distance (most common for semantic search)
-- `'euclidean'` - Euclidean (L2) distance
-- `'dot'` - Negative dot product
+- `'cosine'` - 余弦距离（语义搜索中最常用）
+- `'euclidean'` - 欧氏距离（L2）
+- `'dot'` - 负点积
 
-**Requirements:**
+**要求：**
 
-- SQL Server version with vector support enabled
-- Vector dimensions must be specified using the `length` option
+- 使用支持向量功能的 SQL Server 版本
+- 必须通过 `length` 选项指定向量维度

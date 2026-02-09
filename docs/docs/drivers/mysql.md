@@ -1,98 +1,81 @@
 # MySQL / MariaDB
 
-MySQL, MariaDB and Amazon Aurora MySQL are supported as TypeORM drivers.
+MySQL、MariaDB 和 Amazon Aurora MySQL 作为 TypeORM 的驱动被支持。
 
-## Installation
+## 安装
 
 ```shell
 npm install mysql2
 ```
 
-## Data Source Options
+## 数据源选项
 
-See [Data Source Options](../data-source/2-data-source-options.md) for the common data source options. You can use the data source types `mysql`, `mariadb` and `aurora-mysql` to connect to the respective databases.
+请参见 [数据源选项](../data-source/2-data-source-options.md) 了解常用的数据源选项。您可以使用数据源类型 `mysql`、`mariadb` 和 `aurora-mysql` 来连接相应的数据库。
 
-- `url` - Connection url where the connection is performed. Please note that other data source options will override parameters set from url.
+- `url` - 执行连接的连接 URL。请注意，其他数据源选项将会覆盖 URL 中设置的参数。
 
-- `host` - Database host.
+- `host` - 数据库主机。
 
-- `port` - Database host port. Default mysql port is `3306`.
+- `port` - 数据库主机端口。MySQL 默认端口是 `3306`。
 
-- `username` - Database username.
+- `username` - 数据库用户名。
 
-- `password` - Database password.
+- `password` - 数据库密码。
 
-- `database` - Database name.
+- `database` - 数据库名称。
 
-- `socketPath` - Database socket path.
+- `socketPath` - 数据库套接字路径。
 
-- `poolSize` - Maximum number of clients the pool should contain for each connection.
+- `poolSize` - 每个连接池中应包含的最大客户端数量。
 
-- `charset` and `collation` - The charset/collation for the connection. If an SQL-level charset is specified (like utf8mb4) then the default collation for that charset is used.
+- `charset` 和 `collation` - 连接的字符集/校对规则。如果指定了 SQL 层面的字符集（如 utf8mb4），则使用该字符集的默认校对规则。
 
-- `timezone` - the timezone configured on the MySQL server. This is used to typecast server date/time
-  values to JavaScript Date object and vice versa. This can be `local`, `Z`, or an offset in the form
-  `+HH:MM` or `-HH:MM`. (Default: `local`)
+- `timezone` - MySQL 服务器配置的时区。用于类型转换服务器日期/时间值为 JavaScript Date 对象，反之亦然。可以是 `local`、`Z`，或格式为 `+HH:MM` 或 `-HH:MM` 的偏移量。（默认：`local`）
 
-- `connectTimeout` - The milliseconds before a timeout occurs during the initial connection to the MySQL server.
-  (Default: `10000`)
+- `connectTimeout` - 在初始连接到 MySQL 服务器期间，发生超时前的毫秒数。（默认：`10000`）
 
-- `acquireTimeout` - The milliseconds before a timeout occurs during the initial connection to the MySQL server. It differs from `connectTimeout` as it governs the TCP connection timeout whereas connectTimeout does not. (default: `10000`)
+- `acquireTimeout` - 在初始连接到 MySQL 服务器期间，发生超时前的毫秒数。它与 `connectTimeout` 不同，`acquireTimeout` 是 TCP 连接超时，`connectTimeout` 不是。（默认：`10000`）
 
-- `insecureAuth` - Allow connecting to MySQL instances that ask for the old (insecure) authentication method.
-  (Default: `false`)
+- `insecureAuth` - 允许连接请求旧的（不安全）认证方式的 MySQL 实例。（默认：`false`）
 
-- `supportBigNumbers` - When dealing with big numbers (`BIGINT` and `DECIMAL` columns) in the database,
-  you should enable this option (Default: `true`)
+- `supportBigNumbers` - 处理数据库中的大数字（`BIGINT` 和 `DECIMAL` 列）时，应启用此选项。（默认：`true`）
 
-- `bigNumberStrings` - Enabling both `supportBigNumbers` and `bigNumberStrings` forces big numbers
-  (`BIGINT` and `DECIMAL` columns) to be always returned as JavaScript String objects (Default: `true`).
-  Enabling `supportBigNumbers` but leaving `bigNumberStrings` disabled will return big numbers as String
-  objects only when they cannot be accurately represented with
-  [JavaScript Number objects](http://ecma262-5.com/ELS5_HTML.htm#Section_8.5)
-  (which happens when they exceed the `[-2^53, +2^53]` range), otherwise they will be returned as
-  Number objects. This option is ignored if `supportBigNumbers` is disabled.
+- `bigNumberStrings` - 同时启用 `supportBigNumbers` 和 `bigNumberStrings` 会强制大数字（`BIGINT` 和 `DECIMAL` 列）始终以 JavaScript 字符串对象返回。（默认：`true`）  
+启用 `supportBigNumbers` 但未启用 `bigNumberStrings` 的情况下，只有当数字无法精确用 [JavaScript 数字对象](http://ecma262-5.com/ELS5_HTML.htm#Section_8.5) 表示（超出 `[-2^53, +2^53]` 范围）时才以字符串对象返回，否则返回数字对象。如果关闭 `supportBigNumbers`，则忽略该选项。
 
-- `dateStrings` - Force date types (`TIMESTAMP`, `DATETIME`, `DATE`) to be returned as strings rather than
-  inflated into JavaScript Date objects. Can be true/false or an array of type names to keep as strings.
-  (Default: `false`)
+- `dateStrings` - 强制将日期类型（`TIMESTAMP`、`DATETIME`、`DATE`）作为字符串返回，而非转换为 JavaScript Date 对象。可以为 true/false 或包含类型名的字符串数组，表示保留为字符串的类型。（默认：`false`）
 
-- `debug` - Prints protocol details to stdout. Can be true/false or an array of packet type names that
-  should be printed. (Default: `false`)
+- `debug` - 将协议细节打印到标准输出。可以为 true/false 或应打印的包类型名称数组。（默认：`false`）
 
-- `trace` - Generates stack traces on Error to include call site of library entrance ("long stack traces").
-  Slight performance penalty for most calls. (Default: `true`)
+- `trace` - 在出错时生成堆栈追踪，包含库入口调用位置（“长堆栈追踪”）。大多数调用会有轻微性能开销。（默认：`true`）
 
-- `multipleStatements` - Allow multiple mysql statements per query. Be careful with this, it could increase the scope
-  of SQL injection attacks. (Default: `false`)
+- `multipleStatements` - 允许每条查询使用多个 MySQL 语句。使用时请谨慎，可能增加 SQL 注入攻击风险。（默认：`false`）
 
-- `legacySpatialSupport` - Use legacy spatial functions like `GeomFromText` and `AsText` which have been replaced by the standard-compliant `ST_GeomFromText` or `ST_AsText` in MySQL 8.0. (Current default: true)
+- `legacySpatialSupport` - 使用遗留的空间函数如 `GeomFromText` 和 `AsText`，它们在 MySQL 8.0 中被符合标准的 `ST_GeomFromText` 或 `ST_AsText` 替代。（当前默认：`true`）
 
-- `flags` - List of connection flags to use other than the default ones. It is also possible to blacklist default ones.
-  For more information, check [Connection Flags](https://github.com/mysqljs/mysql#connection-flags).
+- `flags` - 使用除默认外的其他连接标志列表，也可以屏蔽默认标志。更多信息请参见 [连接标志](https://github.com/mysqljs/mysql#connection-flags)。
 
-- `ssl` - object with SSL parameters or a string containing the name of the SSL profile.
-  See [SSL options](https://github.com/mysqljs/mysql#ssl-options).
+- `ssl` - 包含 SSL 参数的对象或包含 SSL 配置名称的字符串。详见 [SSL 选项](https://github.com/mysqljs/mysql#ssl-options)。
 
-- `enableQueryTimeout` - If a value is specified for maxQueryExecutionTime, in addition to generating a warning log when a query exceeds this time limit, the specified maxQueryExecutionTime value is also used as the timeout for the query. For more information, check [mysql timeouts](https://github.com/mysqljs/mysql#timeouts).
+- `enableQueryTimeout` - 如果为 maxQueryExecutionTime 指定了值，除了在查询超出此时间限制时生成警告日志外，maxQueryExecutionTime 值也被用作查询的超时。更多信息请参见 [mysql 超时](https://github.com/mysqljs/mysql#timeouts)。
 
-Additional options can be added to the `extra` object and will be passed directly to the client library. See more in the [mysql2 documentation](https://sidorares.github.io/node-mysql2/docs).
+其他选项可以添加到 `extra` 对象中，并将直接传递给客户端库。更多见 [mysql2 文档](https://sidorares.github.io/node-mysql2/docs)。
 
-## Column Types
+## 列类型
 
-`bit`, `int`, `integer`, `tinyint`, `smallint`, `mediumint`, `bigint`, `float`, `double`, `double precision`, `dec`, `decimal`, `numeric`, `fixed`, `bool`, `boolean`, `date`, `datetime`, `timestamp`, `time`, `year`, `char`, `nchar`, `national char`, `varchar`, `nvarchar`, `national varchar`, `text`, `tinytext`, `mediumtext`, `blob`, `longtext`, `tinyblob`, `mediumblob`, `longblob`, `enum`, `set`, `json`, `binary`, `varbinary`, `geometry`, `point`, `linestring`, `polygon`, `multipoint`, `multilinestring`, `multipolygon`, `geometrycollection`, `uuid`, `inet4`, `inet6`
+`bit`、`int`、`integer`、`tinyint`、`smallint`、`mediumint`、`bigint`、`float`、`double`、`double precision`、`dec`、`decimal`、`numeric`、`fixed`、`bool`、`boolean`、`date`、`datetime`、`timestamp`、`time`、`year`、`char`、`nchar`、`national char`、`varchar`、`nvarchar`、`national varchar`、`text`、`tinytext`、`mediumtext`、`blob`、`longtext`、`tinyblob`、`mediumblob`、`longblob`、`enum`、`set`、`json`、`binary`、`varbinary`、`geometry`、`point`、`linestring`、`polygon`、`multipoint`、`multilinestring`、`multipolygon`、`geometrycollection`、`uuid`、`inet4`、`inet6`
 
-> Note: `uuid`, `inet4`, and `inet6` are only available for MariaDB and for the respective versions that made them available.
+> 注意：`uuid`、`inet4` 和 `inet6` 仅适用于 MariaDB 及其支持这些类型的对应版本。
 
-### `enum` column type
+### `enum` 列类型
 
-See [enum column type](../entity/1-entities.md#enum-column-type).
+请参见 [enum 列类型](../entity/1-entities.md#enum-column-type)。
 
-### `set` column type
+### `set` 列类型
 
-`set` column type is supported by `mariadb` and `mysql`. There are various possible column definitions:
+`set` 列类型由 `mariadb` 和 `mysql` 支持。存在多种可能的列定义方式：
 
-Using TypeScript enums:
+使用 TypeScript 枚举：
 
 ```typescript
 export enum UserRole {
@@ -115,7 +98,7 @@ export class User {
 }
 ```
 
-Using an array with `set` values:
+使用包含 `set` 值的数组：
 
 ```typescript
 export type UserRoleType = "admin" | "editor" | "ghost"
@@ -134,6 +117,6 @@ export class User {
 }
 ```
 
-### Vector Types
+### 向量类型
 
-MySQL supports the [VECTOR type](https://dev.mysql.com/doc/refman/en/vector.html) since version 9.0, while in MariaDB, [vectors](https://mariadb.com/docs/server/reference/sql-structure/vectors/vector-overview) are available since 11.7.
+MySQL 从版本 9.0 开始支持 [VECTOR 类型](https://dev.mysql.com/doc/refman/en/vector.html)，而 MariaDB 自 11.7 版本起支持 [向量](https://mariadb.com/docs/server/reference/sql-structure/vectors/vector-overview)。

@@ -1,24 +1,24 @@
-# Performance and optimization in TypeORM
+# TypeORM 中的性能与优化
 
-## 1. Introduction to performance optimization
+## 1. 性能优化介绍
 
-- In applications using ORM like TypeORM, performance optimization is crucial to ensure the system runs smoothly, minimizes latency, and uses resources efficiently.
+- 在使用 TypeORM 这类 ORM 的应用中，性能优化至关重要，能够确保系统顺畅运行、最小化延迟并高效利用资源。
 
-- Common challenges when using ORM include unnecessary data retrieval, N+1 query problems, and not leveraging optimization tools such as indexing or caching.
+- 使用 ORM 时常见的挑战包括不必要的数据检索、N+1 查询问题，以及未充分利用索引或缓存等优化工具。
 
-- The main goals of optimization include:
-    - Reducing the number of SQL queries sent to the database.
-    - Optimizing complex queries to run faster.
-    - Using caching and indexing to speed up data retrieval.
-    - Ensuring efficient data retrieval using appropriate loading methods (Lazy vs. Eager loading).
+- 优化的主要目标包括：
+    - 减少发送到数据库的 SQL 查询数量。
+    - 优化复杂查询以提高执行速度。
+    - 利用缓存和索引加速数据检索。
+    - 使用合适的加载方式（懒加载 vs 预加载）保证高效数据读取。
 
-## 2. Efficient use of Query Builder
+## 2. 高效使用 Query Builder
 
-### 2.1. Avoiding the N+1 Query Problem
+### 2.1. 避免 N+1 查询问题
 
-- The N+1 Query Problem occurs when the system executes too many sub-queries for each row of data retrieved.
+- N+1 查询问题是指系统为每个查询出的数据行执行过多的子查询。
 
-- To avoid this, you can use `leftJoinAndSelect` or `innerJoinAndSelect` to combine tables in a single query instead of executing multiple queries.
+- 避免方法是使用 `leftJoinAndSelect` 或 `innerJoinAndSelect`，在单条查询中关联多张表，减少查询次数。
 
 ```typescript
 const users = await dataSource
@@ -28,11 +28,11 @@ const users = await dataSource
     .getMany()
 ```
 
-- Here, `leftJoinAndSelect` helps retrieve all user posts in a single query rather than many small queries.
+- 这里 `leftJoinAndSelect` 助力在一条查询中获取所有用户的帖子，而非多条小查询。
 
-### 2.2. Use `getRawMany()` when only raw data is needed
+### 2.2. 仅需原始数据时使用 `getRawMany()`
 
-- In cases where full objects aren't required, you can use `getRawMany()` to fetch raw data and avoid TypeORM processing too much information.
+- 如果不需要完整的实体对象，可通过 `getRawMany()` 获取原始数据，避免 TypeORM 处理过多信息。
 
 ```typescript
 const rawPosts = await dataSource
@@ -42,9 +42,9 @@ const rawPosts = await dataSource
     .getRawMany()
 ```
 
-### 2.3. Limit fields using `select`
+### 2.3. 使用 `select` 限制字段
 
-- To optimize memory usage and reduce unnecessary data, select only the required fields using `select`.
+- 为优化内存使用和减少不必要数据，使用 `select` 指定只查询所需字段。
 
 ```typescript
 const users = await dataSource
@@ -54,19 +54,19 @@ const users = await dataSource
     .getMany()
 ```
 
-## 3. Using indices
+## 3. 使用索引
 
-- Indexes speed up query performance in the database by reducing the amount of data scanned. TypeORM supports creating indexes on table columns using the `@Index` decorator.
+- 索引通过减少扫描数据量加快数据库查询性能。TypeORM 支持在实体列上通过 `@Index` 装饰器创建索引。
 
-### 3.1. Creating an index
+### 3.1. 创建索引
 
-- Indexes can be created directly in entities using the `@Index` decorator.
+- 可直接在实体中使用 `@Index` 装饰器创建索引。
 
 ```typescript
 import { Entity, Column, Index } from "typeorm"
 
 @Entity()
-@Index(["firstName", "lastName"]) // Composite index
+@Index(["firstName", "lastName"]) // 复合索引
 export class User {
     @Column()
     firstName: string
@@ -76,21 +76,21 @@ export class User {
 }
 ```
 
-### 3.2. Unique index
+### 3.2. 唯一索引
 
-- You can create unique indexes to ensure no duplicate values in a column.
+- 也可创建唯一索引，确保列中值不重复。
 
 ```typescript
 @Index(["email"], { unique: true })
 ```
 
-## 4. Lazy loading and Eager Loading
+## 4. 懒加载与预加载
 
-TypeORM provides two main methods for loading data relations: Lazy Loading and Eager Loading. Each has a different impact on the performance of your application.
+TypeORM 提供两种主要的关系数据加载方式：懒加载（Lazy Loading）和预加载（Eager Loading）。它们对应用性能影响不同。
 
-### 4.1. Lazy loading
+### 4.1. 懒加载
 
-- Lazy loading loads the relation data only when needed, reducing database load when all related data isn't always necessary.
+- 懒加载仅在需要时加载关联数据，减少数据库负载，适合并非所有相关数据都必须时。
 
 ```typescript
 @Entity()
@@ -100,23 +100,23 @@ export class User {
 }
 ```
 
-- When you need to retrieve the data, simply call
+- 需要数据时，调用：
 
 ```typescript
 const user = await userRepository.findOne(userId)
 const posts = await user.posts
 ```
 
-- Advantages:
-    - Resource efficiency: Only loads the necessary data when actually required, reducing query costs and memory usage.
-    - Ideal for selective data usage: Suitable for scenarios where not all related data is needed.
-- Disadvantages:
-    - Increased query complexity: Each access to related data triggers an additional query to the database, which may increase latency if not managed properly.
-    - Difficult to track: Can lead to the n+1 query problem if used carelessly.
+- 优点：
+    - 资源高效：仅在真正需要时加载所需数据，减少查询和内存开销。
+    - 适合选择性数据使用场景。
+- 缺点：
+    - 查询复杂度增加：每次访问关联数据都会触发额外查询，若未妥善控制，可能增加延迟。
+    - 不易追踪：不当使用易引发 n+1 查询问题。
 
-### 4.2. Eager Loading
+### 4.2. 预加载
 
-- Eager loading automatically retrieves all related data when the main query is executed. This can be convenient but may cause performance issues if there are too many complex relations.
+- 预加载会在主查询执行时自动获取所有关联数据。方便但如关联关系复杂过多，可能引发性能问题。
 
 ```typescript
 @Entity()
@@ -126,24 +126,24 @@ export class User {
 }
 ```
 
-- In this case, posts will be loaded as soon as user data is retrieved.
+- 这样一来，获取用户数据时即加载对应帖子。
 
-- Advantages:
-    - Automatically loads related data, making it easier to access relationships without additional queries.
-    - Avoids the n+1 query problem: Since all data is fetched in a single query, there's no risk of generating unnecessary multiple queries.
-- Disadvantages:
-    - Fetching all related data at once may result in large queries, even if not all data is needed.
-    - Not suitable for scenarios where only a subset of related data is required, as it can lead to inefficient data usage.
+- 优点：
+    - 自动加载关联数据，访问关系更简便，无需额外查询。
+    - 避免 n+1 查询问题：数据一次性查询，避免多余查询。
+- 缺点：
+    - 一次性拉取所有关联数据可能导致查询庞大，即使部分数据未用到。
+    - 不适合只需关联数据子集的场景，导致数据使用低效。
 
-- To explore more details and examples of how to configure and use lazy and eager relations, visit the official TypeORM documentation: [Eager and Lazy Relations](../relations/5-eager-and-lazy-relations.md)
+- 更多懒加载和预加载配置与示例，请参考官方 TypeORM 文档：[预加载与懒加载关系](../relations/5-eager-and-lazy-relations.md)
 
-## 5. Advanced optimization
+## 5. 高级优化
 
-### 5.1. Using Query Hints
+### 5.1. 使用查询提示（Query Hints）
 
-- Query Hints are instructions sent along with SQL queries, helping the database decide on more efficient execution strategies.
+- 查询提示是随 SQL 查询发送的指令，辅助数据库选择更高效的执行策略。
 
-- Different RDBMS systems support different kinds of hints, such as suggesting index usage or choosing the appropriate JOIN type.
+- 不同关系型数据库支持的提示各异，如建议使用索引或选择合适 JOIN 类型。
 
 ```typescript
 await dataSource.query(`
@@ -153,38 +153,38 @@ await dataSource.query(`
 `)
 ```
 
-- In the example above, `MAX_EXECUTION_TIME(1000)` instructs MySQL to stop the query if it takes more than 1 second.
+- 以上示例中，`MAX_EXECUTION_TIME(1000)` 告诉 MySQL 查询若超过 1 秒则停止。
 
-### 5.2. Pagination
+### 5.2. 分页
 
-- Pagination is a crucial technique for improving performance when retrieving large amounts of data. Instead of fetching all data at once, pagination divides data into smaller pages, reducing database load and optimizing memory usage.
+- 分页是获取大量数据时提高性能的重要手段。通过分块加载数据，减少数据库负载，优化内存使用。
 
-- In TypeORM, you can use `limit` and `offset` for pagination.
-
-```typescript
-const users = await userRepository
-    .createQueryBuilder("user")
-    .limit(10) // Number of records to fetch per page
-    .offset(20) // Skip the first 20 records
-    .getMany()
-```
-
-- Pagination helps prevent fetching large amounts of data at once, minimizing latency and optimizing memory usage. When implementing pagination, consider using pagination cursors for more efficient handling of dynamic data.
-
-### 5.3. Caching
-
-- Caching is the technique of temporarily storing query results or data for use in future requests without querying the database each time.
-
-- TypeORM has built-in caching support, and you can customize how caching is used.
+- TypeORM 中使用 `limit` 和 `offset` 实现分页。
 
 ```typescript
 const users = await userRepository
     .createQueryBuilder("user")
-    .cache(true) // Enable caching
+    .limit(10) // 每页获取记录数
+    .offset(20) // 跳过前 20 条记录
     .getMany()
 ```
 
-- Additionally, you can configure cache duration or use external caching tools like Redis for better efficiency.
+- 分页可防止一次性拉取大量数据，降低延迟并优化内存。实现分页时，可考虑使用分页游标以更有效处理动态数据。
+
+### 5.3. 缓存
+
+- 缓存是将查询结果或数据临时存储以供后续请求复用，避免每次都查询数据库的技术。
+
+- TypeORM 内置支持缓存，且可自定义缓存策略。
+
+```typescript
+const users = await userRepository
+    .createQueryBuilder("user")
+    .cache(true) // 启用缓存
+    .getMany()
+```
+
+- 另外，可配置缓存时长或使用外部缓存工具（如 Redis）提升效率。
 
 ```typescript=
 const dataSource = new DataSource({

@@ -1,21 +1,21 @@
-# Custom repositories
+# 自定义仓库
 
-You can create a custom repository which should contain methods to work with your database.
-For example, let's say we want to have a method called `findByName(firstName: string, lastName: string)`
-which will search for users by a given first and last names.
-The best place for this method is a `Repository`,
-so we could call it like `userRepository.findByName(...)`.
-You can achieve this using custom repositories.
+你可以创建一个自定义仓库，其中应包含操作数据库的方法。
+例如，假设我们想要有一个名为 `findByName(firstName: string, lastName: string)` 的方法，
+用于根据给定的名字和姓氏搜索用户。
+这个方法最合适放在一个 `Repository` 中，
+这样我们就可以像 `userRepository.findByName(...)` 那样调用它。
+你可以通过自定义仓库来实现这一点。
 
-There are several ways how custom repositories can be created.
+创建自定义仓库有几种方式。
 
-- [How to create custom repository](#how-to-create-custom-repository)
-- [Using custom repositories in transactions](#using-custom-repositories-in-transactions)
+- [如何创建自定义仓库](#how-to-create-custom-repository)
+- [在事务中使用自定义仓库](#using-custom-repositories-in-transactions)
 
-## How to create custom repository?
+## 如何创建自定义仓库？
 
-It's common practice assigning a repository instance to a globally exported variable,
-and use this variable across your app, for example:
+通常的做法是将仓库实例赋值给一个全局导出的变量，
+在应用程序中使用这个变量，例如：
 
 ```ts
 // user.repository.ts
@@ -29,7 +29,7 @@ export class UserController {
 }
 ```
 
-In order to extend `UserRepository` functionality you can use `.extend` method of `Repository` class:
+为了扩展 `UserRepository` 的功能，你可以使用 `Repository` 类的 `.extend` 方法：
 
 ```typescript
 // user.repository.ts
@@ -50,19 +50,19 @@ export class UserController {
 }
 ```
 
-## Using custom repositories in transactions
+## 在事务中使用自定义仓库
 
-Transactions have their own scope of execution: they have their own query runner, entity manager and repository instances.
-That's why using global (data source's) entity manager and repositories won't work in transactions.
-In order to execute queries properly in scope of transaction you **must** use provided entity manager
-and its `getRepository` method. In order to use custom repositories within transaction,
-you must use `withRepository` method of the provided entity manager instance:
+事务有自己的执行范围：它们有自己的查询运行器、实体管理器和仓库实例。
+这就是为什么在事务中使用全局（数据源的）实体管理器和仓库不起作用的原因。
+为了在事务范围内正确执行查询，你**必须**使用事务提供的实体管理器
+及其 `getRepository` 方法。若要在事务中使用自定义仓库，
+你必须使用提供的实体管理器实例的 `withRepository` 方法：
 
 ```typescript
 await connection.transaction(async (manager) => {
-    // in transactions you MUST use manager instance provided by a transaction,
-    // you cannot use global entity managers or repositories,
-    // because this manager is exclusive and transactional
+    // 在事务中你必须使用事务提供的 manager 实例，
+    // 不能使用全局实体管理器或仓库，
+    // 因为该 manager 是独立且事务性的
 
     const userRepository = manager.withRepository(UserRepository)
     await userRepository.createAndSave("Timber", "Saw")

@@ -1,16 +1,15 @@
-# Tree Entities
+# 树实体
 
-TypeORM supports the Adjacency list and Closure table patterns for storing tree structures.
-To learn more about the hierarchy table take a look at [this awesome presentation by Bill Karwin](https://www.slideshare.net/billkarwin/models-for-hierarchical-data).
+TypeORM 支持使用邻接表（Adjacency list）和闭包表（Closure table）模式存储树结构。  
+想了解层级表的更多内容，请查看 [Bill Karwin 的这场精彩演讲](https://www.slideshare.net/billkarwin/models-for-hierarchical-data)。
 
-## Adjacency list
+## 邻接表（Adjacency list）
 
-Adjacency list is a simple model with self-referencing.
-Note that TreeRepository doesn't support Adjacency list.
-The benefit of this approach is simplicity,
-a drawback is that you can't load big trees all at once because of join limitations.
-To learn more about the benefits and use of Adjacency Lists look at [this article by Matthew Schinckel](http://schinckel.net/2014/09/13/long-live-adjacency-lists/).
-Example:
+邻接表是一种简单的自引用模型。  
+需要注意的是，TreeRepository 不支持邻接表。  
+这种方法的优点是简单，缺点是由于连接限制，不能一次加载大型树。  
+想了解邻接表的优势及使用方法，可以查看 [Matthew Schinckel 的这篇文章](http://schinckel.net/2014/09/13/long-live-adjacency-lists/)。  
+示例：
 
 ```typescript
 import {
@@ -40,12 +39,12 @@ export class Category {
 }
 ```
 
-## Nested set
+## 嵌套集（Nested set）
 
-Nested set is another pattern of storing tree structures in the database.
-It is very efficient for reads, but bad for writes.
-You cannot have multiple roots in the nested set.
-Example:
+嵌套集是另一种在数据库中存储树结构的模式。  
+它对读取操作非常高效，但写入性能较差。  
+嵌套集不允许存在多个根节点。  
+示例：
 
 ```typescript
 import {
@@ -75,11 +74,11 @@ export class Category {
 }
 ```
 
-## Materialized Path (aka Path Enumeration)
+## 物化路径（Materialized Path，也称路径枚举）
 
-Materialized Path (also called Path Enumeration) is another pattern of storing tree structures in the database.
-It is simple and effective.
-Example:
+物化路径（也叫路径枚举）是另一种在数据库中存储树结构的模式。  
+它简单且高效。  
+示例：
 
 ```typescript
 import {
@@ -109,11 +108,11 @@ export class Category {
 }
 ```
 
-## Closure table
+## 闭包表（Closure table）
 
-Closure table stores relations between parent and child in a separate table in a special way.
-It's efficient in both reading and writing.
-Example:
+闭包表以特殊方式将父子关系存储在单独的表中。  
+它在读写操作上都很高效。  
+示例：
 
 ```typescript
 import {
@@ -143,7 +142,7 @@ export class Category {
 }
 ```
 
-You can specify the closure table name and/or closure table column names by setting optional parameter `options` into `@Tree("closure-table", options)`. `ancestorColumnName` and `descandantColumnName` are callback functions, which receive the primary column's metadata and return the column's name.
+你可以通过在 `@Tree("closure-table", options)` 中设置可选参数 `options` 指定闭包表的名称和/或闭包表列名。`ancestorColumnName` 和 `descendantColumnName` 是回调函数，接收主列的元数据并返回列名。
 
 ```ts
 @Tree("closure-table", {
@@ -153,10 +152,10 @@ You can specify the closure table name and/or closure table column names by sett
 })
 ```
 
-## Working with tree entities
+## 操作树实体
 
-To bind tree entities to each other, it is required to set the parent in the child entity and then save them.
-for example:
+要将树实体绑定在一起，需要在子实体中设置父实体，然后保存它们。  
+例如：
 
 ```typescript
 const a1 = new Category()
@@ -184,13 +183,13 @@ a112.parent = a11
 await dataSource.manager.save(a112)
 ```
 
-To load such a tree use `TreeRepository`:
+要加载这样的树，请使用 `TreeRepository`：
 
 ```typescript
 const trees = await dataSource.manager.getTreeRepository(Category).findTrees()
 ```
 
-`trees` will be the following:
+`trees` 将如下所示：
 
 ```json
 [
@@ -221,54 +220,55 @@ const trees = await dataSource.manager.getTreeRepository(Category).findTrees()
 ]
 ```
 
-There are other special methods to work with tree entities through `TreeRepository`:
+还有一些通过 `TreeRepository` 操作树实体的特殊方法：
 
-- `findTrees` - Returns all trees in the database with all their children, children of children, etc.
+- `findTrees` - 返回数据库中所有树及其所有子节点、子节点的子节点等。
 
 ```typescript
 const treeCategories = await dataSource.manager
     .getTreeRepository(Category)
     .findTrees()
-// returns root categories with sub categories inside
+// 返回含子类的根分类
 
 const treeCategoriesWithLimitedDepth = await dataSource.manager
     .getTreeRepository(Category)
     .findTrees({ depth: 2 })
-// returns root categories with sub categories inside, up to depth 2
+// 返回深度最多为 2 级的根分类及其子分类
 ```
 
-- `findRoots` - Roots are entities that have no ancestors. Finds them all.
-  Does not load children's leaves.
+- `findRoots` - 根节点是没有祖先的实体。查找所有根节点。  
+  不加载其子节点。
 
 ```typescript
 const rootCategories = await dataSource.manager
     .getTreeRepository(Category)
     .findRoots()
-// returns root categories without sub categories inside
+// 返回根分类但不包含子分类
 ```
 
-- `findDescendants` - Gets all children (descendants) of the given entity. Returns them all in a flat array.
+- `findDescendants` - 获取给定实体的所有子节点（后代）。返回一个扁平数组。
 
 ```typescript
 const children = await dataSource.manager
     .getTreeRepository(Category)
     .findDescendants(parentCategory)
-// returns all direct subcategories (without its nested categories) of a parentCategory
+// 返回 parentCategory 所有直接子分类（不包括嵌套子分类）
 ```
 
-- `findDescendantsTree` - Gets all children (descendants) of the given entity. Returns them in a tree - nested into each other.
+- `findDescendantsTree` - 获取给定实体的所有子节点（后代）。返回嵌套结构的树。
 
 ```typescript
 const childrenTree = await repository.findDescendantsTree(parentCategory)
-// returns all direct subcategories (with its nested categories) of a parentCategory
+// 返回 parentCategory 所有直接子分类及其嵌套子分类
+
 const childrenTreeWithLimitedDepth = await repository.findDescendantsTree(
     parentCategory,
     { depth: 2 },
 )
-// returns all direct subcategories (with its nested categories) of a parentCategory, up to depth 2
+// 返回深度最多为 2 级的 parentCategory 子分类及其嵌套子分类
 ```
 
-- `createDescendantsQueryBuilder` - Creates a query builder used to get descendants of the entities in a tree.
+- `createDescendantsQueryBuilder` - 创建用于获取树中实体后代的查询构建器。
 
 ```typescript
 const children = await repository
@@ -281,7 +281,7 @@ const children = await repository
     .getMany()
 ```
 
-- `countDescendants` - Gets the number of descendants of the entity.
+- `countDescendants` - 获取实体后代的数量。
 
 ```typescript
 const childrenCount = await dataSource.manager
@@ -289,23 +289,23 @@ const childrenCount = await dataSource.manager
     .countDescendants(parentCategory)
 ```
 
-- `findAncestors` - Gets all parents (ancestors) of the given entity. Returns them all in a flat array.
+- `findAncestors` - 获取给定实体的所有父节点（祖先）。返回一个扁平数组。
 
 ```typescript
 const parents = await repository.findAncestors(childCategory)
-// returns all direct childCategory's parent categories (without "parent of parents")
+// 返回 childCategory 所有直接父分类（不包括“父的父”）
 ```
 
-- `findAncestorsTree` - Gets all parents (ancestors) of the given entity. Returns them in a tree - nested into each other.
+- `findAncestorsTree` - 获取给定实体的所有父节点（祖先）。返回嵌套结构的树。
 
 ```typescript
 const parentsTree = await dataSource.manager
     .getTreeRepository(Category)
     .findAncestorsTree(childCategory)
-// returns all direct childCategory's parent categories (with "parent of parents")
+// 返回 childCategory 所有直接父分类及其“父的父”
 ```
 
-- `createAncestorsQueryBuilder` - Creates a query builder used to get the ancestors of the entities in a tree.
+- `createAncestorsQueryBuilder` - 创建用于获取树中实体祖先的查询构建器。
 
 ```typescript
 const parents = await repository
@@ -314,7 +314,7 @@ const parents = await repository
     .getMany()
 ```
 
-- `countAncestors` - Gets the number of ancestors of the entity.
+- `countAncestors` - 获取实体祖先的数量。
 
 ```typescript
 const parentsCount = await dataSource.manager
@@ -322,20 +322,20 @@ const parentsCount = await dataSource.manager
     .countAncestors(childCategory)
 ```
 
-For the following methods, options can be passed:
+以下方法可传入选项参数：
 
-- findTrees
-- findRoots
-- findDescendants
-- findDescendantsTree
-- findAncestors
-- findAncestorsTree
+- findTrees  
+- findRoots  
+- findDescendants  
+- findDescendantsTree  
+- findAncestors  
+- findAncestorsTree  
 
-The following options are available:
+可用选项包括：
 
-- `relations` - Indicates what relations of entity should be loaded (simplified left join form).
+- `relations` - 指定应加载的实体关系（简化的左连接形式）。
 
-Examples:
+示例：
 
 ```typescript
 const treeCategoriesWithRelations = await dataSource.manager
@@ -343,12 +343,12 @@ const treeCategoriesWithRelations = await dataSource.manager
     .findTrees({
         relations: ["sites"],
     })
-// automatically joins the sites relation
+// 自动连接 sites 关系
 
 const parentsWithRelations = await dataSource.manager
     .getTreeRepository(Category)
     .findAncestors(childCategory, {
         relations: ["members"],
     })
-// returns all direct childCategory's parent categories (without "parent of parents") and joins the 'members' relation
+// 返回 childCategory 所有直接父分类（不含“父的父”），并连接 members 关系
 ```

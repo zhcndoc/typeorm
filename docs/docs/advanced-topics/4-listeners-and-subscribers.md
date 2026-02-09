@@ -1,18 +1,16 @@
-# Entity Listeners and Subscribers
+# 实体监听器与订阅者
 
-## What is an Entity Listener?
+## 什么是实体监听器？
 
-Any of your entities can have methods with custom logic that listen to specific entity events.
-You must mark those methods with special decorators depending on what event you want to listen to.
+你的任何实体都可以拥有带有自定义逻辑的方法，这些方法监听特定的实体事件。  
+你必须根据你想监听的事件，用特殊的装饰器标记这些方法。
 
-**Note:** Do not make any database calls within a listener, opt for [subscribers](#what-is-a-subscriber) instead.
+**注意：** 不要在监听器中进行任何数据库调用，应选择使用 [订阅者](#什么是订阅者)。
 
 ### `@AfterLoad`
 
-You can define a method with any name in entity and mark it with `@AfterLoad`
-and TypeORM will call it each time the entity
-is loaded using `QueryBuilder` or repository/manager find methods.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterLoad` 装饰它，TypeORM 会在每次实体被通过 `QueryBuilder` 或 repository/manager 的查找方法加载时调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -26,9 +24,8 @@ export class Post {
 
 ### `@BeforeInsert`
 
-You can define a method with any name in entity and mark it with `@BeforeInsert`
-and TypeORM will call it before the entity is inserted using repository/manager `save`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@BeforeInsert` 装饰它，TypeORM 会在通过 repository/manager `save` 方法插入实体之前调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -42,9 +39,8 @@ export class Post {
 
 ### `@AfterInsert`
 
-You can define a method with any name in entity and mark it with `@AfterInsert`
-and TypeORM will call it after the entity is inserted using repository/manager `save`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterInsert` 装饰它，TypeORM 会在通过 repository/manager `save` 方法插入实体之后调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -58,9 +54,9 @@ export class Post {
 
 ### `@BeforeUpdate`
 
-You can define a method with any name in the entity and mark it with `@BeforeUpdate`
-and TypeORM will call it before an existing entity is updated using repository/manager `save`. Keep in mind, however, that this will occur only when information is changed in the model. If you run `save` without modifying anything from the model, `@BeforeUpdate` and `@AfterUpdate` will not run.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@BeforeUpdate` 装饰它，TypeORM 会在通过 repository/manager `save` 方法更新已存在的实体之前调用它。  
+请注意，只有当模型中的信息发生更改时才会调用。如果调用 `save` 时没有修改模型中的任何内容，`@BeforeUpdate` 和 `@AfterUpdate` 将不会被执行。  
+示例：
 
 ```typescript
 @Entity()
@@ -74,9 +70,8 @@ export class Post {
 
 ### `@AfterUpdate`
 
-You can define a method with any name in the entity and mark it with `@AfterUpdate`
-and TypeORM will call it after an existing entity is updated using repository/manager `save`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterUpdate` 装饰它，TypeORM 会在通过 repository/manager `save` 方法更新已存在的实体之后调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -90,9 +85,8 @@ export class Post {
 
 ### `@BeforeRemove`
 
-You can define a method with any name in the entity and mark it with `@BeforeRemove`
-and TypeORM will call it before an entity is removed using repository/manager `remove`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@BeforeRemove` 装饰它，TypeORM 会在通过 repository/manager `remove` 方法移除实体之前调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -106,9 +100,8 @@ export class Post {
 
 ### `@AfterRemove`
 
-You can define a method with any name in the entity and mark it with `@AfterRemove`
-and TypeORM will call it after the entity is removed using repository/manager `remove`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterRemove` 装饰它，TypeORM 会在通过 repository/manager `remove` 方法移除实体之后调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -122,9 +115,8 @@ export class Post {
 
 ### `@BeforeSoftRemove`
 
-You can define a method with any name in the entity and mark it with `@BeforeSoftRemove`
-and TypeORM will call it before an entity is soft removed using repository/manager `softRemove`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@BeforeSoftRemove` 装饰它，TypeORM 会在通过 repository/manager `softRemove` 方法软删除实体之前调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -138,9 +130,8 @@ export class Post {
 
 ### `@AfterSoftRemove`
 
-You can define a method with any name in the entity and mark it with `@AfterSoftRemove`
-and TypeORM will call it after the entity is soft removed using repository/manager `softRemove`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterSoftRemove` 装饰它，TypeORM 会在通过 repository/manager `softRemove` 方法软删除实体之后调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -154,9 +145,8 @@ export class Post {
 
 ### `@BeforeRecover`
 
-You can define a method with any name in the entity and mark it with `@BeforeRecover`
-and TypeORM will call it before an entity is recovered using repository/manager `recover`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@BeforeRecover` 装饰它，TypeORM 会在通过 repository/manager `recover` 方法恢复实体之前调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -170,9 +160,8 @@ export class Post {
 
 ### `@AfterRecover`
 
-You can define a method with any name in the entity and mark it with `@AfterRecover`
-and TypeORM will call it after the entity is recovered using repository/manager `recover`.
-Example:
+你可以在实体中定义一个任意名称的方法并用 `@AfterRecover` 装饰它，TypeORM 会在通过 repository/manager `recover` 方法恢复实体之后调用它。  
+示例：
 
 ```typescript
 @Entity()
@@ -184,24 +173,24 @@ export class Post {
 }
 ```
 
-## What is a Subscriber?
+## 什么是订阅者？
 
-Marks a class as an event subscriber which can listen to specific entity events or any entity events.
-Events are firing using `QueryBuilder` and repository/manager methods.
-Example:
+将一个类标记为事件订阅者，可以监听特定实体事件或所有实体事件。  
+事件通过 `QueryBuilder` 和 repository/manager 方法触发。  
+示例：
 
 ```typescript
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface<Post> {
     /**
-     * Indicates that this subscriber only listen to Post events.
+     * 指示该订阅者仅监听 Post 事件。
      */
     listenTo() {
         return Post
     }
 
     /**
-     * Called before post insertion.
+     * 在 Post 插入前调用。
      */
     beforeInsert(event: InsertEvent<Post>) {
         console.log(`BEFORE POST INSERTED: `, event.entity)
@@ -209,63 +198,63 @@ export class PostSubscriber implements EntitySubscriberInterface<Post> {
 }
 ```
 
-You can implement any method from `EntitySubscriberInterface`.
-To listen to any entity you just omit `listenTo` method and use `any`:
+你可以实现 `EntitySubscriberInterface` 的任意方法。  
+若监听所有实体，则省略 `listenTo` 方法并使用 `any`：
 
 ```typescript
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface {
     /**
-     * Called after entity is loaded.
+     * 在实体加载后调用。
      */
     afterLoad(entity: any) {
         console.log(`AFTER ENTITY LOADED: `, entity)
     }
 
     /**
-     * Called before query execution.
+     * 查询执行前调用。
      */
     beforeQuery(event: BeforeQueryEvent<any>) {
         console.log(`BEFORE QUERY: `, event.query)
     }
 
     /**
-     * Called after query execution.
+     * 查询执行后调用。
      */
     afterQuery(event: AfterQueryEvent<any>) {
         console.log(`AFTER QUERY: `, event.query)
     }
 
     /**
-     * Called before entity insertion.
+     * 实体插入前调用。
      */
     beforeInsert(event: InsertEvent<any>) {
         console.log(`BEFORE ENTITY INSERTED: `, event.entity)
     }
 
     /**
-     * Called after entity insertion.
+     * 实体插入后调用。
      */
     afterInsert(event: InsertEvent<any>) {
         console.log(`AFTER ENTITY INSERTED: `, event.entity)
     }
 
     /**
-     * Called before entity update.
+     * 实体更新前调用。
      */
     beforeUpdate(event: UpdateEvent<any>) {
         console.log(`BEFORE ENTITY UPDATED: `, event.entity)
     }
 
     /**
-     * Called after entity update.
+     * 实体更新后调用。
      */
     afterUpdate(event: UpdateEvent<any>) {
         console.log(`AFTER ENTITY UPDATED: `, event.entity)
     }
 
     /**
-     * Called before entity removal.
+     * 实体移除前调用。
      */
     beforeRemove(event: RemoveEvent<any>) {
         console.log(
@@ -275,7 +264,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called after entity removal.
+     * 实体移除后调用。
      */
     afterRemove(event: RemoveEvent<any>) {
         console.log(
@@ -285,7 +274,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called before entity removal.
+     * 实体软删除前调用。
      */
     beforeSoftRemove(event: SoftRemoveEvent<any>) {
         console.log(
@@ -295,7 +284,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called after entity removal.
+     * 实体软删除后调用。
      */
     afterSoftRemove(event: SoftRemoveEvent<any>) {
         console.log(
@@ -305,7 +294,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called before entity recovery.
+     * 实体恢复前调用。
      */
     beforeRecover(event: RecoverEvent<any>) {
         console.log(
@@ -315,7 +304,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called after entity recovery.
+     * 实体恢复后调用。
      */
     afterRecover(event: RecoverEvent<any>) {
         console.log(
@@ -325,42 +314,42 @@ export class PostSubscriber implements EntitySubscriberInterface {
     }
 
     /**
-     * Called before transaction start.
+     * 事务开始前调用。
      */
     beforeTransactionStart(event: TransactionStartEvent) {
         console.log(`BEFORE TRANSACTION STARTED: `, event)
     }
 
     /**
-     * Called after transaction start.
+     * 事务开始后调用。
      */
     afterTransactionStart(event: TransactionStartEvent) {
         console.log(`AFTER TRANSACTION STARTED: `, event)
     }
 
     /**
-     * Called before transaction commit.
+     * 事务提交前调用。
      */
     beforeTransactionCommit(event: TransactionCommitEvent) {
         console.log(`BEFORE TRANSACTION COMMITTED: `, event)
     }
 
     /**
-     * Called after transaction commit.
+     * 事务提交后调用。
      */
     afterTransactionCommit(event: TransactionCommitEvent) {
         console.log(`AFTER TRANSACTION COMMITTED: `, event)
     }
 
     /**
-     * Called before transaction rollback.
+     * 事务回滚前调用。
      */
     beforeTransactionRollback(event: TransactionRollbackEvent) {
         console.log(`BEFORE TRANSACTION ROLLBACK: `, event)
     }
 
     /**
-     * Called after transaction rollback.
+     * 事务回滚后调用。
      */
     afterTransactionRollback(event: TransactionRollbackEvent) {
         console.log(`AFTER TRANSACTION ROLLBACK: `, event)
@@ -368,27 +357,27 @@ export class PostSubscriber implements EntitySubscriberInterface {
 }
 ```
 
-Make sure your `subscribers` property is set in your [DataSourceOptions](../data-source/2-data-source-options.md#common-data-source-options) so TypeORM loads your subscriber.
+确保你的 [DataSourceOptions](../data-source/2-data-source-options.md#common-data-source-options) 中的 `subscribers` 属性已设置，以便 TypeORM 加载你的订阅者。
 
-### `Event Object`
+### `事件对象`
 
-Excluding `listenTo`, all `EntitySubscriberInterface` methods are passed an event object that has the following base properties:
+除 `listenTo` 方法外，所有 `EntitySubscriberInterface` 的方法都接收一个事件对象，该对象包含以下基础属性：
 
-- `dataSource: DataSource` - DataSource used in the event.
-- `queryRunner: QueryRunner` - QueryRunner used in the event transaction.
-- `manager: EntityManager` - EntityManager used in the event transaction.
+- `dataSource: DataSource` - 事件中使用到的数据源。  
+- `queryRunner: QueryRunner` - 事件事务中使用的查询执行器。  
+- `manager: EntityManager` - 事件事务中使用的实体管理器。
 
-See each [Event's interface](https://github.com/typeorm/typeorm/tree/master/src/subscriber/event) for additional properties.
+具体事件还会有额外属性，可查看对应的 [事件接口](https://github.com/typeorm/typeorm/tree/master/src/subscriber/event)。
 
-Note that `event.entity` may not necessarily contain primary key(s) when `Repository.update()` is used. Only the values provided as the entity partial will be available. In order to make primary keys available in the subscribers, you can explicitly pass primary key value(s) in the partial entity object literal or use `Repository.save()`, which performs re-fetching.
+请注意，当使用 `Repository.update()` 时，`event.entity` 中不一定含有主键。此时仅包含传入的实体部分属性。为了在订阅者中获取主键，你可以显式地在部分实体对象字面量中传入主键值，或者使用会重新查询的 `Repository.save()`。
 
 ```typescript
 await postRepository.update(post.id, { description: "Bacon ipsum dolor amet cow" })
 
 // post.subscriber.ts
 afterUpdate(event: UpdateEvent<Post>) {
-  console.log(event.entity) // outputs { description: 'Bacon ipsum dolor amet cow' }
+  console.log(event.entity) // 输出 { description: 'Bacon ipsum dolor amet cow' }
 }
 ```
 
-**Note:** All database operations in the subscribed event listeners should be performed using the event object's `queryRunner` or `manager` instance.
+**注意：** 所有订阅事件监听器中的数据库操作应当使用事件对象中的 `queryRunner` 或 `manager` 实例来执行。

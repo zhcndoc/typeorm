@@ -1,10 +1,10 @@
-# Find Options
+# 查找选项
 
-## Basic options
+## 基本选项
 
-All repository and manager `.find*` methods accept special options you can use to query data you need without using `QueryBuilder`:
+所有仓库和管理器的 `.find*` 方法都接受特殊选项，您可以使用它们进行查询，而无需使用 `QueryBuilder`：
 
-- `select` - indicates which properties of the main object must be selected
+- `select` - 指定必须选择主对象的哪些属性
 
 ```typescript
 userRepository.find({
@@ -15,13 +15,13 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT "firstName", "lastName" FROM "user"
 ```
 
-- `relations` - relations needs to be loaded with the main entity. Sub-relations can also be loaded (shorthand for `join` and `leftJoinAndSelect`)
+- `relations` - 需要与主实体一起加载的关联关系。子关联关系也可以加载（`join` 和 `leftJoinAndSelect` 的简写）
 
 ```typescript
 userRepository.find({
@@ -42,7 +42,7 @@ userRepository.find({
 })
 ```
 
-will execute following queries:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
@@ -57,7 +57,7 @@ LEFT JOIN "videos" ON "videos"."id" = "user"."videoId"
 LEFT JOIN "video_attributes" ON "video_attributes"."id" = "videos"."video_attributesId"
 ```
 
-- `where` - simple conditions by which entity should be queried.
+- `where` - 实体应根据的简单条件进行查询。
 
 ```typescript
 userRepository.find({
@@ -68,14 +68,14 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
 WHERE "firstName" = 'Timber' AND "lastName" = 'Saw'
 ```
 
-Querying a column from an embedded entity should be done with respect to the hierarchy in which it was defined. Example:
+查询嵌入式实体中的列应遵循其定义的层级结构。例如：
 
 ```typescript
 userRepository.find({
@@ -91,7 +91,7 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
@@ -99,7 +99,7 @@ LEFT JOIN "project" ON "project"."id" = "user"."projectId"
 WHERE "project"."name" = 'TypeORM' AND "project"."initials" = 'TORM'
 ```
 
-Querying with OR operator:
+使用 OR 运算符查询：
 
 ```typescript
 userRepository.find({
@@ -110,13 +110,13 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user" WHERE ("firstName" = 'Timber' AND "lastName" = 'Saw') OR ("firstName" = 'Stan' AND "lastName" = 'Lee')
 ```
 
-- `order` - selection order.
+- `order` - 选择顺序。
 
 ```typescript
 userRepository.find({
@@ -127,14 +127,14 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
 ORDER BY "name" ASC, "id" DESC
 ```
 
-- `withDeleted` - include entities which have been soft deleted with `softDelete` or `softRemove`, e.g. have their `@DeleteDateColumn` column set. By default, soft deleted entities are not included.
+- `withDeleted` - 包括通过 `softDelete` 或 `softRemove` 软删除的实体，例如，其 `@DeleteDateColumn` 列已设置。默认情况下，不包括软删除的实体。
 
 ```typescript
 userRepository.find({
@@ -142,9 +142,9 @@ userRepository.find({
 })
 ```
 
-`find*` methods which return multiple entities (`find`, `findBy`, `findAndCount`, `findAndCountBy`) also accept following options:
+返回多个实体的 `find*` 方法（`find`, `findBy`, `findAndCount`, `findAndCountBy`）还接受以下选项：
 
-- `skip` - offset (paginated) from where entities should be taken.
+- `skip` - 偏移量（分页）从何处开始取实体。
 
 ```typescript
 userRepository.find({
@@ -152,12 +152,14 @@ userRepository.find({
 })
 ```
 
+执行以下查询：
+
 ```sql
 SELECT * FROM "user"
 OFFSET 5
 ```
 
-- `take` - limit (paginated) - max number of entities that should be taken.
+- `take` - 限制（分页） - 应取的最大实体数量。
 
 ```typescript
 userRepository.find({
@@ -165,16 +167,16 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
 LIMIT 10
 ```
 
-\*\* `skip` and `take` should be used together
+\*\* `skip` 和 `take` 应配合使用
 
-\*\* If you are using typeorm with MSSQL, and want to use `take` or `limit`, you need to use order as well or you will receive the following error: `'Invalid usage of the option NEXT in the FETCH statement.'`
+\*\* 如果您使用 MSSQL，并想使用 `take` 或 `limit`，需要同时指定 `order`，否则会收到以下错误：`'Invalid usage of the option NEXT in the FETCH statement.'`
 
 ```typescript
 userRepository.find({
@@ -186,7 +188,7 @@ userRepository.find({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
@@ -194,7 +196,7 @@ ORDER BY "columnName" ASC
 LIMIT 10 OFFSET 0
 ```
 
-- `cache` - Enables or disables query result caching. See [caching](../query-builder/6-caching.md) for more information and options.
+- `cache` - 启用或禁用查询结果缓存。详情及配置见 [缓存](../query-builder/6-caching.md)。
 
 ```typescript
 userRepository.find({
@@ -202,14 +204,14 @@ userRepository.find({
 })
 ```
 
-- `lock` - Enables locking mechanism for query. Can be used only in `findOne` and `findOneBy` methods.
-  `lock` is an object which can be defined as:
+- `lock` - 为查询启用锁机制。仅可用于 `findOne` 和 `findOneBy` 方法。
+  `lock` 是一个对象，可以定义为：
 
 ```ts
 { mode: "optimistic", version: number | Date }
 ```
 
-or
+或者
 
 ```ts
 {
@@ -217,10 +219,10 @@ or
         "pessimistic_write" |
         "dirty_read" |
         /*
-            "pessimistic_partial_write" and "pessimistic_write_or_fail" are deprecated and
-            will be removed in a future version.
+            "pessimistic_partial_write" 和 "pessimistic_write_or_fail" 已废弃，
+            将在未来版本移除。
 
-            Use onLocked instead.
+            请使用 onLocked 替代。
          */
         "pessimistic_partial_write" |
         "pessimistic_write_or_fail" |
@@ -232,7 +234,7 @@ or
 }
 ```
 
-for example:
+例如：
 
 ```typescript
 userRepository.findOne({
@@ -243,9 +245,9 @@ userRepository.findOne({
 })
 ```
 
-See [lock modes](../query-builder/1-select-query-builder.md#lock-modes) for more information
+更多信息见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)
 
-Complete example of find options:
+查找选项完整示例：
 
 ```typescript
 userRepository.find({
@@ -275,21 +277,21 @@ userRepository.find({
 })
 ```
 
-Find without arguments:
+无参数查找：
 
 ```ts
 userRepository.find()
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
 ```
 
-## Advanced options
+## 高级选项
 
-TypeORM provides a lot of built-in operators that can be used to create more complex comparisons:
+TypeORM 提供许多内置操作符，可用于创建更复杂的比较：
 
 - `Not`
 
@@ -301,7 +303,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" != 'About #1'
@@ -317,7 +319,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" < 10
@@ -333,7 +335,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" <= 10
@@ -349,7 +351,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" > 10
@@ -365,7 +367,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" >= 10
@@ -381,7 +383,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" = 'About #2'
@@ -397,7 +399,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" LIKE '%out #%'
@@ -413,7 +415,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" ILIKE '%out #%'
@@ -429,7 +431,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" BETWEEN 1 AND 10
@@ -445,7 +447,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" IN ('About #2','About #3')
@@ -461,7 +463,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query (Postgres notation):
+将执行以下查询（Postgres 语法）：
 
 ```sql
 SELECT * FROM "post" WHERE "title" = ANY(['About #2','About #3'])
@@ -477,7 +479,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" IS NULL
@@ -493,7 +495,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "categories" @> '{TypeScript}'
@@ -509,7 +511,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "categories" <@ '{TypeScript}'
@@ -525,13 +527,13 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "categories" && '{TypeScript}'
 ```
 
-- `JsonContains` (PostgreSQL/CockroachDB only)
+- `JsonContains`（仅 PostgreSQL/CockroachDB）
 
 ```ts
 import { JsonContains } from "typeorm"
@@ -541,7 +543,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "metadata" ::jsonb @> '{"author":{"name":"John"}}'
@@ -557,14 +559,14 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "likes" = "dislikes" - 4
 ```
 
-In the simplest case, a raw query is inserted immediately after the equal symbol.
-But you can also completely rewrite the comparison logic using the function.
+最简单的情况是，原始查询直接插入在等号后面。
+但您也可以通过函数完全重写比较逻辑。
 
 ```ts
 import { Raw } from "typeorm"
@@ -574,13 +576,14 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "currentDate" > NOW()
 ```
 
-If you need to provide user input, you should not include the user input directly in your query as this may create a SQL injection vulnerability. Instead, you can use the second argument of the `Raw` function to provide a list of parameters to bind to the query.
+如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。
+而应使用 `Raw` 函数的第二个参数，提供用于绑定查询的参数列表。
 
 ```ts
 import { Raw } from "typeorm"
@@ -590,13 +593,13 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "currentDate" > '2020-10-06'
 ```
 
-If you need to provide user input that is an array, you can bind them as a list of values in the SQL statement by using the special expression syntax:
+如果需要提供数组类型的用户输入，可以使用特殊表达式语法将其绑定为 SQL 语句中的值列表：
 
 ```ts
 import { Raw } from "typeorm"
@@ -611,15 +614,15 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" IN ('Go To Statement Considered Harmful', 'Structured Programming')
 ```
 
-## Combining Advanced Options
+## 组合高级选项
 
-Also you can combine these operators with below:
+您也可以将这些操作符组合使用：
 
 - `Not`
 
@@ -632,7 +635,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE NOT("likes" > 10) AND NOT("title" = 'About #2')
@@ -648,7 +651,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE "title" = 'About #2' OR "title" ILIKE 'About%'
@@ -664,7 +667,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 })
 ```
 
-will execute following query:
+将执行以下查询：
 
 ```sql
 SELECT * FROM "post" WHERE NOT("title" = 'About #2') AND "title" ILIKE '%About%'

@@ -12,39 +12,39 @@ import styles from "./index.module.css"
 // Feature section data
 const features = [
     {
-        title: "Flexible Patterns",
+        title: "灵活的模式",
         description:
-            "Supports both DataMapper and ActiveRecord patterns, giving you the flexibility to choose what works best for your project.",
+            "支持 DataMapper 和 ActiveRecord 两种模式，让您可以灵活选择最适合项目的方案。",
         icon: "⚙️",
     },
     {
-        title: "TypeScript First",
+        title: "TypeScript 优先",
         description:
-            "Built from the ground up with TypeScript support, providing complete type safety for your database models.",
+            "从头开始构建，支持 TypeScript，为您的数据库模型提供完整的类型安全。",
         icon: "📝",
     },
     {
-        title: "Multi-Database Support",
+        title: "多数据库支持",
         description:
-            "Works with MySQL, PostgreSQL, MariaDB, SQLite, MS SQL Server, Oracle, MongoDB, and more.",
+            "支持 MySQL、PostgreSQL、MariaDB、SQLite、MS SQL Server、Oracle、MongoDB 等多种数据库。",
         icon: "🗄️",
     },
     {
-        title: "Powerful QueryBuilder",
+        title: "强大的查询构建器",
         description:
-            "Elegant syntax for building complex queries with joins, pagination, and caching.",
+            "优雅的语法用于构建包含连接、分页和缓存的复杂查询。",
         icon: "🔍",
     },
     {
-        title: "Migrations & Schema",
+        title: "迁移与模式",
         description:
-            "First-class support for database migrations with automatic generation.",
+            "对数据库迁移提供一流支持，并自动生成。",
         icon: "🚀",
     },
     {
-        title: "Cross-Platform",
+        title: "跨平台",
         description:
-            "Works in Node.js, browsers, mobile, and desktop applications.",
+            "适用于 Node.js、浏览器、移动端和桌面应用程序。",
         icon: "🌐",
     },
 ]
@@ -126,7 +126,7 @@ function HomepageHeader() {
                                 className="button button--secondary button--lg"
                                 to="/docs/getting-started"
                             >
-                                Get Started
+                                开始使用
                             </Link>
                             <Link
                                 className="button button--outline button--lg"
@@ -134,7 +134,7 @@ function HomepageHeader() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                View on GitHub
+                                在 GitHub 上查看
                             </Link>
                         </div>
                     </div>
@@ -188,13 +188,9 @@ function CodeExampleSection() {
             <div className="container">
                 <div className={styles.codeExampleContent}>
                     <div className={styles.codeExampleText}>
-                        <Heading as="h2">Elegant, Type-Safe API</Heading>
+                        <Heading as="h2">优雅且类型安全的 API</Heading>
                         <p>
-                            TypeORM provides a beautiful, simple API for
-                            interacting with your database that takes full
-                            advantage of TypeScript's type system. Choose
-                            between DataMapper and ActiveRecord patterns - both
-                            are fully supported.
+                            TypeORM 提供了一个美观、简单的 API，用于与数据库交互，充分利用了 TypeScript 的类型系统。你可以选择 DataMapper 或 ActiveRecord 模式——两者都完全支持。
                         </p>
                         <div className={styles.codeTabs}>
                             <div className={styles.codeTabHeader}>
@@ -205,7 +201,7 @@ function CodeExampleSection() {
                                     )}
                                     onClick={() => handleTabClick("entity")}
                                 >
-                                    Entity Definition
+                                    实体定义
                                 </div>
                                 <div
                                     className={clsx(
@@ -214,7 +210,7 @@ function CodeExampleSection() {
                                     )}
                                     onClick={() => handleTabClick("dataMapper")}
                                 >
-                                    Data Mapper
+                                    数据映射器
                                 </div>
                                 <div
                                     className={clsx(
@@ -225,7 +221,7 @@ function CodeExampleSection() {
                                         handleTabClick("activeRecord")
                                     }
                                 >
-                                    Active Record
+                                    活动记录
                                 </div>
                             </div>
                             <div className={styles.codeTabContent}>
@@ -283,7 +279,7 @@ function SupportedDatabases() {
         <section className={styles.databasesSection}>
             <div className="container">
                 <Heading as="h2" className={styles.sectionTitle}>
-                    Supported Databases
+                    支持的数据库
                 </Heading>
                 <div className={styles.databasesGrid}>
                     {databases.map((db, index) => (
@@ -307,11 +303,10 @@ function PlatformsSection() {
         <section className={styles.platformsSection}>
             <div className="container">
                 <Heading as="h2" className={styles.sectionTitle}>
-                    Works Everywhere
+                    适用于所有平台
                 </Heading>
                 <p className={styles.platformsDescription}>
-                    TypeORM runs in NodeJS, Browser, Cordova, Ionic, React
-                    Native, NativeScript, Expo, and Electron platforms.
+                    TypeORM 可以在 NodeJS、浏览器、Cordova、Ionic、React Native、NativeScript、Expo 和 Electron 平台运行。
                 </p>
                 <div className={styles.platformsIcons}>
                     <span>🖥️ NodeJS</span>
@@ -329,11 +324,9 @@ function CallToAction() {
     return (
         <section className={styles.ctaSection}>
             <div className="container">
-                <Heading as="h2">Ready to Get Started?</Heading>
+                <Heading as="h2">准备好开始了吗？</Heading>
                 <p>
-                    TypeORM makes database interaction a breeze. Join thousands
-                    of developers who are already building better applications
-                    with TypeORM.
+                    TypeORM 让数据库交互变得轻而易举。加入已经在使用 TypeORM 构建更好应用程序的数千名开发者的行列吧。
                 </p>
                 <div className={styles.ctaButtons}>
                     <Link
@@ -343,7 +336,7 @@ function CallToAction() {
                         )}
                         to="/docs/getting-started"
                     >
-                        Read the Docs
+                        阅读文档
                     </Link>
                     <Link
                         className="button button--outline button--lg"
@@ -351,7 +344,7 @@ function CallToAction() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Star on GitHub
+                        在 GitHub 上点赞
                     </Link>
                 </div>
             </div>

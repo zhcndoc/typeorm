@@ -1,100 +1,97 @@
 # MongoDB
 
-## MongoDB support
+## MongoDB 支持
 
-TypeORM has basic MongoDB support.
-Most of TypeORM functionality is RDBMS-specific,
-this page contains all MongoDB-specific functionality documentation.
+TypeORM 具有基本的 MongoDB 支持。  
+TypeORM 大部分功能是针对关系型数据库的，  
+本页包含所有 MongoDB 特定的功能文档。
 
-## Installation
+## 安装
 
 ```shell
 npm install mongodb
 ```
 
-## Data Source Options
+## 数据源选项
 
-- `url` - Connection url where the connection is performed. Please note that other data source options will override parameters set from url.
+- `url` - 连接 URL，执行连接操作的地址。请注意，其他数据源选项会覆盖 URL 中设置的参数。
 
-- `host` - Database host.
+- `host` - 数据库主机。
 
-- `port` - Database host port. Default mongodb port is `27017`.
+- `port` - 数据库主机端口。MongoDB 默认端口为 `27017`。
 
-- `username` - Database username (replacement for `auth.user`).
+- `username` - 数据库用户名（替代 `auth.user`）。
 
-- `password` - Database password (replacement for `auth.password`).
+- `password` - 数据库密码（替代 `auth.password`）。
 
-- `database` - Database name.
+- `database` - 数据库名称。
 
-- `poolSize` - Set the maximum pool size for each server or proxy connection.
+- `poolSize` - 设置每个服务器或代理连接的最大连接池大小。
 
-- `tls` - Use a TLS/SSL connection (needs a mongod server with ssl support, 2.4 or higher). Default: `false`.
+- `tls` - 使用 TLS/SSL 连接（需要支持 ssl 的 mongod 服务器，2.4 或更高版本）。默认：`false`。
 
-- `tlsAllowInvalidCertificates` - Specifies whether the driver generates an error when the server's TLS certificate is invalid. Default: `false`.
+- `tlsAllowInvalidCertificates` - 指定当服务器的 TLS 证书无效时驱动程序是否生成错误。默认：`false`。
 
-- `tlsCAFile` - Specifies the location of a local .pem file that contains the root certificate chain from the Certificate Authority.
+- `tlsCAFile` - 指定本地 .pem 文件的位置，该文件包含来自证书颁发机构的根证书链。
 
-- `tlsCertificateKeyFile` - Specifies the location of a local .pem file that contains the client's TLS/SSL certificate and key.
+- `tlsCertificateKeyFile` - 指定本地 .pem 文件的位置，该文件包含客户端的 TLS/SSL 证书和密钥。
 
-- `tlsCertificateKeyFilePassword` - Specifies the password to decrypt the `tlsCertificateKeyFile`.
+- `tlsCertificateKeyFilePassword` - 指定解密 `tlsCertificateKeyFile` 的密码。
 
-- `keepAlive` - The number of milliseconds to wait before initiating keepAlive on the TCP socket. Default: `30000`.
+- `keepAlive` - 启动 TCP 套接字 keepAlive 前等待的毫秒数。默认：`30000`。
 
-- `connectTimeoutMS` - TCP Connection timeout setting. Default: `30000`.
+- `connectTimeoutMS` - TCP 连接超时时间设置。默认：`30000`。
 
-- `socketTimeoutMS` - TCP Socket timeout setting. Default: `360000`.
+- `socketTimeoutMS` - TCP 套接字超时时间设置。默认：`360000`。
 
-- `replicaSet` - The name of the replica set to connect to.
+- `replicaSet` - 要连接的副本集名称。
 
-- `authSource` - If the database authentication is dependent on another databaseName.
+- `authSource` - 如果数据库认证依赖于其他数据库名称。
 
-- `writeConcern` - The write concern.
+- `writeConcern` - 写关注设置。
 
-- `forceServerObjectId` - Force server to assign \_id values instead of driver. Default: `false`.
+- `forceServerObjectId` - 强制服务器分配 \_id 值而非驱动程序分配。默认：`false`。
 
-- `serializeFunctions` - Serialize functions on any object. Default: `false`.
+- `serializeFunctions` - 序列化对象上的函数。默认：`false`。
 
-- `ignoreUndefined` - Specify if the BSON serializer should ignore undefined fields. Default: `false`.
+- `ignoreUndefined` - 指定 BSON 序列化器是否忽略未定义字段。默认：`false`。
 
-- `raw` - Return document results as raw BSON buffers. Default: `false`.
+- `raw` - 返回文档结果为原始 BSON 缓冲区。默认：`false`。
 
-- `promoteLongs` - Promotes Long values to number if they fit inside the 53-bit resolution. Default: `true`.
+- `promoteLongs` - 如果 Long 值在 53 位解析范围内，提升为数字。默认：`true`。
 
-- `promoteBuffers` - Promotes Binary BSON values to native Node Buffers. Default: `false`.
+- `promoteBuffers` - 将二进制 BSON 值提升为原生 Node 缓冲区。默认：`false`。
 
-- `promoteValues` - Promotes BSON values to native types where possible, set to false to only receive wrapper types.
-  Default: `true`.
+- `promoteValues` - 尽可能提升 BSON 值为原生类型，设置为 false 则只接收包装类型。默认：`true`。
 
-- `readPreference` - The preferred read preference.
-    - `ReadPreference.PRIMARY`
-    - `ReadPreference.PRIMARY_PREFERRED`
-    - `ReadPreference.SECONDARY`
-    - `ReadPreference.SECONDARY_PREFERRED`
+- `readPreference` - 偏好的读偏好。  
+    - `ReadPreference.PRIMARY`  
+    - `ReadPreference.PRIMARY_PREFERRED`  
+    - `ReadPreference.SECONDARY`  
+    - `ReadPreference.SECONDARY_PREFERRED`  
     - `ReadPreference.NEAREST`
 
-- `pkFactory` - A primary key factory object for generation of custom \_id keys.
+- `pkFactory` - 生成自定义 \_id 键的主键工厂对象。
 
-- `readConcern` - Specify a read concern for the collection. (only MongoDB 3.2 or higher supported).
+- `readConcern` - 指定集合的读关注。（仅支持 MongoDB 3.2 或更高版本）
 
-- `maxStalenessSeconds` - Specify a maxStalenessSeconds value for secondary reads, minimum is 90 seconds.
+- `maxStalenessSeconds` - 为副本集二级读取指定最大延迟秒数，最小值为 90 秒。
 
-- `appName` - The name of the application that created this MongoClient instance. MongoDB 3.4 and newer will print this
-  value in the server log upon establishing each connection. It is also recorded in the slow query log and profile
-  collections
+- `appName` - 创建此 MongoClient 实例的应用程序名称。MongoDB 3.4 及更新版本会在建立每个连接时将此值打印到服务器日志，也会记录在慢查询日志和概要分析集合中。
 
-- `authMechanism` - Sets the authentication mechanism that MongoDB will use to authenticate the connection.
+- `authMechanism` - 设置 MongoDB 用于连接认证的认证机制。
 
-- `directConnection` - Specifies whether to force-dispatch all operations to the specified host.
+- `directConnection` - 指定是否强制将所有操作发送到指定主机。
 
-Additional options can be added to the `extra` object and will be passed directly to the client library. See more in `mongodb`'s documentation for [Connection Options](https://mongodb-node.netlify.app/docs/drivers/node/current/connect/connection-options/).
+额外选项可添加到 `extra` 对象中，将直接传递给客户端库。详见 `mongodb` 文档中的 [Connection Options](https://mongodb-node.netlify.app/docs/drivers/node/current/connect/connection-options/)。
 
-## Defining entities and columns
+## 定义实体和列
 
-Defining entities and columns is almost the same as in relational databases,
-the main difference is that you must use `@ObjectIdColumn`
-instead of `@PrimaryColumn` or `@PrimaryGeneratedColumn`.
+定义实体和列几乎与关系数据库中相同，  
+主要区别是必须使用 `@ObjectIdColumn`  
+而非 `@PrimaryColumn` 或 `@PrimaryGeneratedColumn`。
 
-Simple entity example:
+简单实体示例：
 
 ```typescript
 import { Entity, ObjectId, ObjectIdColumn, Column } from "typeorm"
@@ -112,7 +109,7 @@ export class User {
 }
 ```
 
-And this is how you bootstrap the app:
+以下是启动应用的方式：
 
 ```typescript
 import { DataSource } from "typeorm"
@@ -125,9 +122,10 @@ const myDataSource = new DataSource({
 })
 ```
 
-## Defining subdocuments (embed documents)
+## 定义子文档（嵌入文档）
 
-Since MongoDB stores objects and objects inside objects (or documents inside documents), you can do the same in TypeORM:
+由于 MongoDB 支持对象内部嵌套对象（或文档内嵌文档），  
+TypeORM 中也可以这么做：
 
 ```typescript
 import { Entity, ObjectId, ObjectIdColumn, Column } from "typeorm"
@@ -187,7 +185,7 @@ export class User {
 }
 ```
 
-If you save this entity:
+如果你保存这个实体：
 
 ```typescript
 import { getMongoManager } from "typeorm"
@@ -208,7 +206,7 @@ const manager = getMongoManager()
 await manager.save(user)
 ```
 
-The following document will be saved in the database:
+以下文档将被保存到数据库：
 
 ```json
 {
@@ -234,19 +232,10 @@ The following document will be saved in the database:
 }
 ```
 
-## Using `MongoEntityManager` and `MongoRepository`
+## 使用 `MongoEntityManager` 和 `MongoRepository`
 
-You can use the majority of methods inside the `EntityManager` (except for RDBMS-specific, like `query` and `transaction`).
-For example:
-
-```typescript
-const timber = await myDataSource.manager.findOneBy(User, {
-    firstName: "Timber",
-    lastName: "Saw",
-})
-```
-
-For MongoDB there is also a separate `MongoEntityManager` which extends `EntityManager`.
+你可以使用 `EntityManager` 中的大多数方法（关系型数据库特定的方法，如 `query` 和 `transaction` 除外）。  
+例如：
 
 ```typescript
 const timber = await myDataSource.manager.findOneBy(User, {
@@ -255,7 +244,16 @@ const timber = await myDataSource.manager.findOneBy(User, {
 })
 ```
 
-Just like separate like `MongoEntityManager` there is a `MongoRepository` with extended `Repository`:
+MongoDB 还有一个独立的 `MongoEntityManager`，它继承自 `EntityManager`。
+
+```typescript
+const timber = await myDataSource.manager.findOneBy(User, {
+    firstName: "Timber",
+    lastName: "Saw",
+})
+```
+
+另一独立类型是扩展了 `Repository` 的 `MongoRepository`：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).findOneBy({
@@ -264,9 +262,9 @@ const timber = await myDataSource.getMongoRepository(User).findOneBy({
 })
 ```
 
-Use Advanced options in find():
+使用 `find()` 的高级选项：
 
-Equal:
+相等查询：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).find({
@@ -276,7 +274,7 @@ const timber = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-LessThan:
+小于查询：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).find({
@@ -286,7 +284,7 @@ const timber = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-In:
+包含查询：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).find({
@@ -296,7 +294,7 @@ const timber = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-Not in:
+不包含查询：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).find({
@@ -306,7 +304,7 @@ const timber = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-Or:
+或查询：
 
 ```typescript
 const timber = await myDataSource.getMongoRepository(User).find({
@@ -316,7 +314,7 @@ const timber = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-Querying subdocuments
+子文档查询
 
 ```typescript
 const users = await myDataSource.getMongoRepository(User).find({
@@ -326,10 +324,10 @@ const users = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-Querying Array of subdocuments
+数组子文档查询
 
 ```typescript
-// Query users with photos of size less than 500
+// 查询照片大小小于 500 的用户
 const users = await myDataSource.getMongoRepository(User).find({
     where: {
         "photos.size": { $lt: 500 },
@@ -337,145 +335,147 @@ const users = await myDataSource.getMongoRepository(User).find({
 })
 ```
 
-Both `MongoEntityManager` and `MongoRepository` contain a lot of useful MongoDB-specific methods:
+`MongoEntityManager` 和 `MongoRepository` 都包含大量有用的 MongoDB 特定方法：
 
 ### `createCursor`
 
-Create a cursor for a query that can be used to iterate over results from MongoDB.
+为查询创建游标，用于迭代 MongoDB 返回的结果。
 
 ### `createEntityCursor`
 
-Create a cursor for a query that can be used to iterate over results from MongoDB.
-This returns a modified version of the cursor that transforms each result into Entity models.
+为查询创建游标，用于迭代 MongoDB 返回的结果。  
+此游标会将结果转换为实体模型的修改版本。
 
 ### `aggregate`
 
-Execute an aggregation framework pipeline against the collection.
+针对集合执行聚合框架管道。
 
 ### `bulkWrite`
 
-Perform a bulkWrite operation without a fluent API.
+执行批量写入操作（无需流式 API）。
 
 ### `count`
 
-Count the number of matching documents in the db to a query.
+统计数据库中匹配查询的文档数量。
 
 ### `countDocuments`
 
-Count the number of matching documents in the db to a query.
+统计数据库中匹配查询的文档数量。
 
 ### `createCollectionIndex`
 
-Create an index on the db and collection.
+在数据库集合上创建索引。
 
 ### `createCollectionIndexes`
 
-Create multiple indexes in the collection, this method is only supported in MongoDB 2.6 or higher. Earlier versions of MongoDB will throw a "command not supported" error. Index specifications are defined at [createIndexes](http://docs.mongodb.org/manual/reference/command/createIndexes/).
+在集合中创建多个索引，此方法仅支持 MongoDB 2.6 或更高版本。  
+旧版本 MongoDB 会抛出“不支持命令”错误。  
+索引规范参见 [createIndexes](http://docs.mongodb.org/manual/reference/command/createIndexes/)。
 
 ### `deleteMany`
 
-Delete multiple documents on MongoDB.
+删除多个文档。
 
 ### `deleteOne`
 
-Delete a document on MongoDB.
+删除单个文档。
 
 ### `distinct`
 
-The distinct command returns a list of distinct values for the given key across a collection.
+返回集合中某个字段的唯一值列表。
 
 ### `dropCollectionIndex`
 
-Drops an index from this collection.
+从集合删除一个索引。
 
 ### `dropCollectionIndexes`
 
-Drops all indexes from the collection.
+从集合删除所有索引。
 
 ### `findOneAndDelete`
 
-Find a document and delete it in one atomic operation, requires a write lock for the duration of the operation.
+查找并删除一个文档，属于原子操作，执行期间需要写锁。
 
 ### `findOneAndReplace`
 
-Find a document and replace it in one atomic operation, requires a write lock for the duration of the operation.
+查找并替换一个文档，属于原子操作，执行期间需要写锁。
 
 ### `findOneAndUpdate`
 
-Find a document and update it in one atomic operation, requires a write lock for the duration of the operation.
+查找并更新一个文档，属于原子操作，执行期间需要写锁。
 
 ### `geoHaystackSearch`
 
-Execute a geo search using a geo haystack index on a collection.
+使用集合的 geo haystack 索引执行地理搜索。
 
 ### `geoNear`
 
-Execute the geoNear command to search for items in the collection.
+执行 geoNear 命令在集合中搜索项目。
 
 ### `group`
 
-Run a group command across a collection.
+在集合上执行 group 命令。
 
 ### `collectionIndexes`
 
-Retrieve all the indexes of the collection.
+获取集合的所有索引。
 
 ### `collectionIndexExists`
 
-Retrieve if an index exists on the collection
+检查集合中是否存在某个索引。
 
 ### `collectionIndexInformation`
 
-Retrieve this collection's index info.
+获取集合的索引信息。
 
 ### `initializeOrderedBulkOp`
 
-Initiate an In order bulk write operation; operations will be serially executed in the order they are added, creating a new operation for each switch in types.
+初始化“顺序”批量写操作；操作按添加顺序串行执行，且每次类型切换都会新建操作。
 
 ### `initializeUnorderedBulkOp`
 
-Initiate an Out of order batch write operation. All operations will be buffered into insert/update/remove commands executed out of order.
+初始化“非顺序”批量写操作；所有操作缓冲成插入/更新/删除命令，执行顺序不定。
 
 ### `insertMany`
 
-Insert an array of documents into MongoDB.
+插入多个文档。
 
 ### `insertOne`
 
-Insert a single document into MongoDB.
+插入单个文档。
 
 ### `isCapped`
 
-Return if the collection is a capped collection.
+判断集合是否为固定集合（capped collection）。
 
 ### `listCollectionIndexes`
 
-Get the list of all indexes information for the collection.
+获取集合的所有索引信息列表。
 
 ### `parallelCollectionScan`
 
-Return N number of parallel cursors for a collection allowing parallel reading of the entire collection. There are no ordering guarantees for returned results
+返回多个并行游标以并行读取集合全部数据。返回结果无序保证。
 
 ### `reIndex`
 
-Reindex all indexes on the collection Warning: reIndex is a blocking operation (indexes are rebuilt in the foreground) and will be slow for large collections.
+对集合所有索引进行重建。警告：reIndex 是阻塞操作（索引前台重建），大型集合执行缓慢。
 
 ### `rename`
 
-Change the name of an existing collection.
+重命名已有集合。
 
 ### `replaceOne`
 
-Replace a document on MongoDB.
+替换单个文档。
 
 ### `stats`
 
-Get all the collection statistics.
+获取集合的所有统计信息。
 
 ### `updateMany`
 
-Update multiple documents within the collection based on the filter.
+根据筛选条件更新多个文档。
 
 ### `updateOne`
 
-Update a single document within the collection based on the filter.
+根据筛选条件更新单个文档。

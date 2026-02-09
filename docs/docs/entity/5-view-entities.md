@@ -1,19 +1,19 @@
-# View Entities
+# 视图实体
 
-## What is a ViewEntity?
+## 什么是 ViewEntity？
 
-View entity is a class that maps to a database view.
-You can create a view entity by defining a new class and mark it with `@ViewEntity()`:
+视图实体是映射到数据库视图的类。  
+你可以通过定义一个新类并用 `@ViewEntity()` 标记它来创建视图实体：
 
-`@ViewEntity()` accepts following options:
+`@ViewEntity()` 接受以下选项：
 
-- `name` - view name. If not specified, then view name is generated from entity class name.
-- `database` - database name in selected DB server.
-- `schema` - schema name.
-- `expression` - view definition. **Required parameter**.
-- `dependsOn` - List of other views on which the current views depends. If your view uses another view in its definition, you can add it here so that [migrations](../migrations/01-why.md) are generated in the correct order.
+- `name` - 视图名称。如果未指定，则视图名称由实体类名生成。  
+- `database` - 选定数据库服务器中的数据库名称。  
+- `schema` - 架构名称。  
+- `expression` - 视图定义。**必需参数**。  
+- `dependsOn` - 当前视图依赖的其他视图列表。如果你的视图在定义时使用了另一个视图，可以将其添加到这里，以便 [迁移](../migrations/01-why.md) 能以正确顺序生成。
 
-`expression` can be string with properly escaped columns and tables, depend on database used (postgres in example):
+`expression` 可以是根据使用的数据库（以下示例为 Postgres）的转义列和表的字符串：
 
 ```typescript
 @ViewEntity({
@@ -25,7 +25,7 @@ You can create a view entity by defining a new class and mark it with `@ViewEnti
 })
 ```
 
-or an instance of QueryBuilder
+或者是QueryBuilder的实例：
 
 ```typescript
 @ViewEntity({
@@ -39,7 +39,7 @@ or an instance of QueryBuilder
 })
 ```
 
-**Note:** parameter binding is not supported due to drivers limitations. Use the literal parameters instead.
+**注意：** 由于驱动限制，不支持参数绑定。请使用字面量参数代替。
 
 ```typescript
 @ViewEntity({
@@ -50,12 +50,12 @@ or an instance of QueryBuilder
         .addSelect("category.name", "categoryName")
         .from(Post, "post")
         .leftJoin(Category, "category", "category.id = post.categoryId")
-        .where("category.name = :name", { name: "Cars" })  // <-- this is wrong
-        .where("category.name = 'Cars'")                   // <-- and this is right
+        .where("category.name = :name", { name: "Cars" })  // <-- 这是错误的
+        .where("category.name = 'Cars'")                   // <-- 这是正确的
 })
 ```
 
-Each view entity must be registered in your data source options:
+每个视图实体必须在数据源配置中注册：
 
 ```typescript
 import { DataSource } from "typeorm"
@@ -72,12 +72,11 @@ const dataSource = new DataSource({
 })
 ```
 
-## View Entity columns
+## 视图实体的列
 
-To map data from view into the correct entity columns you must mark entity columns with `@ViewColumn()`
-decorator and specify these columns as select statement aliases.
+为了将视图中的数据映射到正确的实体列，必须使用 `@ViewColumn()` 装饰器标记实体列，并且在查询的 SELECT 语句中将这些列指定为别名。
 
-example with string expression definition:
+使用字符串表达式定义的示例：
 
 ```typescript
 import { ViewEntity, ViewColumn } from "typeorm"
@@ -101,7 +100,7 @@ export class PostCategory {
 }
 ```
 
-example using QueryBuilder:
+使用 QueryBuilder 的示例：
 
 ```typescript
 import { ViewEntity, ViewColumn } from "typeorm"
@@ -128,11 +127,11 @@ export class PostCategory {
 }
 ```
 
-## View Column options
+## 视图列选项
 
-View Column options define additional options for your view entity columns, similar to [column options](./1-entities.md#column-options) for regular entities.
+视图列选项定义了视图实体列的额外选项，类似于常规实体的 [列选项](./1-entities.md#column-options)。
 
-You can specify view column options in `@ViewColumn`:
+你可以在 `@ViewColumn` 中指定视图列选项：
 
 ```typescript
 @ViewColumn({
@@ -142,14 +141,14 @@ You can specify view column options in `@ViewColumn`:
 name: string;
 ```
 
-List of available options in `ViewColumnOptions`:
+`ViewColumnOptions` 中的可用选项列表：
 
-- `name: string` - Column name in the database view.
-- `transformer: { from(value: DatabaseType): EntityType, to(value: EntityType): DatabaseType }` - Used to unmarshal properties of arbitrary type `DatabaseType` supported by the database into a type `EntityType`. Arrays of transformers are also supported and are applied in reverse order when reading. Note that because database views are read-only, `transformer.to(value)` will never be used.
+- `name: string` - 数据库视图中的列名。  
+- `transformer: { from(value: DatabaseType): EntityType, to(value: EntityType): DatabaseType }` - 用于从数据库支持的任意类型 `DatabaseType` 反序列化为实体类型 `EntityType`。也支持变换器数组，读取时按相反顺序应用。注意，因为数据库视图是只读的，`transformer.to(value)` 永远不会被使用。
 
-## Materialized View Indices
+## 物化视图索引
 
-There's support for creation of indices for materialized views if using `PostgreSQL`.
+如果使用 `PostgreSQL`，支持为物化视图创建索引。
 
 ```typescript
 @ViewEntity({
@@ -177,7 +176,7 @@ export class PostCategory {
 }
 ```
 
-However, `unique` is currently the only supported option for indices in materialized views. The rest of the indices options will be ignored.
+但是，目前物化视图的索引只支持唯一索引(`unique`)选项，其他索引选项将被忽略。
 
 ```typescript
 @Index("name-idx", { unique: true })
@@ -185,9 +184,9 @@ However, `unique` is currently the only supported option for indices in material
 name: string
 ```
 
-## Complete example
+## 完整示例
 
-Lets create two entities and a view containing aggregated data from these entities:
+让我们创建两个实体以及包含从这些实体聚合数据的视图：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -254,7 +253,7 @@ export class PostCategory {
 }
 ```
 
-then fill these tables with data and request all data from PostCategory view:
+然后向这些表填充数据，并从 PostCategory 视图请求所有数据：
 
 ```typescript
 import { Category } from "./entities/Category"
@@ -283,14 +282,14 @@ const postCategories = await dataSource.manager.find(PostCategory)
 const postCategory = await dataSource.manager.findOneBy(PostCategory, { id: 1 })
 ```
 
-the result in `postCategories` will be:
+`postCategories` 中的结果将是：
 
 ```javascript
 [ PostCategory { id: 1, name: 'About BMW', categoryName: 'Cars' },
   PostCategory { id: 2, name: 'About Boeing', categoryName: 'Airplanes' } ]
 ```
 
-and in `postCategory`:
+而 `postCategory` 是：
 
 ```javascript
 PostCategory { id: 1, name: 'About BMW', categoryName: 'Cars' }

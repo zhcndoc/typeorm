@@ -1,8 +1,8 @@
-# Logging
+# 日志记录
 
-## Enabling logging
+## 启用日志记录
 
-You can enable logging of all queries and errors by simply setting `logging: true` in data source options:
+只需在数据源选项中设置 `logging: true`，即可启用所有查询和错误的日志记录：
 
 ```typescript
 {
@@ -18,9 +18,9 @@ You can enable logging of all queries and errors by simply setting `logging: tru
 }
 ```
 
-## Logging options
+## 日志记录选项
 
-You can enable different types of logging in data source options:
+你可以在数据源选项中启用不同类型的日志记录：
 
 ```typescript
 {
@@ -30,7 +30,7 @@ You can enable different types of logging in data source options:
 }
 ```
 
-If you want to enable logging of failed queries only then only add `error`:
+如果你只想启用失败查询的日志记录，则只需添加 `error`：
 
 ```typescript
 {
@@ -40,17 +40,17 @@ If you want to enable logging of failed queries only then only add `error`:
 }
 ```
 
-There are other options you can use:
+还有其他可用选项：
 
-- `query` - logs all queries.
-- `error` - logs all failed queries and errors.
-- `schema` - logs the schema build process.
-- `warn` - logs internal orm warnings.
-- `info` - logs internal orm informative messages.
-- `log` - logs internal orm log messages.
+- `query` - 记录所有查询。
+- `error` - 记录所有失败的查询和错误。
+- `schema` - 记录模式构建过程。
+- `warn` - 记录内部 ORM 警告。
+- `info` - 记录内部 ORM 信息性消息。
+- `log` - 记录内部 ORM 日志消息。
 
-You can specify as many options as needed.
-If you want to enable all logging you can simply specify `logging: "all"`:
+你可以根据需要指定任意多个选项。
+如果想启用全部日志记录，可以简单地指定 `logging: "all"`：
 
 ```typescript
 {
@@ -60,10 +60,9 @@ If you want to enable all logging you can simply specify `logging: "all"`:
 }
 ```
 
-## Log long-running queries
+## 记录长时间执行的查询
 
-If you have performance issues, you can log queries that take too much time to execute
-by setting `maxQueryExecutionTime` in data source options:
+如果你遇到性能问题，可以通过在数据源选项中设置 `maxQueryExecutionTime` 来记录执行时间过长的查询：
 
 ```typescript
 {
@@ -73,22 +72,20 @@ by setting `maxQueryExecutionTime` in data source options:
 }
 ```
 
-This code will log all queries which run for more than `1 second`.
+上述代码会记录所有运行超过 `1 秒` 的查询。
 
-## Changing default logger
+## 更改默认日志器
 
-TypeORM ships with 4 different types of logger:
+TypeORM 提供了 4 种不同类型的日志器：
 
-- `advanced-console` - this is the default logger which logs all messages into the console using color
-  and sql syntax highlighting.
-- `simple-console` - this is a simple console logger which is exactly the same as the advanced logger, but it does not use any color highlighting.
-  This logger can be used if you have problems / or don't like colorized logs.
-- `formatted-console` - this is almost the same as the advanced logger, but it formats sql queries to
-  be more readable (using [@sqltools/formatter](https://github.com/mtxr/vscode-sqltools)).
-- `file` - this logger writes all logs into `ormlogs.log` in the root folder of your project (near `package.json`).
-- `debug` - this logger uses [debug package](https://github.com/visionmedia/debug), to turn on logging set your env variable `DEBUG=typeorm:*` (note logging option has no effect on this logger).
+- `advanced-console` - 这是默认日志器，会在控制台中记录所有消息，支持颜色和 SQL 语法高亮。
+- `simple-console` - 这是一个简单的控制台日志器，与高级日志器完全相同，但不使用任何颜色高亮。
+  如果你对彩色日志不满意或者遇到问题，可以使用这个日志器。
+- `formatted-console` - 几乎和高级日志器一样，但它会格式化 SQL 查询以提高可读性（使用 [@sqltools/formatter](https://github.com/mtxr/vscode-sqltools)）。
+- `file` - 该日志器会将所有日志写入项目根目录（与 `package.json` 同级）的 `ormlogs.log` 文件中。
+- `debug` - 该日志器使用了 [debug 包](https://github.com/visionmedia/debug)，要开启日志，请设置环境变量 `DEBUG=typeorm:*`（注意，日志选项对该日志器无效）。
 
-You can enable any of them in data source options:
+你可以在数据源选项中启用任意一个日志器：
 
 ```typescript
 {
@@ -99,26 +96,26 @@ You can enable any of them in data source options:
 }
 ```
 
-## Using custom logger
+## 使用自定义日志器
 
-You can create your own logger class by implementing the `Logger` interface:
+你可以通过实现 `Logger` 接口来创建自己的日志类：
 
 ```typescript
 import { Logger } from "typeorm"
 
 export class MyCustomLogger implements Logger {
-    // implement all methods from logger class
+    // 实现日志类的所有方法
 }
 ```
 
-Or you can extend the `AbstractLogger` class:
+或者你可以继承 `AbstractLogger` 类：
 
 ```typescript
 import { AbstractLogger } from "typeorm"
 
 export class MyCustomLogger extends AbstractLogger {
     /**
-     * Write log to specific output.
+     * 将日志写入指定输出。
      */
     protected writeLog(
         level: LogLevel,
@@ -173,7 +170,7 @@ export class MyCustomLogger extends AbstractLogger {
 }
 ```
 
-And specify it in data source options:
+然后在数据源选项中指定它：
 
 ```typescript
 import { DataSource } from "typeorm"
@@ -191,16 +188,16 @@ const dataSource = new DataSource({
 })
 ```
 
-Logger methods can accept `QueryRunner` when it's available. It's helpful if you want to log additional data.
-Also, via query runner, you can get access to additional data passed during to persist/remove. For example:
+当可用时，日志方法可以接受 `QueryRunner`。这对于你希望记录额外数据时非常有用。
+此外，通过 QueryRunner，你可以访问在持久化/移除过程中传递的额外数据。例如：
 
 ```typescript
-// user sends request during entity save
+// 用户在保存实体时发送请求
 postRepository.save(post, { data: { request: request } });
 
-// in logger you can access it this way:
+// 在日志器中可以这样访问：
 logQuery(query: string, parameters?: any[], queryRunner?: QueryRunner) {
     const requestUrl = queryRunner && queryRunner.data["request"] ? "(" + queryRunner.data["request"].url + ") " : "";
-    console.log(requestUrl + "executing query: " + query);
+    console.log(requestUrl + "执行查询: " + query);
 }
 ```

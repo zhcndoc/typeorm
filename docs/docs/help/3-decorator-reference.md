@@ -1,29 +1,29 @@
-# Decorator reference
+# 装饰器参考
 
-## Entity decorators
+## 实体装饰器
 
 #### `@Entity`
 
-Marks your model as an entity. Entity is a class which is transformed into a database table.
-You can specify the table name in the entity:
+将你的模型标记为实体。实体是被转换为数据库表的类。  
+你可以在实体中指定表名：
 
 ```typescript
 @Entity("users")
 export class User {}
 ```
 
-This code will create a database table named "users".
+这段代码会创建一个名为 "users" 的数据库表。
 
-You can also specify some additional entity options:
+你也可以指定一些额外的实体选项：
 
-- `name` - table name. If not specified, then table name is generated from entity class name.
-- `database` - database name in selected DB server.
-- `schema` - schema name.
-- `engine` - database engine to be set during table creation (works only in some databases).
-- `synchronize` - entities marked with `false` are skipped from schema updates.
-- `orderBy` - specifies default ordering for entities when using `find` operations and `QueryBuilder`.
+- `name` - 表名。如果未指定，则表名从实体类名生成。  
+- `database` - 所选数据库服务器中的数据库名。  
+- `schema` - 模式名称。  
+- `engine` - 创建表时设置的数据库引擎（仅部分数据库支持）。  
+- `synchronize` - 标记为 `false` 的实体会被跳过模式更新。  
+- `orderBy` - 指定实体的默认排序，当使用 `find` 操作和 `QueryBuilder` 时适用。  
 
-Example:
+示例：
 
 ```typescript
 @Entity({
@@ -40,20 +40,20 @@ Example:
 export class User {}
 ```
 
-Learn more about [Entities](../entity/1-entities.md).
+了解更多关于[实体](../entity/1-entities.md)。
 
 #### `@ViewEntity`
 
-View entity is a class that maps to a database view.
+视图实体是映射到数据库视图的类。
 
-`@ViewEntity()` accepts following options:
+`@ViewEntity()` 接受如下选项：
 
-- `name` - view name. If not specified, then view name is generated from entity class name.
-- `database` - database name in selected DB server.
-- `schema` - schema name.
-- `expression` - view definition. **Required parameter**.
+- `name` - 视图名称。如果未指定，则视图名称从实体类名生成。  
+- `database` - 所选数据库服务器中的数据库名。  
+- `schema` - 模式名称。  
+- `expression` - 视图定义。**必填参数**。  
 
-`expression` can be string with properly escaped columns and tables, depend on database used (postgres in example):
+`expression` 可以是一个包含适当转义列和表的字符串，取决于使用的数据库（示例中为 Postgres）：
 
 ```typescript
 @ViewEntity({
@@ -66,7 +66,7 @@ View entity is a class that maps to a database view.
 export class PostCategory {}
 ```
 
-or an instance of QueryBuilder
+或者是一个 QueryBuilder 实例：
 
 ```typescript
 @ViewEntity({
@@ -82,7 +82,7 @@ or an instance of QueryBuilder
 export class PostCategory {}
 ```
 
-**Note:** parameter binding is not supported due to drivers limitations. Use the literal parameters instead.
+**注意:** 由于驱动限制，不支持参数绑定。请使用字面量参数。
 
 ```typescript
 @ViewEntity({
@@ -94,20 +94,20 @@ export class PostCategory {}
             .addSelect("category.name", "categoryName")
             .from(Post, "post")
             .leftJoin(Category, "category", "category.id = post.categoryId")
-            .where("category.name = :name", { name: "Cars" }) // <-- this is wrong
-            .where("category.name = 'Cars'"), // <-- and this is right
+            .where("category.name = :name", { name: "Cars" }) // <-- 错误写法
+            .where("category.name = 'Cars'"), // <-- 正确写法
 })
 export class PostCategory {}
 ```
 
-Learn more about [View Entities](../entity/5-view-entities.md).
+了解更多关于[视图实体](../entity/5-view-entities.md)。
 
-## Column decorators
+## 列装饰器
 
 #### `@Column`
 
-Marks a property in your entity as a table column.
-Example:
+将实体中的属性标记为表列。  
+示例：
 
 ```typescript
 @Entity("users")
@@ -126,54 +126,46 @@ export class User {
 }
 ```
 
-`@Column` accept several options you can use:
+`@Column` 接受多个可用选项：
 
-- `type: ColumnType` - Column type. One of the [supported column types](../entity/1-entities.md#column-types).
-- `name: string` - Column name in the database table.
-  By default, the column name is generated from the name of the property.
-  You can change it by specifying your own name.
-- `length: string|number` - Column type's length. For example, if you want to create `varchar(150)` type
-  you specify column type and length options.
-- `width: number` - column type's display width. Used only for [MySQL integer types](https://dev.mysql.com/doc/refman/5.7/en/integer-types.html). _Deprecated_ in newer MySQL versions, will be removed from TypeORM in an upcoming version.
-- `onUpdate: string` - `ON UPDATE` trigger. Used only in [MySQL](https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html).
-- `nullable: boolean` - determines whether the column can become `NULL` or always has to be `NOT NULL`. By default column is `nullable: false`.
-- `update: boolean` - Indicates if column value is updated by "save" operation. If false, you'll be able to write this value only when you first time insert the object.
-  Default value is `true`.
-- `insert: boolean` - Indicates if column value is set the first time you insert the object. Default value is `true`.
-- `select: boolean` - Defines whether or not to hide this column by default when making queries. When set to `false`, the column data will not show with a standard query. By default column is `select: true`
-- `default: string` - Adds database-level column's `DEFAULT` value.
-- `primary: boolean` - Marks column as primary. Same as using `@PrimaryColumn`.
-- `unique: boolean` - Marks column as unique column (creates unique constraint). Default value is false.
-- `comment: string` - Database's column comment. Not supported by all database types.
-- `precision: number` - The precision for a decimal (exact numeric) column (applies only for decimal column), which is the maximum
-  number of digits that are stored for the values. Used in some column types.
-- `scale: number` - The scale for a decimal (exact numeric) column (applies only for decimal column),
-  which represents the number of digits to the right of the decimal point and must not be greater than precision.
-  Used in some column types.
-- `zerofill: boolean` - Puts `ZEROFILL` attribute on to a numeric column. Used only in MySQL. If `true`, MySQL automatically adds the `UNSIGNED` attribute to this column. _Deprecated_ in newer MySQL versions, will be removed from TypeORM in an upcoming version. Use a character column and the `LPAD` function as suggested by MySQL.
-- `unsigned: boolean` - Puts `UNSIGNED` attribute on to a numeric column. Used only in MySQL.
-- `charset: string` - Defines a column character set. Not supported by all database types.
-- `collation: string` - Defines a column collation.
-- `enum: string[]|AnyEnum` - Used in `enum` column type to specify list of allowed enum values.
-  You can specify array of values or specify a enum class.
-- `enumName: string` - A name for generated enum type. If not specified, TypeORM will generate a enum type from entity and column names - so it's necessary if you intend to use the same enum type in different tables.
-- `primaryKeyConstraintName: string` - A name for the primary key constraint. If not specified, then constraint name is generated from the table name and the names of the involved columns.
-- `asExpression: string` - Generated column expression. Used only in [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) and [Postgres](https://www.postgresql.org/docs/12/ddl-generated-columns.html).
-- `generatedType: "VIRTUAL"|"STORED"` - Generated column type. Used only in [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) and [Postgres (Only "STORED")](https://www.postgresql.org/docs/12/ddl-generated-columns.html).
-- `hstoreType: "object"|"string"` - Return type of `HSTORE` column. Returns value as string or as object. Used only in [Postgres](https://www.postgresql.org/docs/9.6/static/hstore.html).
-- `array: boolean` - Used for postgres and cockroachdb column types which can be array (for example int[]).
-- `transformer: ValueTransformer|ValueTransformer[]` - Specifies a value transformer (or array of value transformers) that is to be used to (un)marshal this column when reading or writing to the database. In case of an array, the value transformers will be applied in the natural order from entityValue to databaseValue, and in reverse order from databaseValue to entityValue.
-- `spatialFeatureType: string` - Optional feature type (`Point`, `Polygon`, `LineString`, `Geometry`) used as a constraint on a spatial column. If not specified, it will behave as though `Geometry` was provided. Used only in PostgreSQL and CockroachDB.
-- `srid: number` - Optional [Spatial Reference ID](https://postgis.net/docs/using_postgis_dbmanagement.html#spatial_ref_sys) used as a constraint on a spatial column. If not specified, it will default to `0`. Standard geographic coordinates (latitude/longitude in the WGS84 datum) correspond to [EPSG 4326](http://spatialreference.org/ref/epsg/wgs-84/). Used only in PostgreSQL and CockroachDB.
+- `type: ColumnType` - 列类型。详见[支持的列类型](../entity/1-entities.md#column-types)。  
+- `name: string` - 数据库表中的列名。默认由属性名生成，可手动设定。  
+- `length: string|number` - 列类型长度。例如 `varchar(150)`，指定列类型和长度。  
+- `width: number` - 列类型的显示宽度，仅用于 [MySQL 整数类型](https://dev.mysql.com/doc/refman/5.7/en/integer-types.html)。在新版本 MySQL 中已弃用，将在未来版本 TypeORM 中移除。  
+- `onUpdate: string` - `ON UPDATE` 触发器，仅用于 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html)。  
+- `nullable: boolean` - 是否允许该列为 `NULL`，默认 `false`。  
+- `update: boolean` - 是否允许通过 "save" 操作更新该列，默认 `true`。若为 `false` ，只能插入时写入字段。  
+- `insert: boolean` - 插入时是否设置该列值，默认 `true`。  
+- `select: boolean` - 查询时是否默认包含该列，默认 `true`，设为 `false` 时列数据不会在标准查询结果返回。  
+- `default: string` - 数据库级别的 `DEFAULT` 值。  
+- `primary: boolean` - 将该列标记为主键。等同于 `@PrimaryColumn`。  
+- `unique: boolean` - 设置唯一约束，默认 `false`。  
+- `comment: string` - 列注释，不是所有数据库均支持。  
+- `precision: number` - 小数精度，适用于 decimal 类型，最大存储数字位数。  
+- `scale: number` - 小数标度，decimal 类型小数点右边的位数，不能超过 precision。  
+- `zerofill: boolean` - MySQL 数字列添加 `ZEROFILL` 属性。启用时 MySQL 自动加上 `UNSIGNED`。在新版本 MySQL 中弃用，将在未来版本 TypeORM 移除。建议改用字符串列和 MySQL 的 `LPAD` 函数。  
+- `unsigned: boolean` - MySQL 数字列添加 `UNSIGNED` 属性。  
+- `charset: string` - 列字符集，并非所有数据库支持。  
+- `collation: string` - 列排序规则。  
+- `enum: string[]|AnyEnum` - 用于枚举列类型，指定允许的枚举值列表，可以是字符串数组或枚举类。  
+- `enumName: string` - 生成枚举类型的名称。未指定时 TypeORM 会根据实体与列名生成。若在不同表使用同一枚举类型时须指定。  
+- `primaryKeyConstraintName: string` - 主键约束名称，不指定则根据表名及列名生成。  
+- `asExpression: string` - 生成列表达式，仅支持 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) 和 [Postgres](https://www.postgresql.org/docs/12/ddl-generated-columns.html)。  
+- `generatedType: "VIRTUAL"|"STORED"` - 生成列类型，仅使用于 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) 和 [Postgres（仅支持“STORED”）](https://www.postgresql.org/docs/12/ddl-generated-columns.html)。  
+- `hstoreType: "object"|"string"` - Postgres `HSTORE` 列的返回类型，字符串或对象。仅 Postgres 支持。  
+- `array: boolean` - 用于 Postgres 和 CockroachDB 的数组类型列（例如 int[]）。  
+- `transformer: ValueTransformer|ValueTransformer[]` - 用于读写时转换列值的转换器，可为单个或数组，应用顺序为实体到数据库值为自然顺序，反之为倒序。  
+- `spatialFeatureType: string` - 可选空间列约束类型（`Point`、`Polygon`、`LineString`、`Geometry`）。未指定默认为 `Geometry`。仅 PostgreSQL 和 CockroachDB 支持。  
+- `srid: number` - 空间参考 ID，用作空间列约束，默认 `0`。标准地理坐标对应 [EPSG 4326](http://spatialreference.org/ref/epsg/wgs-84/)。仅 PostgreSQL 和 CockroachDB 支持。  
 
-Learn more about [entity columns](../entity/1-entities.md#entity-columns).
+了解更多关于[实体列](../entity/1-entities.md#entity-columns)。
 
 #### `@PrimaryColumn`
 
-Marks a property in your entity as a table primary column.
-Same as `@Column` decorator but sets its `primary` option to true.
+将实体属性标记为主键列。  
+功能同 `@Column`，但默认 `primary` 选项为 `true`。
 
-Example:
+示例：
 
 ```typescript
 @Entity()
@@ -183,7 +175,7 @@ export class User {
 }
 ```
 
-`@PrimaryColumn()` supports custom primary key constraint name:
+`@PrimaryColumn()` 支持自定义主键约束名称：
 
 ```typescript
 @Entity()
@@ -193,15 +185,14 @@ export class User {
 }
 ```
 
-> Note: when using `primaryKeyConstraintName` with multiple primary keys, the constraint name must be the same for all primary columns.
+> 注意：多主键时，`primaryKeyConstraintName` 必须对所有主键列相同。
 
-Learn more about [entity columns](../entity/1-entities.md#entity-columns).
+了解更多关于[实体列](../entity/1-entities.md#entity-columns)。
 
 #### `@PrimaryGeneratedColumn`
 
-Marks a property in your entity as a table-generated primary column.
-Column it creates is primary and its value is auto-generated.
-Example:
+将实体属性标记为由数据库自动生成的主键列。  
+创建的列为主键，值会自动生成。示例：
 
 ```typescript
 @Entity()
@@ -211,7 +202,7 @@ export class User {
 }
 ```
 
-`@PrimaryGeneratedColumn()` supports custom primary key constraint name:
+支持自定义主键约束名称：
 
 ```typescript
 @Entity()
@@ -221,16 +212,15 @@ export class User {
 }
 ```
 
-There are four generation strategies:
+有四种生成策略：
 
-- `increment` - uses AUTO_INCREMENT / SERIAL / SEQUENCE (depend on database type) to generate incremental number.
-- `identity` - only for [PostgreSQL 10+](https://www.postgresql.org/docs/13/sql-createtable.html). Postgres versions above 10 support the SQL-Compliant **IDENTITY** column. When marking the generation strategy as `identity` the column will be produced using `GENERATED [ALWAYS|BY DEFAULT] AS IDENTITY`
-- `uuid` - generates unique `uuid` string.
-- `rowid` - only for [CockroachDB](https://www.cockroachlabs.com/docs/stable/serial.html). Value is automatically generated using the `unique_rowid()`
-  function. This produces a 64-bit integer from the current timestamp and ID of the node executing the `INSERT` or `UPSERT` operation.
-    > Note: property with a `rowid` generation strategy must be a `string` data type
+- `increment` - 使用 AUTO_INCREMENT / SERIAL / SEQUENCE（依数据库而异）生成递增数字。  
+- `identity` - 仅支持 [PostgreSQL 10+](https://www.postgresql.org/docs/13/sql-createtable.html)，生成符合 SQL 标准的 IDENTITY 列。  
+- `uuid` - 生成唯一的 `uuid` 字符串。  
+- `rowid` - 仅支持 [CockroachDB](https://www.cockroachlabs.com/docs/stable/serial.html)，自动使用 `unique_rowid()` 生成值，该函数基于时间戳和执行节点 ID 生成 64 位整数。  
+  > 注意：`rowid` 类型字段必须为 `string` 类型。  
 
-Default generation strategy is `increment`, to change it to another strategy, simply pass it as the first argument to decorator:
+默认生成策略为 `increment`，更改策略请将其作为装饰器第一个参数传入：
 
 ```typescript
 @Entity()
@@ -240,14 +230,13 @@ export class User {
 }
 ```
 
-Learn more about [entity columns](../entity/1-entities.md#entity-columns).
+了解更多关于[实体列](../entity/1-entities.md#entity-columns)。
 
 #### `@ObjectIdColumn`
 
-Marks a property in your entity as ObjectId.
-This decorator is only used in MongoDB.
-Every entity in MongoDB must have a ObjectId column.
-Example:
+将属性标记为 MongoDB 的 ObjectId。  
+该装饰器专用于 MongoDB，每个实体必须有一个 ObjectId 列。  
+示例：
 
 ```typescript
 @Entity()
@@ -257,13 +246,13 @@ export class User {
 }
 ```
 
-Learn more about [MongoDB](../drivers/mongodb.md).
+了解更多关于[MongoDB](../drivers/mongodb.md)。
 
 #### `@CreateDateColumn`
 
-Special column that is automatically set to the entity's insertion time.
-You don't need to write a value into this column - it will be automatically set.
-Example:
+特殊列，自动设为实体插入时间。  
+无需手动赋值，会自动设置。  
+示例：
 
 ```typescript
 @Entity()
@@ -275,11 +264,10 @@ export class User {
 
 #### `@UpdateDateColumn`
 
-Special column that is automatically set to the entity's update time
-each time you call `save` from entity manager or repository.
-You don't need to write a value into this column - it will be automatically set.
+特殊列，自动设为实体更新时间。  
+每次调用实体管理器或仓库的 `save` 时自动更新，无需手动赋值。  
 
-This column is also automatically updated during `upsert` operations when an update occurs due to a conflict.
+该列在发生更新冲突的 `upsert` 操作时也会自动更新。
 
 ```typescript
 @Entity()
@@ -291,11 +279,11 @@ export class User {
 
 #### `@DeleteDateColumn`
 
-Special column that is automatically set to the entity's delete time each time you call soft-delete of entity manager or repository. You don't need to set this column - it will be automatically set.
+特殊列，自动设置为实体软删除时间。  
+每次调用实体管理器或仓库的软删除操作时自动设置，无需手动赋值。  
 
-TypeORM's own soft delete functionality utilizes global scopes to only pull "non-deleted" entities from the database.
-
-If the @DeleteDateColumn is set, the default scope will be "non-deleted".
+TypeORM 的软删除功能利用全局作用域只查询“未删除”的实体。  
+若实体带有 `@DeleteDateColumn`，默认作用域即为“未删除”。
 
 ```typescript
 @Entity()
@@ -307,11 +295,9 @@ export class User {
 
 #### `@VersionColumn`
 
-Special column that is automatically set to the entity's version (incremental number)
-each time you call `save` from entity manager or repository.
-You don't need to write a value into this column - it will be automatically set.
+特殊列，实体版本号（递增数值），每次调用实体管理器或仓库的 `save` 时自动更新，无需赋值。  
 
-This column is also automatically updated during `upsert` operations when an update occurs due to a conflict.
+该列在发生更新冲突的 `upsert` 操作时也自动更新。
 
 ```typescript
 @Entity()
@@ -323,7 +309,7 @@ export class User {
 
 #### `@Generated`
 
-Marks column to be a generated value. For example:
+将列标记为生成值。示例：
 
 ```typescript
 @Entity()
@@ -334,12 +320,14 @@ export class User {
 }
 ```
 
-Value will be generated only once, before inserting the entity into the database.
+值只会在插入到数据库之前生成一次。
 
 #### `@VirtualColumn`
 
-Special column that is never saved to the database and thus acts as a readonly property.
-Each time you call `find` or `findOne` from the entity manager, the value is recalculated based on the query function that was provided in the VirtualColumn Decorator. The alias argument passed to the query references the exact entity alias of the generated query behind the scenes.
+特殊列，永远不会保存到数据库，表现为只读属性。  
+每次用实体管理器调用 `find` 或 `findOne` 时，值会基于装饰器内的查询函数重新计算。`alias` 参数是底层查询的实体别名。  
+
+示例：
 
 ```typescript
 @Entity({ name: "companies", alias: "COMP" })
@@ -367,14 +355,12 @@ export class Employee extends BaseEntity {
 }
 ```
 
-## Relation decorators
+## 关联装饰器
 
 #### `@OneToOne`
 
-One-to-one is a relation where A contains only one instance of B, and B contains only one instance of A.
-Let's take for example `User` and `Profile` entities.
-User can have only a single profile, and a single profile is owned by only a single user.
-Example:
+一对一关系，例如 `User` 和 `Profile`。  
+用户只能有一个资料，资料也只属于一个用户。示例：
 
 ```typescript
 import { Entity, OneToOne, JoinColumn } from "typeorm"
@@ -388,14 +374,12 @@ export class User {
 }
 ```
 
-Learn more about [one-to-one relations](../relations/2-one-to-one-relations.md).
+了解更多关于[一对一关系](../relations/2-one-to-one-relations.md)。
 
 #### `@ManyToOne`
 
-Many-to-one / one-to-many is a relation where A contains multiple instances of B, but B contains only one instance of A.
-Let's take for example `User` and `Photo` entities.
-User can have multiple photos, but each photo is owned by only one single user.
-Example:
+多对一 / 一对多关系，例如 `User` 和 `Photo`。  
+一个用户可以有多张照片，但每张照片只属于一个用户。示例：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm"
@@ -414,14 +398,12 @@ export class Photo {
 }
 ```
 
-Learn more about [many-to-one / one-to-many relations](../relations/3-many-to-one-one-to-many-relations.md).
+了解更多关于[多对一 / 一对多关系](../relations/3-many-to-one-one-to-many-relations.md)。
 
 #### `@OneToMany`
 
-Many-to-one / one-to-many is a relation where A contains multiple instances of B, but B contains only one instance of A.
-Let's take for example `User` and `Photo` entities.
-User can have multiple photos, but each photo is owned by only a single user.
-Example:
+多对一 / 一对多关系，例如 `User` 和 `Photo`。  
+一个用户可以有多张照片，但每张照片只属于一个用户。示例：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
@@ -440,14 +422,12 @@ export class User {
 }
 ```
 
-Learn more about [many-to-one / one-to-many relations](../relations/3-many-to-one-one-to-many-relations.md).
+了解更多关于[多对一 / 一对多关系](../relations/3-many-to-one-one-to-many-relations.md)。
 
 #### `@ManyToMany`
 
-Many-to-many is a relation where A contains multiple instances of B, and B contain multiple instances of A.
-Let's take for example `Question` and `Category` entities.
-Question can have multiple categories, and each category can have multiple questions.
-Example:
+多对多关系，例如 `Question` 和 `Category`。  
+一个问题可以有多个分类，一个分类也可以包含多个问题。示例：
 
 ```typescript
 import {
@@ -476,13 +456,11 @@ export class Question {
 }
 ```
 
-Learn more about [many-to-many relations](../relations/4-many-to-many-relations.md).
+了解更多关于[多对多关系](../relations/4-many-to-many-relations.md)。
 
 #### `@JoinColumn`
 
-Defines which side of the relation contains the join column with a foreign key and
-allows you to customize the join column name, referenced column name and foreign key name.
-Example:
+定义关联关系中存放外键的那一方的连接列，允许自定义连接列名、引用列名和外键名称。示例：
 
 ```typescript
 @Entity()
@@ -499,13 +477,12 @@ export class Post {
 
 #### `@JoinTable`
 
-Used for `many-to-many` relations and describes join columns of the "junction" table.
-Junction table is a special, separate table created automatically by TypeORM with columns referenced to the related entities.
-You can change the name of the generated "junction" table, the column names inside the junction table, their referenced
-columns with the `joinColumn`- and `inverseJoinColumn` attributes, and the created foreign keys names.
-You can also set parameter `synchronize` to false to skip schema update(same way as in @Entity)
+用于 `many-to-many` 关系，描述“联结”表的连接列。  
+“联结表”是由 TypeORM 自动创建的特殊独立表，列引用相关实体。  
+你可以通过 `name` 改变联结表名，通过 `joinColumn` 和 `inverseJoinColumn` 自定义联结表内列名、引用列名和外键名称。  
+也可以设置 `synchronize: false` 跳过架构更新（和 `@Entity` 相同机制）。  
 
-Example:
+示例：
 
 ```typescript
 @Entity()
@@ -529,15 +506,12 @@ export class Post {
 }
 ```
 
-If the destination table has composite primary keys,
-then an array of properties must be sent to the `@JoinTable` decorator.
+如果目标表是复合主键，则必须向 `@JoinTable` 传入属性数组。
 
 #### `@RelationId`
 
-Loads id (or ids) of specific relations into properties.
-For example, if you have a many-to-one `category` in your `Post` entity,
-you can have a new category id by marking a new property with `@RelationId`.
-Example:
+加载特定关联的 id （或 ids）到属性。  
+例如 `Post` 实体中有关联 `category`，你可以用新属性并加上 `@RelationId` 获取分类 id。示例：
 
 ```typescript
 @Entity()
@@ -545,12 +519,12 @@ export class Post {
     @ManyToOne((type) => Category)
     category: Category
 
-    @RelationId((post: Post) => post.category) // you need to specify target relation
+    @RelationId((post: Post) => post.category) // 需要指定目标关联
     categoryId: number
 }
 ```
 
-This functionality works for all kind of relations, including `many-to-many`:
+此功能适用于所有关系类型，包括 `many-to-many`：
 
 ```typescript
 @Entity()
@@ -563,17 +537,14 @@ export class Post {
 }
 ```
 
-Relation id is used only for representation.
-The underlying relation is not added/removed/changed when chaining the value.
+关联 id 仅用于表示。更改该值不会影响真正的关联数据。
 
-## Subscriber and listener decorators
+## 订阅者和监听器装饰器
 
 #### `@AfterLoad`
 
-You can define a method with any name in entity and mark it with `@AfterLoad`
-and TypeORM will call it each time the entity
-is loaded using `QueryBuilder` or repository/manager find methods.
-Example:
+可定义实体中的任意命名方法，使用 `@AfterLoad` 标记。每次通过 `QueryBuilder` 或仓库/管理器的 `find` 方法加载实体时，该方法都会被调用。  
+示例：
 
 ```typescript
 @Entity()
@@ -585,13 +556,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@BeforeInsert`
 
-You can define a method with any name in entity and mark it with `@BeforeInsert`
-and TypeORM will call it before the entity is inserted using repository/manager `save`.
-Example:
+定义实体中的任意命名方法，并用 `@BeforeInsert` 标记。  
+当实体通过仓库或管理器的 `save` 插入前调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -603,13 +573,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@AfterInsert`
 
-You can define a method with any name in entity and mark it with `@AfterInsert`
-and TypeORM will call it after the entity is inserted using repository/manager `save`.
-Example:
+定义实体中的任意命名方法，并用 `@AfterInsert` 标记。  
+实体插入后通过仓库或管理器的 `save` 调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -621,13 +590,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@BeforeUpdate`
 
-You can define a method with any name in the entity and mark it with `@BeforeUpdate`
-and TypeORM will call it before an existing entity is updated using repository/manager `save`.
-Example:
+定义实体中的任意命名方法，并用 `@BeforeUpdate` 标记。  
+当实体通过仓库或管理器的 `save` 更新前调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -639,13 +607,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@AfterUpdate`
 
-You can define a method with any name in the entity and mark it with `@AfterUpdate`
-and TypeORM will call it after an existing entity is updated using repository/manager `save`.
-Example:
+定义实体中的任意命名方法，并用 `@AfterUpdate` 标记。  
+实体更新后通过仓库或管理器的 `save` 调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -657,13 +624,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@BeforeRemove`
 
-You can define a method with any name in the entity and mark it with `@BeforeRemove`
-and TypeORM will call it before an entity is removed using repository/manager `remove`.
-Example:
+定义实体中的任意命名方法，并用 `@BeforeRemove` 标记。  
+实体通过仓库或管理器的 `remove` 删除前调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -675,13 +641,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@AfterRemove`
 
-You can define a method with any name in the entity and mark it with `@AfterRemove`
-and TypeORM will call it after the entity is removed using repository/manager `remove`.
-Example:
+定义实体中的任意命名方法，并用 `@AfterRemove` 标记。  
+实体通过仓库或管理器的 `remove` 删除后调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -693,13 +658,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@BeforeSoftRemove`
 
-You can define a method with any name in the entity and mark it with `@BeforeSoftRemove`
-and TypeORM will call it before an entity is soft removed using repository/manager `softRemove`.
-Example:
+定义实体中的任意命名方法，并用 `@BeforeSoftRemove` 标记。  
+实体通过仓库或管理器的 `softRemove` 软删除前调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -711,13 +675,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@AfterSoftRemove`
 
-You can define a method with any name in the entity and mark it with `@AfterSoftRemove`
-and TypeORM will call it after the entity is soft removed using repository/manager `softRemove`.
-Example:
+定义实体中的任意命名方法，并用 `@AfterSoftRemove` 标记。  
+实体通过仓库或管理器的 `softRemove` 软删除后调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -729,13 +692,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@BeforeRecover`
 
-You can define a method with any name in the entity and mark it with `@BeforeRecover`
-and TypeORM will call it before an entity is recovered using repository/manager `recover`.
-Example:
+定义实体中的任意命名方法，并用 `@BeforeRecover` 标记。  
+实体通过仓库或管理器的 `recover` 恢复前调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -747,13 +709,12 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@AfterRecover`
 
-You can define a method with any name in the entity and mark it with `@AfterRecover`
-and TypeORM will call it after the entity is recovered using repository/manager `recover`.
-Example:
+定义实体中的任意命名方法，并用 `@AfterRecover` 标记。  
+实体通过仓库或管理器的 `recover` 恢复后调用该方法。示例：
 
 ```typescript
 @Entity()
@@ -765,26 +726,25 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
 
 #### `@EventSubscriber`
 
-Marks a class as an event subscriber which can listen to specific entity events or any entity's events.
-Events are fired using `QueryBuilder` and repository/manager methods.
-Example:
+标记类为事件订阅者，可监听特定实体事件或所有实体事件。  
+事件由 `QueryBuilder` 以及仓库/管理器方法触发。示例：
 
 ```typescript
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface<Post> {
     /**
-     * Indicates that this subscriber only listen to Post events.
+     * 指定此订阅者仅监听 Post 事件。
      */
     listenTo() {
         return Post
     }
 
     /**
-     * Called before post insertion.
+     * 在插入 Post 前调用。
      */
     beforeInsert(event: InsertEvent<Post>) {
         console.log(`BEFORE POST INSERTED: `, event.entity)
@@ -792,14 +752,15 @@ export class PostSubscriber implements EntitySubscriberInterface<Post> {
 }
 ```
 
-You can implement any method from `EntitySubscriberInterface`.
-To listen to any entity, you just omit the `listenTo` method and use `any`:
+你可以实现 `EntitySubscriberInterface` 中的任意方法。  
+
+若想监听所有实体事件，可省略 `listenTo` 方法，并使用 `any`：
 
 ```typescript
 @EventSubscriber()
 export class PostSubscriber implements EntitySubscriberInterface {
     /**
-     * Called before entity insertion.
+     * 在实体插入前调用。
      */
     beforeInsert(event: InsertEvent<any>) {
         console.log(`BEFORE ENTITY INSERTED: `, event.entity)
@@ -807,18 +768,18 @@ export class PostSubscriber implements EntitySubscriberInterface {
 }
 ```
 
-Learn more about [subscribers](../advanced-topics/4-listeners-and-subscribers.md).
+了解更多关于[订阅者](../advanced-topics/4-listeners-and-subscribers.md)。
 
-## Other decorators
+## 其他装饰器
 
 #### `@Index`
 
-This decorator allows you to create a database index for a specific column or columns.
-It also allows you to mark column or columns to be unique.
-This decorator can be applied to columns or an entity itself.
-Use it on a column when an index on a single column is needed
-and use it on the entity when a single index on multiple columns is required.
-Examples:
+该装饰器允许你为一个或多个列创建数据库索引，或标记为唯一。  
+既可以应用于列，也可以应用于实体。  
+
+当仅需单列索引时，应用于列；当需多列索引时，应用于实体。  
+
+示例：
 
 ```typescript
 @Entity()
@@ -850,15 +811,15 @@ export class User {
 }
 ```
 
-Learn more about [indices](../advanced-topics/3-indices.md).
+了解更多关于[索引](../advanced-topics/3-indices.md)。
 
 #### `@Unique`
 
-This decorator allows you to create a database unique constraint for a specific column or columns.
-This decorator can be applied only to an entity itself.
-You must specify the entity field names (not database column names) as arguments.
+该装饰器允许你为某个或某些列创建唯一约束。  
+仅能应用于实体。  
+需指定实体字段名（非数据库列名）作为参数。
 
-Examples:
+示例：
 
 ```typescript
 @Entity()
@@ -877,14 +838,14 @@ export class User {
 }
 ```
 
-> Note: MySQL stores unique constraints as unique indices
+> 注意：MySQL 将唯一约束存储为唯一索引。
 
 #### `@Check`
 
-This decorator allows you to create a database check constraint for a specific column or columns.
-This decorator can be applied only to an entity itself.
+该装饰器允许你为某个或某些列创建数据库检查约束。  
+仅能应用于实体。
 
-Examples:
+示例：
 
 ```typescript
 @Entity()
@@ -902,14 +863,14 @@ export class User {
 }
 ```
 
-> Note: MySQL does not support check constraints.
+> 注意：MySQL 不支持检查约束。
 
 #### `@Exclusion`
 
-This decorator allows you to create a database exclusion constraint for a specific column or columns.
-This decorator can be applied only to an entity itself.
+该装饰器允许你为某个或某些列创建数据库排除约束。  
+仅能应用于实体。
 
-Examples:
+示例：
 
 ```typescript
 @Entity()
@@ -926,21 +887,18 @@ export class RoomBooking {
 }
 ```
 
-> Note: Only PostgreSQL supports exclusion constraints.
+> 注意：仅 PostgreSQL 支持排除约束。
 
 #### `@ForeignKey`
 
-This decorator allows you to create a database foreign key for a specific column or columns.
-This decorator can be applied to columns or an entity itself.
-Use it on a column when an foreign key on a single column is needed
-and use it on the entity when a single foreign key on multiple columns is required.
+该装饰器允许你为某个或某些列创建数据库外键。  
+既可以应用于列，也可以应用于实体。  
+单列外键时应用于列；多列外键时应用于实体。  
 
-> Note: **Do not use this decorator with relations.** Foreign keys are created automatically for relations
-> which you define using [Relation decorators](#relation-decorators) (`@ManyToOne`, `@OneToOne`, etc).
-> The `@ForeignKey` decorator should only be used to create foreign keys in the database when you
-> don't want to define an equivalent entity relationship.
+> 注意：**不要与关联装饰器一起使用。** 外键会自动为你通过关联装饰器（例如 `@ManyToOne`、`@OneToOne` 等）定义的关系生成。  
+> 该 `@ForeignKey` 装饰器仅用于当你不想定义等价实体关系时创建数据库外键。
 
-Examples:
+示例：
 
 ```typescript
 @Entity("orders")

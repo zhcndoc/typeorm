@@ -1,95 +1,95 @@
 # Postgres / CockroachDB
 
-PostgreSQL, CockroachDB and Amazon Aurora Postgres are supported as TypeORM drivers.
+PostgreSQL、CockroachDB 和 Amazon Aurora Postgres 被支持作为 TypeORM 的驱动程序。
 
-Databases that are PostgreSQL-compatible can also be used with TypeORM via the `postgres` data source type.
+兼容 PostgreSQL 的数据库也可以通过 `postgres` 数据源类型与 TypeORM 一起使用。
 
-To use YugabyteDB, refer to [their ORM docs](https://docs.yugabyte.com/stable/drivers-orms/nodejs/typeorm/) to get started. Note that because some Postgres features are [not supported](https://docs.yugabyte.com/stable/develop/postgresql-compatibility/#unsupported-postgresql-features) by YugabyteDB, some TypeORM functionality may be limited.
+要使用 YugabyteDB，请参阅[他们的 ORM 文档](https://docs.yugabyte.com/stable/drivers-orms/nodejs/typeorm/)以开始使用。请注意，由于 YugabyteDB [不支持](https://docs.yugabyte.com/stable/develop/postgresql-compatibility/#unsupported-postgresql-features) 某些 Postgres 功能，部分 TypeORM 功能可能受限。
 
-## Installation
+## 安装
 
 ```shell
 npm install pg
 ```
 
-For streaming support:
+若需支持流式传输：
 
 ```shell
 npm install pg-query-stream
 ```
 
-## Data Source Options
+## 数据源选项
 
-See [Data Source Options](../data-source/2-data-source-options.md) for the common data source options. You can use the data source type `postgres`, `cockroachdb` or `aurora-postgres` to connect to the respective databases.
+有关常见数据源选项，请参见[数据源选项](../data-source/2-data-source-options.md)。您可以使用数据源类型 `postgres`、`cockroachdb` 或 `aurora-postgres` 连接到相应的数据库。
 
-- `url` - Connection url where the connection is performed. Please note that other data source options will override parameters set from url.
+- `url` - 连接所用的 URL。请注意，其他数据源选项将覆盖来自 URL 设置的参数。
 
-- `host` - Database host.
+- `host` - 数据库主机。
 
-- `port` - Database host port. The default Postgres port is `5432`.
+- `port` - 数据库端口。Postgres 默认端口是 `5432`。
 
-- `username` - Database username.
+- `username` - 数据库用户名。
 
-- `password` - Database password.
+- `password` - 数据库密码。
 
-- `database` - Database name.
+- `database` - 数据库名称。
 
-- `schema` - Schema name. Default is "public".
+- `schema` - 模式名称。默认是 "public"。
 
-- `connectTimeoutMS` - The milliseconds before a timeout occurs during the initial connection to the postgres server. If `undefined`, or set to `0`, there is no timeout. Defaults to `undefined`.
+- `connectTimeoutMS` - 在初始连接到 Postgres 服务器时发生超时的毫秒值。如果为 `undefined` 或设置为 `0`，则无超时。默认是 `undefined`。
 
-- `ssl` - Object with ssl parameters. See [TLS/SSL](https://node-postgres.com/features/ssl).
+- `ssl` - 包含 SSL 参数的对象。详情见 [TLS/SSL](https://node-postgres.com/features/ssl)。
 
-- `uuidExtension` - The Postgres extension to use when generating UUIDs. Defaults to `uuid-ossp`. It can be changed to `pgcrypto` if the `uuid-ossp` extension is unavailable.
+- `uuidExtension` - 生成 UUID 时使用的 Postgres 扩展。默认为 `uuid-ossp`。如果 `uuid-ossp` 扩展不可用，可以更改为 `pgcrypto`。
 
-- `poolErrorHandler` - A function that gets called when the underlying pool emits `'error'` event. Takes a single parameter (error instance) and defaults to logging with `warn` level.
+- `poolErrorHandler` - 当底层连接池发出 `'error'` 事件时调用的函数。接受一个参数（错误实例），默认以 `warn` 级别记录日志。
 
-- `maxTransactionRetries` - A maximum number of transaction retries in case of a 40001 error. Defaults to 5.
+- `maxTransactionRetries` - 发生 40001 错误时最大事务重试次数。默认值是 5。
 
-- `logNotifications` - A boolean to determine whether postgres server [notice messages](https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html) and [notification events](https://www.postgresql.org/docs/current/sql-notify.html) should be included in client's logs with `info` level (default: `false`).
+- `logNotifications` - 布尔值，决定是否将 Postgres 服务器的[通知消息](https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html)和[通知事件](https://www.postgresql.org/docs/current/sql-notify.html)包含在客户端日志的 `info` 级别中（默认：`false`）。
 
-- `installExtensions` - A boolean to control whether to install necessary postgres extensions automatically or not (default: `true`)
+- `installExtensions` - 控制是否自动安装必要的 Postgres 扩展（默认：`true`）
 
-- `extensions` - List of additional Postgres extensions to be installed in the database (default: `undefined`)
+- `extensions` - 在数据库中安装的额外 Postgres 扩展列表（默认：`undefined`）
 
-- `applicationName` - A string visible in statistics and logs to help referencing an application to a connection (default: `undefined`)
+- `applicationName` - 可在统计和日志中看到的字符串，帮助将应用程序与连接关联（默认：`undefined`）
 
-- `parseInt8` - A boolean to enable parsing 64-bit integers (int8) as JavaScript numbers. By default, `int8` (bigint) values are returned as strings to avoid overflows. JavaScript numbers are IEEE-754 and lose precision over the maximum safe integer (`Number.MAX_SAFE_INTEGER = +2^53`). If you require the full 64-bit range consider working with the returned strings or converting them to native `bigint` instead of using this option.
+- `parseInt8` - 布尔值，启用将 64 位整数（int8）解析为 JavaScript 数字。默认情况下，`int8` （bigint）值作为字符串返回以避免溢出。JavaScript 的数字基于 IEEE-754，超出最大安全整数范围（`Number.MAX_SAFE_INTEGER = +2^53`）会丢失精度。如果需要完整的 64 位范围，建议使用返回的字符串或转换为本地的 `bigint`，而不是使用此选项。
 
-Additional options can be added to the `extra` object and will be passed directly to the client library. See more in `pg`'s documentation for [Pool](https://node-postgres.com/apis/pool#new-pool) and [Client](https://node-postgres.com/apis/client#new-client).
+其他选项可添加至 `extra` 对象，会直接传递给客户端库。详情见 `pg` 文档中的 [Pool](https://node-postgres.com/apis/pool#new-pool) 和 [Client](https://node-postgres.com/apis/client#new-client)。
 
-## Column Types
+## 列类型
 
-### Column types for `postgres`
+### `postgres` 的列类型
 
-`int`, `int2`, `int4`, `int8`, `smallint`, `integer`, `bigint`, `decimal`, `numeric`, `real`, `float`, `float4`, `float8`, `double precision`, `money`, `character varying`, `varchar`, `character`, `char`, `text`, `citext`, `hstore`, `bytea`, `bit`, `varbit`, `bit varying`, `timetz`, `timestamptz`, `timestamp`, `timestamp without time zone`, `timestamp with time zone`, `date`, `time`, `time without time zone`, `time with time zone`, `interval`, `bool`, `boolean`, `enum`, `point`, `line`, `lseg`, `box`, `path`, `polygon`, `circle`, `cidr`, `inet`, `macaddr`, `macaddr8`, `tsvector`, `tsquery`, `uuid`, `xml`, `json`, `jsonb`, `jsonpath`, `int4range`, `int8range`, `numrange`, `tsrange`, `tstzrange`, `daterange`, `int4multirange`, `int8multirange`, `nummultirange`, `tsmultirange`, `tstzmultirange`, `multidaterange`, `geometry`, `geography`, `cube`, `ltree`, `vector`, `halfvec`.
+`int`, `int2`, `int4`, `int8`, `smallint`, `integer`, `bigint`, `decimal`, `numeric`, `real`, `float`, `float4`, `float8`, `double precision`, `money`, `character varying`, `varchar`, `character`, `char`, `text`, `citext`, `hstore`, `bytea`, `bit`, `varbit`, `bit varying`, `timetz`, `timestamptz`, `timestamp`, `timestamp without time zone`, `timestamp with time zone`, `date`, `time`, `time without time zone`, `time with time zone`, `interval`, `bool`, `boolean`, `enum`, `point`, `line`, `lseg`, `box`, `path`, `polygon`, `circle`, `cidr`, `inet`, `macaddr`, `macaddr8`, `tsvector`, `tsquery`, `uuid`, `xml`, `json`, `jsonb`, `jsonpath`, `int4range`, `int8range`, `numrange`, `tsrange`, `tstzrange`, `daterange`, `int4multirange`, `int8multirange`, `nummultirange`, `tsmultirange`, `tstzmultirange`, `multidaterange`, `geometry`, `geography`, `cube`, `ltree`, `vector`, `halfvec`。
 
-### Column types for `cockroachdb`
+### `cockroachdb` 的列类型
 
 `array`, `bool`, `boolean`, `bytes`, `bytea`, `blob`, `date`, `numeric`, `decimal`, `dec`, `float`, `float4`, `float8`, `double precision`, `real`, `inet`, `int`, `integer`, `int2`, `int8`, `int64`, `smallint`, `bigint`, `interval`, `string`, `character varying`, `character`, `char`, `char varying`, `varchar`, `text`, `time`, `time without time zone`, `timestamp`, `timestamptz`, `timestamp without time zone`, `timestamp with time zone`, `json`, `jsonb`, `uuid`
 
-Note: CockroachDB returns all numeric data types as `string`. However, if you omit the column type and define your property as `number` ORM will `parseInt` string into number.
+注意：CockroachDB 将所有数值类型数据作为 `string` 返回。但是如果省略列类型且将属性定义为 `number`，ORM 会使用 `parseInt` 将字符串转换成数字。
 
-### Vector columns
+### 向量列
 
-Vector columns can be used for similarity searches using PostgreSQL's vector operators:
+向量列可以用于使用 PostgreSQL 的向量操作符进行相似性搜索：
 
 ```typescript
-// L2 distance (Euclidean) - <->
+// L2 距离（欧几里得） - <->
 const results = await dataSource.sql`
     SELECT id, embedding
     FROM post
     ORDER BY embedding <-> ${"[1,2,3]"}
     LIMIT 5`
 
-// Cosine distance - <=>
+// 余弦距离 - <=>
 const results = await dataSource.sql`
     SELECT id, embedding
     FROM post
     ORDER BY embedding <=> ${"[1,2,3]"}
     LIMIT 5`
 
-// Inner product - <#>
+// 内积 - <#>
 const results = await dataSource.sql`
     SELECT id, embedding
     FROM post
@@ -97,9 +97,9 @@ const results = await dataSource.sql`
     LIMIT 5`
 ```
 
-### Spatial columns
+### 空间列
 
-TypeORM's PostgreSQL and CockroachDB support uses [GeoJSON](http://geojson.org/) as an interchange format, so geometry columns should be tagged either as `object` or `Geometry` (or subclasses, e.g. `Point`) after importing [`geojson` types](https://www.npmjs.com/package/@types/geojson) or using the TypeORM built-in GeoJSON types:
+TypeORM 对 PostgreSQL 和 CockroachDB 的支持使用 [GeoJSON](http://geojson.org/) 作为交换格式，因此几何列应该被标记为 `object` 或 `Geometry`（或其子类，例如 `Point`），可以导入 [`geojson` 类型](https://www.npmjs.com/package/@types/geojson) 或使用 TypeORM 内置的 GeoJSON 类型：
 
 ```typescript
 import {
@@ -154,11 +154,7 @@ thing.multiPointWithSRID = {
 }
 ```
 
-TypeORM tries to do the right thing, but it's not always possible to determine
-when a value being inserted or the result of a PostGIS function should be
-treated as a geometry. As a result, you may find yourself writing code similar
-to the following, where values are converted into PostGIS `geometry`s from
-GeoJSON and into GeoJSON as `json`:
+TypeORM 会尽力正确处理，但并非总能确定插入值或 PostGIS 函数的结果是否应视为几何体。因此，您可能会写类似如下代码，将值从 GeoJSON 转换为 PostGIS `geometry`，并将几何结果以 `json` 作为 GeoJSON 处理：
 
 ```typescript
 import { Point } from "typeorm"
@@ -170,8 +166,7 @@ const origin: Point = {
 
 await dataSource.manager
     .createQueryBuilder(Thing, "thing")
-    // convert stringified GeoJSON into a geometry with an SRID that matches the
-    // table specification
+    // 将字符串化的 GeoJSON 转换为匹配表中 SRID 的几何体
     .where(
         "ST_Distance(geom, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(geom))) > 0",
     )
@@ -180,15 +175,14 @@ await dataSource.manager
         "ASC",
     )
     .setParameters({
-        // stringify GeoJSON
+        // 字符串化 GeoJSON
         origin: JSON.stringify(origin),
     })
     .getMany()
 
 await dataSource.manager
     .createQueryBuilder(Thing, "thing")
-    // convert geometry result into GeoJSON, treated as JSON (so that TypeORM
-    // will know to deserialize it)
+    // 将几何结果转换成 GeoJSON，以 JSON 形式返回（以便 TypeORM 知道要反序列化）
     .select("ST_AsGeoJSON(ST_Buffer(geom, 0.1))::json geom")
     .from("thing")
     .getMany()

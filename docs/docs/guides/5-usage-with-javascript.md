@@ -1,7 +1,7 @@
-# Using with JavaScript
+# 在 JavaScript 中使用
 
-TypeORM can be used not only with TypeScript, but also with JavaScript.
-Everything is the same, except you need to omit types and if your platform does not support ES6 classes then you need to define objects with all required metadata.
+TypeORM 不仅可以和 TypeScript 一起使用，也可以和 JavaScript 一起使用。
+一切都相同，只是你需要省略类型，如果你的平台不支持 ES6 类的话，则需要用所有必需的元数据来定义对象。
 
 ##### app.js
 
@@ -31,7 +31,7 @@ dataSource
 
         var post = {
             title: "Control flow based type analysis",
-            text: "TypeScript 2.0 implements a control flow-based type analysis for local variables and parameters.",
+            text: "TypeScript 2.0 实现了基于控制流的局部变量和参数类型分析。",
             categories: [category1, category2],
         }
 
@@ -39,17 +39,17 @@ dataSource
         postRepository
             .save(post)
             .then(function (savedPost) {
-                console.log("Post has been saved: ", savedPost)
-                console.log("Now lets load all posts: ")
+                console.log("文章已保存: ", savedPost)
+                console.log("现在让我们加载所有文章: ")
 
                 return postRepository.find()
             })
             .then(function (allPosts) {
-                console.log("All posts: ", allPosts)
+                console.log("所有文章: ", allPosts)
             })
     })
     .catch(function (error) {
-        console.log("Error: ", error)
+        console.log("错误: ", error)
     })
 ```
 
@@ -59,8 +59,8 @@ dataSource
 var EntitySchema = require("typeorm").EntitySchema
 
 module.exports = new EntitySchema({
-    name: "Category", // Will use table name `category` as default behaviour.
-    tableName: "categories", // Optional: Provide `tableName` property to override the default behaviour for table name.
+    name: "Category", // 默认行为会使用表名 `category`。
+    tableName: "categories", // 可选：提供 `tableName` 属性以覆盖默认的表名行为。
     columns: {
         id: {
             primary: true,
@@ -80,8 +80,8 @@ module.exports = new EntitySchema({
 var EntitySchema = require("typeorm").EntitySchema
 
 module.exports = new EntitySchema({
-    name: "Post", // Will use table name `post` as default behaviour.
-    tableName: "posts", // Optional: Provide `tableName` property to override the default behaviour for table name.
+    name: "Post", // 默认行为会使用表名 `post`。
+    tableName: "posts", // 可选：提供 `tableName` 属性以覆盖默认的表名行为。
     columns: {
         id: {
             primary: true,
@@ -106,4 +106,4 @@ module.exports = new EntitySchema({
 })
 ```
 
-You can check out this example [typeorm/javascript-example](https://github.com/typeorm/javascript-example) to learn more.
+你可以查看这个示例 [typeorm/javascript-example](https://github.com/typeorm/javascript-example) 来了解更多。

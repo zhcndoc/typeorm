@@ -1,7 +1,7 @@
-# Update using Query Builder
+# 使用查询构建器进行更新
 
-You can create `UPDATE` queries using `QueryBuilder`.
-Examples:
+你可以使用 `QueryBuilder` 创建 `UPDATE` 查询。
+示例：
 
 ```typescript
 await dataSource
@@ -12,11 +12,11 @@ await dataSource
     .execute()
 ```
 
-This is the most efficient way in terms of performance to update entities in your database.
+这是在性能方面更新数据库中实体的最有效方法。
 
-## Raw SQL support
+## 原生 SQL 支持
 
-In some cases when you need to execute SQL queries you need to use function style value:
+在某些情况下，当你需要执行 SQL 查询时，你需要使用函数式的值：
 
 ```typescript
 await dataSource
@@ -31,4 +31,4 @@ await dataSource
     .execute()
 ```
 
-> Warning: When using raw SQL, ensure that values are properly sanitized to prevent SQL injection.
+> 警告：使用原生 SQL 时，请确保对值进行正确的清理以防止 SQL 注入。

@@ -1,25 +1,25 @@
-# Transactions
+# 事务
 
-## Creating and using transactions
+## 创建和使用事务
 
-Transactions are created using `DataSource` or `EntityManager`.
-Examples:
+事务是通过 `DataSource` 或 `EntityManager` 来创建的。
+示例：
 
 ```typescript
 await myDataSource.transaction(async (transactionalEntityManager) => {
-    // execute queries using transactionalEntityManager
+    // 使用 transactionalEntityManager 执行查询
 })
 ```
 
-or
+或者
 
 ```typescript
 await myDataSource.manager.transaction(async (transactionalEntityManager) => {
-    // execute queries using transactionalEntityManager
+    // 使用 transactionalEntityManager 执行查询
 })
 ```
 
-Everything you want to run in a transaction must be executed in a callback:
+你希望在事务中执行的所有操作都必须在回调函数中执行：
 
 ```typescript
 await myDataSource.manager.transaction(async (transactionalEntityManager) => {
@@ -29,13 +29,12 @@ await myDataSource.manager.transaction(async (transactionalEntityManager) => {
 })
 ```
 
-The most important restriction when working in a transaction is to **ALWAYS** use the provided instance of entity manager -
-`transactionalEntityManager` in this example. DO NOT USE GLOBAL ENTITY MANAGER.
-All operations **MUST** be executed using the provided transactional entity manager.
+在事务中工作的最重要限制是**必须始终**使用提供的实体管理器实例——本例中的 `transactionalEntityManager`。**不要**使用全局实体管理器。
+所有操作**必须**使用提供的事务实体管理器来执行。
 
-### Specifying Isolation Levels
+### 指定隔离级别
 
-Specifying the isolation level for the transaction can be done by supplying it as the first parameter:
+可以通过将隔离级别作为第一个参数传入来指定事务的隔离级别：
 
 ```typescript
 await myDataSource.manager.transaction(
@@ -44,63 +43,63 @@ await myDataSource.manager.transaction(
 )
 ```
 
-Isolation level implementations are _not_ agnostic across all databases.
+隔离级别的实现并非对所有数据库都通用。
 
-The following database drivers support the standard isolation levels (`READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`):
+以下数据库驱动支持标准的隔离级别（`READ UNCOMMITTED`、`READ COMMITTED`、`REPEATABLE READ`、`SERIALIZABLE`）：
 
 - MySQL
 - Postgres
 - SQL Server
 
-**SQLite** defaults transactions to `SERIALIZABLE`, but if _shared cache mode_ is enabled, a transaction can use the `READ UNCOMMITTED` isolation level.
+**SQLite** 默认事务为 `SERIALIZABLE`，但如果启用了 _共享缓存模式_，事务可以使用 `READ UNCOMMITTED` 隔离级别。
 
-**Oracle** only supports the `READ COMMITTED` and `SERIALIZABLE` isolation levels.
+**Oracle** 仅支持 `READ COMMITTED` 和 `SERIALIZABLE` 隔离级别。
 
-## Using `QueryRunner` to create and control state of single database connection
+## 使用 `QueryRunner` 创建和控制单个数据库连接的状态
 
-`QueryRunner` provides a single database connection.
-Transactions are organized using query runners.
-Single transactions can only be established on a single query runner.
-You can manually create a query runner instance and use it to manually control transaction state.
-Example:
+`QueryRunner` 提供单个数据库连接。
+事务通过查询运行器（query runners）来组织。
+单个事务只能在单个查询运行器上建立。
+你可以手动创建一个查询运行器实例，并用它来手动控制事务状态。
+示例：
 
 ```typescript
-// create a new query runner
+// 创建一个新的查询运行器
 const queryRunner = dataSource.createQueryRunner()
 
-// establish real database connection using our new query runner
+// 使用新的查询运行器建立真实的数据库连接
 await queryRunner.connect()
 
-// now we can execute any queries on a query runner, for example:
+// 现在我们可以在查询运行器上执行任何查询，例如：
 await queryRunner.query("SELECT * FROM users")
 
-// we can also access entity manager that works with connection created by a query runner:
+// 我们也可以访问通过查询运行器创建的连接工作的实体管理器：
 const users = await queryRunner.manager.find(User)
 
-// lets now open a new transaction:
+// 现在开始一个新事务：
 await queryRunner.startTransaction()
 
 try {
-    // execute some operations on this transaction:
+    // 在该事务中执行一些操作：
     await queryRunner.manager.save(user1)
     await queryRunner.manager.save(user2)
     await queryRunner.manager.save(photos)
 
-    // commit transaction now:
+    // 现在提交事务：
     await queryRunner.commitTransaction()
 } catch (err) {
-    // since we have errors let's rollback changes we made
+    // 发生错误时回滚我们所做的更改
     await queryRunner.rollbackTransaction()
 } finally {
-    // you need to release query runner which is manually created:
+    // 需要释放手动创建的查询运行器：
     await queryRunner.release()
 }
 ```
 
-There are 3 methods to control transactions in `QueryRunner`:
+`QueryRunner` 中有三种方法来控制事务：
 
-- `startTransaction` - starts a new transaction inside the query runner instance.
-- `commitTransaction` - commits all changes made using the query runner instance.
-- `rollbackTransaction` - rolls all changes made using the query runner instance back.
+- `startTransaction` - 在查询运行器实例中启动一个新事务。
+- `commitTransaction` - 提交使用查询运行器实例所做的所有更改。
+- `rollbackTransaction` - 回滚使用查询运行器实例所做的所有更改。
 
-Learn more about [Query Runner](../query-runner.md).
+详细了解请参见 [Query Runner](../query-runner.md)。

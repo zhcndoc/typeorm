@@ -1,11 +1,11 @@
-# Entity Inheritance
+# 实体继承
 
-## Concrete Table Inheritance
+## 具体表继承（Concrete Table Inheritance）
 
-You can reduce duplication in your code by using entity inheritance patterns.
-The simplest and the most effective is concrete table inheritance.
+通过使用实体继承模式，可以减少代码中的重复。
+最简单且最有效的是具体表继承。
 
-For example, you have `Photo`, `Question`, `Post` entities:
+例如，你有 `Photo`、`Question`、`Post` 实体：
 
 ```typescript
 @Entity()
@@ -58,8 +58,8 @@ export class Post {
 }
 ```
 
-As you can see all those entities have common columns: `id`, `title`, `description`.
-To reduce duplication and produce a better abstraction we can create a base class called `Content` for them:
+如你所见，所有这些实体都有公共的列：`id`、`title`、`description`。
+为了减少重复并提供更好的抽象，我们可以为它们创建一个基类，称为 `Content`：
 
 ```typescript
 export abstract class Content {
@@ -98,16 +98,16 @@ export class Post extends Content {
 }
 ```
 
-All columns (relations, embeds, etc.) from parent entities (parent can extend other entity as well)
-will be inherited and created in final entities.
+父实体中的所有列（包括关系、嵌入等）（父类也可以继承自其他实体）
+都会被继承并在最终的实体中创建。
 
-This example will create 3 tables - `photo`, `question` and `post`.
+这个例子会创建 3 张表——`photo`、`question` 和 `post`。
 
-## Single Table Inheritance
+## 单表继承（Single Table Inheritance）
 
-TypeORM also supports single table inheritance.
-Single table inheritance is a pattern when you have multiple classes with their own properties,
-but in the database they are stored in the same table.
+TypeORM 也支持单表继承。
+单表继承是一种模式，你有多个类，每个类都有自己的属性，
+但在数据库中它们存储在同一张表中。
 
 ```typescript
 @Entity()
@@ -148,10 +148,10 @@ export class Post extends Content {
 }
 ```
 
-This will create a single table called `content` and all instances of photos, questions and posts
-will be saved into this table.
+这将创建一个名为 `content` 的单表，所有的照片、问题和帖子实例
+都会保存到这张表中。
 
-## Using embeddeds
+## 使用嵌入对象（Embeddeds）
 
-There is an amazing way to reduce duplication in your app (using composition over inheritance) by using `embedded columns`.
-Read more about embedded entities [here](./2-embedded-entities.md).
+通过使用“嵌入列”（embedded columns），有一种很棒的方法可以减少应用中的重复（使用组合优于继承的方式）。
+在这里了解更多关于嵌入实体的内容：[链接](./2-embedded-entities.md)。

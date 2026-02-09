@@ -1,15 +1,15 @@
-# Relations FAQ
+# 关系常见问题
 
-## How to create self referencing relation?
+## 如何创建自引用关系？
 
-Self-referencing relations are relations which have a relation to themselves.
-This is useful when you are storing entities in a tree-like structures.
-Also, "adjacency list" pattern is implemented using self-referenced relations.
-For example, you want to create categories tree in your application.
-Categories can nest categories, nested categories can nest other categories, etc.
-Self-referencing relations come handy here.
-Basically self-referencing relations are just regular relations that targets entity itself.
-Example:
+自引用关系是指实体与自身有关系的关系。
+当你存储树形结构的实体时非常有用。
+另外，“邻接列表”模式也是通过自引用关系实现的。
+例如，你想在应用中创建分类树。
+分类可以嵌套分类，嵌套分类又可以嵌套其他分类，依此类推。
+这时候自引用关系就非常方便。
+基本上自引用关系就是普通关系，只不过目标实体是自身。
+示例：
 
 ```typescript
 import {
@@ -39,10 +39,10 @@ export class Category {
 }
 ```
 
-## How to use relation id without joining relation?
+## 如何不联表加载关系而仅使用关系 ID？
 
-Sometimes you want to have, in your object, the id of the related object without loading it.
-For example:
+有时候你希望在对象中仅包含关联对象的 ID，而不加载关联对象本身。
+例如：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -84,8 +84,7 @@ export class User {
 }
 ```
 
-When you load a user without `profile` joined you won't have any information about profile in your user object,
-even profile id:
+当你加载一个用户但没有联表加载 `profile` 时，用户对象中不会包含任何 profile 的信息，甚至连 profile 的 id 都没有：
 
 ```javascript
 User {
@@ -94,9 +93,8 @@ User {
 }
 ```
 
-But sometimes you want to know what is the "profile id" of this user without loading the whole profile for this user.
-To do this you just need to add another property to your entity with `@Column`
-named exactly as the column created by your relation. Example:
+但有时你想知道当前用户的“profile id”，而不加载整个 profile。
+为此，只需在实体中添加一个用 `@Column` 装饰器标记的新属性，并且名称必须与关联列的列名一致。示例：
 
 ```typescript
 import {
@@ -125,7 +123,7 @@ export class User {
 }
 ```
 
-That's all. Next time you load a user object it will contain a profile id:
+就这么简单。下次你加载用户对象时，它就会包含 profile 的 id：
 
 ```javascript
 User {
@@ -135,9 +133,9 @@ User {
 }
 ```
 
-## How to load relations in entities?
+## 如何加载实体中的关系？
 
-The easiest way to load your entity relations is to use `relations` option in `FindOptions`:
+加载实体关系最简单的方式是使用 `FindOptions` 的 `relations` 选项：
 
 ```typescript
 const users = await dataSource.getRepository(User).find({
@@ -149,10 +147,10 @@ const users = await dataSource.getRepository(User).find({
 })
 ```
 
-Alternative and more flexible way is to use `QueryBuilder`:
+另一种更灵活的方式是使用 `QueryBuilder`：
 
 ```typescript
-const user = await dataSource
+const users = await dataSource
     .getRepository(User)
     .createQueryBuilder("user")
     .leftJoinAndSelect("user.profile", "profile")
@@ -161,15 +159,15 @@ const user = await dataSource
     .getMany()
 ```
 
-Using `QueryBuilder` you can do `innerJoinAndSelect` instead of `leftJoinAndSelect`
-(to learn the difference between `LEFT JOIN` and `INNER JOIN` refer to your SQL documentation),
-you can join relation data by a condition, make ordering, etc.
+使用 `QueryBuilder` 你可以使用 `innerJoinAndSelect` 替代 `leftJoinAndSelect`  
+（关于 `LEFT JOIN` 和 `INNER JOIN` 的区别，请参考你的 SQL 文档），
+还可以根据条件联表，排序等等。
 
-Learn more about [`QueryBuilder`](../query-builder/1-select-query-builder.md).
+了解更多关于 [`QueryBuilder`](../query-builder/1-select-query-builder.md)。
 
-## Avoid relation property initializers
+## 避免关系属性初始化器
 
-Sometimes it is useful to initialize your relation properties, for example:
+有时初始化关系属性是很有用的，例如：
 
 ```typescript
 import {
@@ -194,13 +192,13 @@ export class Question {
 
     @ManyToMany((type) => Category, (category) => category.questions)
     @JoinTable()
-    categories: Category[] = [] // see = [] initialization here
+    categories: Category[] = [] // 注意这里有 = [] 初始化
 }
 ```
 
-However, in TypeORM entities it may cause problems.
-To understand the problem, let's first try to load a Question entity WITHOUT the initializer set.
-When you load a question it will return an object like this:
+然而，在 TypeORM 实体中，这可能会导致问题。
+为了理解这个问题，先尝试不初始化关系属性来加载一个 Question 实体。
+你加载的对象会是这样的：
 
 ```javascript
 Question {
@@ -209,9 +207,9 @@ Question {
 }
 ```
 
-Now when you save this object `categories` inside it won't be touched - because it is unset.
+此时保存该对象时，因为 `categories` 没有被设置，所以不会对数据库里的关联数据做出改变。
 
-But if you have an initializer, the loaded object will look as follows:
+但是如果你有初始化器，加载结果将会是：
 
 ```javascript
 Question {
@@ -221,19 +219,19 @@ Question {
 }
 ```
 
-When you save the object it will check if there are any categories in the database bind to the question -
-and it will detach all of them. Why? Because relation equal to `[]` or any items inside it will be considered
-like something was removed from it, there is no other way to check if an object was removed from entity or not.
+保存该对象时，TypeORM 会检测数据库中与该问题相关联的 categories，
+然后断开它们的绑定。为什么？因为关系被赋予了 `[]` 或者某些项，会被视为“某些关联已被移除”，
+这是检测关联是否被移除的唯一办法。
 
-Therefore, saving an object like this will bring you problems - it will remove all previously set categories.
+因此，保存如此对象会导致所有之前设置的 categories 被删除，带来问题。
 
-How to avoid this behaviour? Simply don't initialize arrays in your entities.
-Same rule applies to a constructor - don't initialize it in a constructor as well.
+如何避免这种情况？只需不要在实体中初始化数组即可。
+同样规则适用于构造函数——在构造函数中也不要初始化关系属性。
 
-## Avoid foreign key constraint creation
+## 避免创建外键约束
 
-Sometimes for performance reasons you might want to have a relation between entities, but without foreign key constraint.
-You can define if foreign key constraint should be created with `createForeignKeyConstraints` option (default: true).
+有时出于性能考虑，你可能希望两个实体之间有所联系，但不希望在数据库级别创建外键约束。
+你可以通过 `createForeignKeyConstraints` 选项来控制是否创建外键约束（默认值：true）。
 
 ```typescript
 import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm"
@@ -257,14 +255,14 @@ export class ActionLog {
 }
 ```
 
-## Avoid circular import errors
+## 避免循环导入错误
 
-Here is an example if you want to define your entities, and you don't want those to cause errors in some environments.
-In this situation we have Action.ts and Person.ts importing each other for a many-to-many relationship.
-We use import type so that we can use the type information without any JavaScript code being generated.
+下面是一个例子，展示如何定义实体且不导致某些环境下的错误。
+在此情形中，我们有 Action.ts 和 Person.ts 互相导入以实现多对多关系。
+我们使用 `import type` 以便仅使用类型信息，而不生成任何 JavaScript 代码。
 
 ```typescript
-import { Entity, PrimaryColumn, Column, ManytoMany } from "typeorm"
+import { Entity, PrimaryColumn, Column, ManyToMany } from "typeorm"
 import type { Person } from "./Person"
 
 @Entity()
@@ -284,7 +282,7 @@ export class ActionLog {
 ```
 
 ```typescript
-import { Entity, PrimaryColumn, ManytoMany } from "typeorm"
+import { Entity, PrimaryColumn, ManyToMany } from "typeorm"
 import type { ActionLog } from "./Action"
 
 @Entity()

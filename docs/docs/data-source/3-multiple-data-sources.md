@@ -1,8 +1,8 @@
-# Multiple data sources, databases, schemas and replication setup
+# 多数据源、数据库、模式和复制设置
 
-## Using multiple data sources
+## 使用多个数据源
 
-To use multiple data sources connected to different databases, simply create multiple DataSource instances:
+要使用多个连接到不同数据库的数据源，只需创建多个 DataSource 实例：
 
 ```typescript
 import { DataSource } from "typeorm"
@@ -30,10 +30,10 @@ const db2DataSource = new DataSource({
 })
 ```
 
-## Using multiple databases within a single data source
+## 在单个数据源中使用多个数据库
 
-To use multiple databases in a single data source,
-you can specify database name per-entity:
+要在单个数据源中使用多个数据库，
+可以在每个实体中指定数据库名称：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -64,10 +64,10 @@ export class Photo {
 }
 ```
 
-`User` entity will be created inside `secondDB` database and `Photo` entity inside `thirdDB` database.
-All other entities will be created in a default database defined in the data source options.
+`User` 实体会创建在 `secondDB` 数据库中，`Photo` 实体会创建在 `thirdDB` 数据库中。
+所有其他实体会在数据源选项中定义的默认数据库中创建。
 
-If you want to select data from a different database you only need to provide an entity:
+如果想从不同的数据库中查询数据，只需提供实体即可：
 
 ```typescript
 const users = await dataSource
@@ -76,17 +76,17 @@ const users = await dataSource
     .from(User, "user")
     .addFrom(Photo, "photo")
     .andWhere("photo.userId = user.id")
-    .getMany() // userId is not a foreign key since its cross-database request
+    .getMany() // userId 不是外键，因为这是跨数据库请求
 ```
 
-This code will produce following SQL query (depend on database type):
+此代码会生成如下 SQL 查询（根据数据库类型不同）：
 
 ```sql
 SELECT * FROM "secondDB"."user" "user", "thirdDB"."photo" "photo"
     WHERE "photo"."userId" = "user"."id"
 ```
 
-You can also specify a table path instead of the entity:
+你也可以指定表路径而不是实体：
 
 ```typescript
 const users = await dataSource
@@ -95,14 +95,14 @@ const users = await dataSource
     .from("secondDB.user", "user")
     .addFrom("thirdDB.photo", "photo")
     .andWhere("photo.userId = user.id")
-    .getMany() // userId is not a foreign key since its cross-database request
+    .getMany() // userId 不是外键，因为这是跨数据库请求
 ```
 
-This feature is supported only in mysql and mssql databases.
+此功能仅在 MySQL 和 MSSQL 数据库中支持。
 
-## Using multiple schemas within a single data source
+## 在单个数据源中使用多个模式（schema）
 
-To use multiple schemas in your applications, just set `schema` on each entity:
+要在应用中使用多个模式，只需在每个实体上设置 `schema`：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -133,10 +133,10 @@ export class Photo {
 }
 ```
 
-`User` entity will be created inside `secondSchema` schema and `Photo` entity inside `thirdSchema` schema.
-All other entities will be created in a default database defined in the data source options.
+`User` 实体将创建在 `secondSchema` 模式中，`Photo` 实体将创建在 `thirdSchema` 模式中。
+其他所有实体会在数据源选项中定义的默认数据库中创建。
 
-If you want to select data from a different schema you only need to provide an entity:
+如果想从不同模式中查询数据，只需提供实体：
 
 ```typescript
 const users = await dataSource
@@ -145,30 +145,30 @@ const users = await dataSource
     .from(User, "user")
     .addFrom(Photo, "photo")
     .andWhere("photo.userId = user.id")
-    .getMany() // userId is not a foreign key since its cross-database request
+    .getMany() // userId 不是外键，因为这是跨数据库请求
 ```
 
-This code will produce following SQL query (depend on database type):
+此代码会生成如下 SQL 查询（根据数据库类型不同）：
 
 ```sql
 SELECT * FROM "secondSchema"."question" "question", "thirdSchema"."photo" "photo"
     WHERE "photo"."userId" = "user"."id"
 ```
 
-You can also specify a table path instead of entity:
+你也可以指定表路径而非实体：
 
 ```typescript
 const users = await dataSource
     .createQueryBuilder()
     .select()
-    .from("secondSchema.user", "user") // in mssql you can even specify a database: secondDB.secondSchema.user
-    .addFrom("thirdSchema.photo", "photo") // in mssql you can even specify a database: thirdDB.thirdSchema.photo
+    .from("secondSchema.user", "user") // 在mssql中你甚至可以指定数据库：secondDB.secondSchema.user
+    .addFrom("thirdSchema.photo", "photo") // 在mssql中你甚至可以指定数据库：thirdDB.thirdSchema.photo
     .andWhere("photo.userId = user.id")
     .getMany()
 ```
 
-This feature is supported only in postgres and mssql databases.
-In mssql you can also combine schemas and databases, for example:
+此功能仅在 Postgres 和 MSSQL 数据库中支持。
+在 MSSQL 中，你也可以结合使用模式和数据库，例如：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -186,10 +186,10 @@ export class User {
 }
 ```
 
-## Replication
+## 复制（Replication）
 
-You can set up read/write replication using TypeORM.
-Example of replication options:
+你可以使用 TypeORM 设置读写复制。
+复制配置示例：
 
 ```typescript
 const datasource = new DataSource({
@@ -223,32 +223,32 @@ const datasource = new DataSource({
 })
 ```
 
-With replication slaves defined, TypeORM will start sending all possible queries to slaves by default.
+定义复制从库（slaves）后，TypeORM 默认会将所有可能的查询发送到从库。
 
-- all queries performed by the `find` methods or `SelectQueryBuilder` will use a random `slave` instance
-- all write queries performed by `update`, `create`, `InsertQueryBuilder`, `UpdateQueryBuilder`, etc will use the `master` instance
-- all raw queries performed by calling `.query()` will use the `master` instance
-- all schema update operations are performed using the `master` instance
+- 通过 `find` 方法或 `SelectQueryBuilder` 执行的所有查询将使用随机的 `slave` 实例
+- 所有通过 `update`、`create`、`InsertQueryBuilder`、`UpdateQueryBuilder` 等执行的写操作将使用 `master` 实例
+- 通过调用 `.query()` 执行的所有原始查询将使用 `master` 实例
+- 所有模式更新操作都使用 `master` 实例执行
 
-### Explicitly selecting query destinations
+### 明确选择查询目标
 
-By default, TypeORM will send all read queries to a random read slave, and all writes to the master. This means when you first add the `replication` settings to your configuration, any existing read query runners that don't explicitly specify a replication mode will start going to a slave. This is good for scalability, but if some of those queries _must_ return up to date data, then you need to explicitly pass a replication mode when you create a query runner.
+默认情况下，TypeORM 会将所有读取查询都发送到随机的读从库，写入操作发送到主库。这意味着当你首次在配置中添加 `replication` 设置后，任何现有的不显式指定复制模式的读取查询都会开始访问从库。这有利于扩展，但如果某些查询**必须**返回最新数据，则需要在创建查询运行器时显式传入复制模式。
 
-If you want to explicitly use the `master` for read queries, pass an explicit `ReplicationMode` when creating your `QueryRunner`;
+如果你想明确使用 `master` 进行读取查询，创建 `QueryRunner` 时传入明确的 `ReplicationMode`：
 
 ```typescript
 const masterQueryRunner = dataSource.createQueryRunner("master")
 try {
     const postsFromMaster = await dataSource
-        .createQueryBuilder(Post, "post", masterQueryRunner) // you can either pass QueryRunner as an optional argument with query builder
-        .setQueryRunner(masterQueryRunner) // or use setQueryRunner which sets or overrides query builder's QueryRunner
+        .createQueryBuilder(Post, "post", masterQueryRunner) // 你可以作为可选参数传递 QueryRunner 给查询构造器
+        .setQueryRunner(masterQueryRunner) // 或使用 setQueryRunner 设置或覆盖查询构造器的 QueryRunner
         .getMany()
 } finally {
     await masterQueryRunner.release()
 }
 ```
 
-If you want to use a slave in raw queries, pass `slave` as the replication mode when creating a query runner:
+如果你想在原始查询中使用从库，创建 `QueryRunner` 时传入 `"slave"`：
 
 ```typescript
 const slaveQueryRunner = dataSource.createQueryRunner("slave")
@@ -263,18 +263,18 @@ try {
 }
 ```
 
-**Note**: Manually created `QueryRunner` instances must be explicitly released on their own. If you don't release your query runners, they will keep a connection checked out of the pool, and prevent other queries from using it.
+**注意**：手动创建的 `QueryRunner` 实例必须显式释放。如果不释放，查询运行器会一直占用一个数据库连接，阻止其他查询使用该连接。
 
-### Adjusting the default destination for reads
+### 调整读取查询默认目标
 
-If you don't want all reads to go to a `slave` instance by default, you can change the default read query destination by passing `defaultMode: "master"` in your replication options:
+如果不想让所有读取都默认发送到 `slave` 实例，可以在复制配置中传入 `defaultMode: "master"` 来更改默认读取目标：
 
 ```typescript
 const datasource = new DataSource({
     type: "mysql",
     logging: true,
     replication: {
-        // set the default destination for read queries as the master instance
+        // 设置读取查询默认目标为主库
         defaultMode: "master",
         master: {
             host: "server1",
@@ -296,15 +296,15 @@ const datasource = new DataSource({
 })
 ```
 
-With this mode, no queries will go to the read slaves by default, and you'll have to opt-in to sending queries to read slaves with explicit `.createQueryRunner("slave")` calls.
+在此模式下，默认不会将查询发送给读从库，你必须显式使用 `.createQueryRunner("slave")` 调用，才能访问从库。
 
-If you're adding replication options to an existing app for the first time, this is a good option for ensuring no behavior changes right away, and instead you can slowly adopt read replicas on a query runner by query runner basis.
+如果你是首次在现有应用中添加复制配置，这是保证初始行为不变的好选项，之后可以逐步在每个查询运行器上使用读副本。
 
-### Supported drivers
+### 支持的驱动
 
-Replication is supported by the MySQL, PostgreSQL, SQL Server, Cockroach, Oracle, and Spanner connection drivers.
+复制支持 MySQL、PostgreSQL、SQL Server、Cockroach、Oracle 和 Spanner 连接驱动。
 
-MySQL replication supports extra configuration options:
+MySQL 复制支持附加配置选项：
 
 ```typescript
 {
@@ -331,27 +331,27 @@ MySQL replication supports extra configuration options:
     }],
 
     /**
-    * If true, PoolCluster will attempt to reconnect when connection fails. (Default: true)
+    * 如果为 true，在连接失败时 PoolCluster 会尝试重新连接。（默认：true）
     */
     canRetry: true,
 
     /**
-     * If connection fails, node's errorCount increases.
-     * When errorCount is greater than removeNodeErrorCount, remove a node in the PoolCluster. (Default: 5)
+     * 如果连接失败，node 的 errorCount 增加。
+     * 当 errorCount 大于 removeNodeErrorCount 时，会移除 PoolCluster 中的该节点。（默认：5）
      */
     removeNodeErrorCount: 5,
 
     /**
-     * If connection fails, specifies the number of milliseconds before another connection attempt will be made.
-     * If set to 0, then node will be removed instead and never re-used. (Default: 0)
+     * 如果连接失败，指定毫秒数后尝试重新连接。
+     * 如果设置为 0，则节点将被移除且不会再重用。（默认：0）
      */
      restoreNodeTimeout: 0,
 
     /**
-     * Determines how slaves are selected:
-     * RR: Select one alternately (Round-Robin).
-     * RANDOM: Select the node by random function.
-     * ORDER: Select the first node available unconditionally.
+     * 确定如何选择从库：
+     * RR: 轮询选择。
+     * RANDOM: 随机选择节点。
+     * ORDER: 无条件选择第一个可用节点。
      */
     selector: "RR"
   }

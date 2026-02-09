@@ -1,23 +1,23 @@
-# Migration to v1
+# 迁移到 v1
 
-## Dependencies
+## 依赖
 
-The lowest JavaScript version supported is now ES2023, which means Node 20 and later is supported. If you are using a platform that does not support ES2023, please upgrade.
+最低支持的 JavaScript 版本现在是 ES2023，这意味着支持 Node 20 及更高版本。如果您使用的平台不支持 ES2023，请升级。
 
-TypeORM requires newer versions of the database client libraries.
+TypeORM 需要更新版本的数据库客户端库。
 
-Glob patterns are now handled by `tinyglobby` instead of `glob`. While `tinyglobby` is almost a drop-in replacement for `glob`, there might be certain cases in which the behavior is different.
+Glob 模式现在由 `tinyglobby` 处理，替代了之前的 `glob`。虽然 `tinyglobby` 几乎是 `glob` 的直接替代品，但在某些情况下行为可能有所不同。
 
 ## MySQL / MariaDB
 
-The `connectorPackage` option was removed, together with the support for the old `mysql` client. The only database client supported is now `mysql2`, which TypeORM will try to load by default. If you were using `mysql` in your project, simply replace it with `mysql2`.
+`connectorPackage` 选项已被移除，同时也移除了对旧版 `mysql` 客户端的支持。现在唯一支持的数据库客户端是 `mysql2`，TypeORM 将默认尝试加载它。如果您的项目中使用了 `mysql`，只需替换为 `mysql2` 即可。
 
 ## Expo
 
-Support for the legacy Expo SQLite driver has been removed. The legacy API was removed by Expo in SDK v52, so you'll need to use Expo SDK v52 or later with the modern async SQLite API.
+已移除对旧版 Expo SQLite 驱动的支持。旧版 API 在 Expo SDK v52 中被移除，因此您需要使用 Expo SDK v52 或更高版本，以及现代的异步 SQLite API。
 
-## hashing
+## 哈希
 
-Historically TypeORM used a non-standard SHA-1 implementation for hashing. This has been changed to use the built-in `crypto` module from Node.js.
+历史上 TypeORM 使用了非标准的 SHA-1 实现来进行哈希运算。现已更改为使用 Node.js 内置的 `crypto` 模块。
 
-For browser environments `RandomGenerator.sha1` was fixed to the standard implementation.
+对于浏览器环境，`RandomGenerator.sha1` 已修正为标准实现。

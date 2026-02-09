@@ -1,11 +1,12 @@
-# Embedded Entities
+# 嵌入实体
 
-There is an amazing way to reduce duplication in your app (using composition over inheritance) by using `embedded columns`.
-Embedded column is a column which accepts a class with its own columns and merges those columns into the current entity's database table.
-Example:
+有一种很棒的方法可以减少应用中的重复代码（使用组合优于继承），那就是使用 `嵌入列`。  
+嵌入列是一个接受拥有自己列的类的列，并将这些列合并到当前实体的数据库表中。
 
-Let's say we have `User`, `Employee` and `Student` entities.
-All those entities have few things in common - `first name` and `last name` properties
+示例：
+
+假设我们有 `User`、`Employee` 和 `Student` 实体。  
+这些实体都有一些共同的属性——`first name` 和 `last name`。
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -64,7 +65,7 @@ export class Student {
 }
 ```
 
-What we can do is to reduce `firstName` and `lastName` duplication by creating a new class with those columns:
+我们可以通过创建一个包含这些列的新类来减少 `firstName` 和 `lastName` 的重复：
 
 ```typescript
 import { Column } from "typeorm"
@@ -78,7 +79,7 @@ export class Name {
 }
 ```
 
-Then you can "connect" those columns in your entities:
+然后你可以在实体中“连接”这些列：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -131,7 +132,7 @@ export class Student {
 }
 ```
 
-All columns defined in the `Name` entity will be merged into `user`, `employee` and `student`:
+`Name` 实体中定义的所有列将会被合并到 `user`、`employee` 和 `student` 表中：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -162,6 +163,6 @@ All columns defined in the `Name` entity will be merged into `user`, `employee` 
 +-------------+--------------+----------------------------+
 ```
 
-This way code duplication in the entity classes is reduced.
-You can use as many columns (or relations) in embedded classes as you need.
-You even can have nested embedded columns inside embedded classes.
+这样就减少了实体类中的代码重复。  
+你可以在嵌入类中使用任意数量的列（或关系）。  
+甚至可以在嵌入类内部嵌套嵌入列。

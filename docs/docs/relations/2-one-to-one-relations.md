@@ -1,8 +1,8 @@
-# One-to-one relations
+# 一对一关系
 
-One-to-one is a relation where A contains only one instance of B, and B contains only one instance of A.
-Let's take for example `User` and `Profile` entities.
-User can have only a single profile, and a single profile is owned by only a single user.
+一对一关系是指 A 只包含一个 B 实例，B 也只包含一个 A 实例。
+举个例子，`User` 和 `Profile` 实体。
+User 只能有一个 Profile，一个 Profile 也只属于一个 User。
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -44,11 +44,11 @@ export class User {
 }
 ```
 
-Here we added `@OneToOne` to the `user` and specified the target relation type to be `Profile`.
-We also added `@JoinColumn` which is required and must be set only on one side of the relation.
-The side you set `@JoinColumn` on, that side's table will contain a "relation id" and foreign keys to the target entity table.
+这里我们给 `user` 添加了 `@OneToOne`，并指定目标关系类型为 `Profile`。
+我们还加上了 `@JoinColumn`，这是必须的，并且只能设置在关系的一侧。
+设置 `@JoinColumn` 的那一侧的表会包含“关系 id”以及指向目标实体表的外键。
 
-This example will produce the following tables:
+这个例子将会生成以下表：
 
 ```text
 +-------------+--------------+----------------------------+
@@ -68,9 +68,9 @@ This example will produce the following tables:
 +-------------+--------------+----------------------------+
 ```
 
-Again, `@JoinColumn` must be set only on one side of the relation - the side that must have the foreign key in the database table.
+再次强调，`@JoinColumn` 必须只能设置在关系的一侧——也就是数据库表中必须有外键的一侧。
 
-Example how to save such a relation:
+下面是如何保存这样一个关系的示例：
 
 ```typescript
 const profile = new Profile()
@@ -84,9 +84,9 @@ user.profile = profile
 await dataSource.manager.save(user)
 ```
 
-With [cascades](./1-relations.md#cascades) enabled you can save this relation with only one `save` call.
+启用 [级联操作](./1-relations.md#cascades) 后，你只需要一次 `save` 调用即可保存此关系。
 
-To load user with profile inside you must specify relation in `FindOptions`:
+要加载包含 profile 的 user，你必须在 `FindOptions` 中指定关系：
 
 ```typescript
 const users = await dataSource.getRepository(User).find({
@@ -96,7 +96,7 @@ const users = await dataSource.getRepository(User).find({
 })
 ```
 
-Or using `QueryBuilder` you can join them:
+或者使用 `QueryBuilder` 进行连接：
 
 ```typescript
 const users = await dataSource
@@ -106,13 +106,14 @@ const users = await dataSource
     .getMany()
 ```
 
-With eager loading enabled on a relation, you don't have to specify relations in the find command as it will ALWAYS be loaded automatically. If you use QueryBuilder eager relations are disabled, you have to use `leftJoinAndSelect` to load the relation.
+如果在关系上启用了急加载（eager loading），你就不需要在 find 命令中指定关系，因为它会始终自动加载。
+如果使用 QueryBuilder，急加载关系将被禁用，你必须用 `leftJoinAndSelect` 来加载关系。
 
-Relations can be uni-directional and bi-directional.
-Uni-directional are relations with a relation decorator only on one side.
-Bi-directional are relations with decorators on both sides of a relation.
+关系可以是单向的，也可以是双向的。
+单向关系是关系装饰器只在一侧设置的关系。
+双向关系是双方都设置了装饰器的关系。
 
-We just created a uni-directional relation. Let's make it bi-directional:
+我们刚刚创建了一个单向关系，接下来将其改为双向：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm"
@@ -129,7 +130,7 @@ export class Profile {
     @Column()
     photo: string
 
-    @OneToOne(() => User, (user) => user.profile) // specify inverse side as a second parameter
+    @OneToOne(() => User, (user) => user.profile) // 第二个参数指定反向关系
     user: User
 }
 ```
@@ -152,16 +153,16 @@ export class User {
     @Column()
     name: string
 
-    @OneToOne(() => Profile, (profile) => profile.user) // specify inverse side as a second parameter
+    @OneToOne(() => Profile, (profile) => profile.user) // 第二个参数指定反向关系
     @JoinColumn()
     profile: Profile
 }
 ```
 
-We just made our relation bi-directional. Note, inverse relation does not have a `@JoinColumn`.
-`@JoinColumn` must only be on one side of the relation - on the table that will own the foreign key.
+我们刚刚将关系改为双向。注意，反向关系不需要加 `@JoinColumn`。
+`@JoinColumn` 只能放在关系的一侧——也就是会拥有外键的表那一侧。
 
-Bi-directional relations allow you to join relations from both sides using `QueryBuilder`:
+双向关系允许你通过 `QueryBuilder` 从双方进行连接：
 
 ```typescript
 const profiles = await dataSource

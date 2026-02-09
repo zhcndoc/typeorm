@@ -1,36 +1,36 @@
 # `EntityManager` API
 
-- `dataSource` - The DataSource used by `EntityManager`.
+- `dataSource` - `EntityManager`使用的数据源。
 
 ```typescript
 const dataSource = manager.dataSource
 ```
 
-- `queryRunner` - The query runner used by `EntityManager`.
-  Used only in transactional instances of EntityManager.
+- `queryRunner` - `EntityManager`使用的查询运行器。
+  仅在事务性实体管理器实例中使用。
 
 ```typescript
 const queryRunner = manager.queryRunner
 ```
 
-- `transaction` - Provides a transaction where multiple database requests will be executed in a single database transaction.
-  Learn more [Transactions](../advanced-topics/2-transactions.md).
+- `transaction` - 提供一个事务，在该事务中多个数据库请求将作为单一数据库事务执行。
+  了解更多 [事务](../advanced-topics/2-transactions.md)。
 
 ```typescript
 await manager.transaction(async (manager) => {
-    // NOTE: you must perform all database operations using the given manager instance
-    // it's a special instance of EntityManager working with this transaction
-    // and don't forget to await things here
+    // 注意：你必须使用传入的 manager 实例执行所有数据库操作
+    // 这是一个专门用于该事务的 EntityManager 实例
+    // 并且别忘了在这里使用 await
 })
 ```
 
-- `query` - Executes a raw SQL query.
+- `query` - 执行原生 SQL 查询。
 
 ```typescript
 const rawData = await manager.query(`SELECT * FROM USERS`)
 
-// You can also use parameters to avoid SQL injection
-// The syntax differs between the drivers
+// 你也可以使用参数以避免 SQL 注入
+// 不同驱动的语法有所区别
 
 // aurora-mysql, better-sqlite3, capacitor, cordova,
 // expo, mariadb, mysql, nativescript, react-native,
@@ -65,17 +65,17 @@ const rawData = await manager.query(
 )
 ```
 
-- `sql` - Executes a raw SQL query using template literals.
+- `sql` - 使用模板字符串执行原生 SQL 查询。
 
 ```typescript
 const rawData =
     await manager.sql`SELECT * FROM USERS WHERE name = ${"John"} and age = ${24}`
 ```
 
-Learn more about using the [SQL Tag syntax](../guides/7-sql-tag.md).
+了解有关使用 [SQL Tag 语法](../guides/7-sql-tag.md)的更多内容。
 
-- `createQueryBuilder` - Creates a query builder use to build SQL queries.
-  Learn more about [QueryBuilder](../query-builder/1-select-query-builder.md).
+- `createQueryBuilder` - 创建查询构建器，用于构建 SQL 查询。
+  了解更多关于 [QueryBuilder](../query-builder/1-select-query-builder.md)。
 
 ```typescript
 const users = await manager
@@ -86,44 +86,43 @@ const users = await manager
     .getMany()
 ```
 
-- `hasId` - Checks if given entity has its primary column property defined.
+- `hasId` - 检查给定实体是否定义了其主键列属性。
 
 ```typescript
 if (manager.hasId(user)) {
-    // ... do something
+    // ... 执行某些操作
 }
 ```
 
-- `getId` - Gets given entity's primary column property value.
-  If the entity has composite primary keys then the returned value will be an object with names and values of primary columns.
+- `getId` - 获取给定实体的主键列属性值。
+  如果实体有复合主键，则返回值为包含主键列名和值的对象。
 
 ```typescript
 const userId = manager.getId(user) // userId === 1
 ```
 
-- `create` - Creates a new instance of `User`. Optionally accepts an object literal with user properties
-  which will be written into newly created user object.
+- `create` - 创建一个新的 `User` 实例。可选地接收一个包含用户属性的对象字面量，
+  属性将被写入新创建的用户对象。
 
 ```typescript
-const user = manager.create(User) // same as const user = new User();
+const user = manager.create(User) // 等同于 const user = new User();
 const user = manager.create(User, {
     id: 1,
     firstName: "Timber",
     lastName: "Saw",
-}) // same as const user = new User(); user.firstName = "Timber"; user.lastName = "Saw";
+}) // 等同于 const user = new User(); user.firstName = "Timber"; user.lastName = "Saw";
 ```
 
-- `merge` - Merges multiple entities into a single entity.
+- `merge` - 合并多个实体为单一实体。
 
 ```typescript
 const user = new User()
-manager.merge(User, user, { firstName: "Timber" }, { lastName: "Saw" }) // same as user.firstName = "Timber"; user.lastName = "Saw";
+manager.merge(User, user, { firstName: "Timber" }, { lastName: "Saw" }) // 等同于 user.firstName = "Timber"; user.lastName = "Saw";
 ```
 
-- `preload` - Creates a new entity from the given plain javascript object. If the entity already exist in the database, then
-  it loads it (and everything related to it), replaces all values with the new ones from the given object,
-  and returns the new entity. The new entity is actually loaded from the database entity with all properties
-  replaced from the new object.
+- `preload` - 从给定的普通 JavaScript 对象创建一个新实体。如果实体已存在于数据库中，
+  则加载该实体（以及所有相关联的实体），用新对象中的值替换所有值，并返回新实体。
+  新实体实际上是从数据库中加载的实体，所有属性被新的对象替换。
 
 ```typescript
 const partialUser = {
@@ -134,30 +133,30 @@ const partialUser = {
     },
 }
 const user = await manager.preload(User, partialUser)
-// user will contain all missing data from partialUser with partialUser property values:
+// user 将包含 partialUser 中缺失的所有数据，且属性值为 partialUser 的值：
 // { id: 1, firstName: "Rizzrak", lastName: "Saw", profile: { id: 1, ... } }
 ```
 
-- `save` - Saves a given entity or array of entities.
-  If the entity already exists in the database, then it's updated.
-  If the entity does not exist in the database yet, it's inserted.
-  It saves all given entities in a single transaction (in the case of entity manager is not transactional).
-  Also supports partial updating since all undefined properties are skipped. In order to make a value `NULL`, you must manually set the property to equal `null`.
+- `save` - 保存给定实体或实体数组。
+  如果实体已存在数据库中，则更新它。
+  如果实体尚未存在，则插入它。
+  会在单个事务中保存所有给定实体（如果实体管理器本身不是事务性的）。
+  也支持部分更新，因为所有未定义的属性都会被跳过。若想将值设为 `NULL`，必须手动将属性设置为 `null`。
 
 ```typescript
 await manager.save(user)
 await manager.save([category1, category2, category3])
 ```
 
-- `remove` - Removes a given entity or array of entities.
-  It removes all given entities in a single transaction (in the case of entity, manager is not transactional).
+- `remove` - 删除给定实体或实体数组。
+  会在单个事务中删除所有给定实体（如果实体管理器本身不是事务性的）。
 
 ```typescript
 await manager.remove(user)
 await manager.remove([category1, category2, category3])
 ```
 
-- `insert` - Inserts a new entity, or array of entities.
+- `insert` - 插入一个新实体或实体数组。
 
 ```typescript
 await manager.insert(User, {
@@ -177,26 +176,26 @@ await manager.insert(User, [
 ])
 ```
 
-- `update` - Updates entities by entity id, ids or given conditions. Sets fields from supplied partial entity.
+- `update` - 通过实体 ID、IDs 或给定条件更新实体。按提供的部分实体设置字段。
 
 ```typescript
 await manager.update(User, { age: 18 }, { category: "ADULT" })
-// executes UPDATE user SET category = ADULT WHERE age = 18
+// 执行 UPDATE user SET category = ADULT WHERE age = 18
 
 await manager.update(User, 1, { firstName: "Rizzrak" })
-// executes UPDATE user SET firstName = Rizzrak WHERE id = 1
+// 执行 UPDATE user SET firstName = Rizzrak WHERE id = 1
 ```
 
-- `updateAll` - Updates _all_ entities of target type (without WHERE clause). Sets fields from supplied partial entity.
+- `updateAll` - 更新目标类型的所有实体（无 WHERE 条件）。按提供的部分实体设置字段。
 
 ```typescript
 await manager.updateAll(User, { category: "ADULT" })
-// executes UPDATE user SET category = ADULT
+// 执行 UPDATE user SET category = ADULT
 ```
 
-- `upsert` - Inserts a new entity or array of entities unless they already exist in which case they are updated instead. Supported by AuroraDataApi, Cockroach, Mysql, Postgres, and Sqlite database drivers.
+- `upsert` - 插入新实体或实体数组，除非它们已存在，在那种情况下改为更新。由 AuroraDataApi、Cockroach、Mysql、Postgres 和 Sqlite 数据库驱动支持。
 
-When an upsert operation results in an update (due to a conflict), special columns like `@UpdateDateColumn` and `@VersionColumn` are automatically updated to their current values.
+当 upsert 操作因冲突导致更新时，像 `@UpdateDateColumn` 和 `@VersionColumn` 这样特殊的列会自动更新为当前值。
 
 ```typescript
 await manager.upsert(
@@ -207,7 +206,7 @@ await manager.upsert(
     ],
     ["externalId"],
 )
-/** executes
+/** 执行
  *  INSERT INTO user
  *  VALUES
  *      (externalId = abc123, firstName = Rizzrak),
@@ -216,7 +215,7 @@ await manager.upsert(
  **/
 ```
 
-- `delete` - Deletes entities by entity id, ids or given conditions.
+- `delete` - 通过实体 ID、IDs 或给定条件删除实体。
 
 ```typescript
 await manager.delete(User, 1)
@@ -224,28 +223,28 @@ await manager.delete(User, [1, 2, 3])
 await manager.delete(User, { firstName: "Timber" })
 ```
 
-- `deleteAll` - Deletes _all_ entities of target type (without WHERE clause).
+- `deleteAll` - 删除目标类型的所有实体（无 WHERE 条件）。
 
 ```typescript
 await manager.deleteAll(User)
-// executes DELETE FROM user
+// 执行 DELETE FROM user
 ```
 
-Refer also to the `clear` method, which performs database `TRUNCATE TABLE` operation instead.
+另请参考 `clear` 方法，它执行数据库的 `TRUNCATE TABLE` 操作。
 
-- `increment` - Increments some column by provided value of entities that match given options.
+- `increment` - 将匹配给定条件的实体的某个列按提供的值递增。
 
 ```typescript
 await manager.increment(User, { firstName: "Timber" }, "age", 3)
 ```
 
-- `decrement` - Decrements some column by provided value that match given options.
+- `decrement` - 将匹配给定条件的实体的某个列按提供的值递减。
 
 ```typescript
 await manager.decrement(User, { firstName: "Timber" }, "age", 3)
 ```
 
-- `exists` - Check whether any entity exists that matches `FindOptions`.
+- `exists` - 检查是否存在匹配 `FindOptions` 条件的任何实体。
 
 ```typescript
 const exists = await manager.exists(User, {
@@ -255,13 +254,13 @@ const exists = await manager.exists(User, {
 })
 ```
 
-- `existsBy` - Checks whether any entity exists that matches `FindOptionsWhere`.
+- `existsBy` - 检查是否存在匹配 `FindOptionsWhere` 条件的任何实体。
 
 ```typescript
 const exists = await manager.existsBy(User, { firstName: "Timber" })
 ```
 
-- `count` - Counts entities that match `FindOptions`. Useful for pagination.
+- `count` - 统计匹配 `FindOptions` 条件的实体数量。适用于分页。
 
 ```typescript
 const count = await manager.count(User, {
@@ -271,13 +270,13 @@ const count = await manager.count(User, {
 })
 ```
 
-- `countBy` - Counts entities that match `FindOptionsWhere`. Useful for pagination.
+- `countBy` - 统计匹配 `FindOptionsWhere` 条件的实体数量。适用于分页。
 
 ```typescript
 const count = await manager.countBy(User, { firstName: "Timber" })
 ```
 
-- `find` - Finds entities that match given `FindOptions`.
+- `find` - 查找匹配给定 `FindOptions` 的实体。
 
 ```typescript
 const timbers = await manager.find(User, {
@@ -287,7 +286,7 @@ const timbers = await manager.find(User, {
 })
 ```
 
-- `findBy` - Finds entities that match given `FindWhereOptions`.
+- `findBy` - 查找匹配给定 `FindWhereOptions` 的实体。
 
 ```typescript
 const timbers = await manager.findBy(User, {
@@ -295,9 +294,8 @@ const timbers = await manager.findBy(User, {
 })
 ```
 
-- `findAndCount` - Finds entities that match given `FindOptions`.
-  Also counts all entities that match given conditions,
-  but ignores pagination settings (from and take options).
+- `findAndCount` - 查找匹配给定 `FindOptions` 的实体。
+  同时统计所有匹配条件的实体数量，但忽略分页设置（from 和 take 选项）。
 
 ```typescript
 const [timbers, timbersCount] = await manager.findAndCount(User, {
@@ -307,9 +305,8 @@ const [timbers, timbersCount] = await manager.findAndCount(User, {
 })
 ```
 
-- `findAndCountBy` - Finds entities that match given `FindOptionsWhere`.
-  Also counts all entities that match given conditions,
-  but ignores pagination settings (from and take options).
+- `findAndCountBy` - 查找匹配给定 `FindOptionsWhere` 的实体。
+  同时统计所有匹配条件的实体数量，但忽略分页设置（from 和 take 选项）。
 
 ```typescript
 const [timbers, timbersCount] = await manager.findAndCountBy(User, {
@@ -317,7 +314,7 @@ const [timbers, timbersCount] = await manager.findAndCountBy(User, {
 })
 ```
 
-- `findOne` - Finds the first entity that matches given `FindOptions`.
+- `findOne` - 查找匹配给定 `FindOptions` 的第一个实体。
 
 ```typescript
 const timber = await manager.findOne(User, {
@@ -327,14 +324,14 @@ const timber = await manager.findOne(User, {
 })
 ```
 
-- `findOneBy` - Finds the first entity that matches given `FindOptionsWhere`.
+- `findOneBy` - 查找匹配给定 `FindOptionsWhere` 的第一个实体。
 
 ```typescript
 const timber = await manager.findOneBy(User, { firstName: "Timber" })
 ```
 
-- `findOneOrFail` - Finds the first entity that matches some id or find options.
-  Rejects the returned promise if nothing matches.
+- `findOneOrFail` - 查找匹配某个 ID 或查找选项的第一个实体。
+  若无匹配，则返回的 Promise 拒绝。
 
 ```typescript
 const timber = await manager.findOneOrFail(User, {
@@ -344,49 +341,49 @@ const timber = await manager.findOneOrFail(User, {
 })
 ```
 
-- `findOneByOrFail` - Finds the first entity that matches given `FindOptions`.
-  Rejects the returned promise if nothing matches.
+- `findOneByOrFail` - 查找匹配给定 `FindOptionsWhere` 的第一个实体。
+  若无匹配，则返回的 Promise 拒绝。
 
 ```typescript
 const timber = await manager.findOneByOrFail(User, { firstName: "Timber" })
 ```
 
-- `clear` - Clears all the data from the given table (truncates/drops it).
+- `clear` - 清空指定表的所有数据（截断/删除该表）。
 
 ```typescript
 await manager.clear(User)
 ```
 
-- `getRepository` - Gets `Repository` to perform operations on a specific entity.
-  Learn more about [Repositories](./2-working-with-repository.md).
+- `getRepository` - 获取用于操作特定实体的 `Repository`。
+  了解更多关于 [Repositories](./2-working-with-repository.md)。
 
 ```typescript
 const userRepository = manager.getRepository(User)
 ```
 
-- `getTreeRepository` - Gets `TreeRepository` to perform operations on a specific entity.
-  Learn more about [Repositories](./2-working-with-repository.md).
+- `getTreeRepository` - 获取用于操作特定实体的 `TreeRepository`。
+  了解更多关于 [Repositories](./2-working-with-repository.md)。
 
 ```typescript
 const categoryRepository = manager.getTreeRepository(Category)
 ```
 
-- `getMongoRepository` - Gets `MongoRepository` to perform operations on a specific entity.
-  Learn more about [MongoDB](../drivers/mongodb.md).
+- `getMongoRepository` - 获取用于操作特定实体的 `MongoRepository`。
+  了解更多关于 [MongoDB](../drivers/mongodb.md)。
 
 ```typescript
 const userRepository = manager.getMongoRepository(User)
 ```
 
-- `withRepository` - Gets custom repository instance used in a transaction.
-  Learn more about [Custom repositories](./4-custom-repository.md).
+- `withRepository` - 获取事务中使用的自定义仓库实例。
+  了解更多关于 [自定义仓库](./4-custom-repository.md)。
 
 ```typescript
 const myUserRepository = manager.withRepository(UserRepository)
 ```
 
-- `release` - Releases query runner of an entity manager.
-  Used only when query runner was created and managed manually.
+- `release` - 释放实体管理器的查询运行器。
+  仅在查询运行器被手动创建和管理时使用。
 
 ```typescript
 await manager.release()

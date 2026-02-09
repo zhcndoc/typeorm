@@ -1,7 +1,7 @@
-# Using Validation
+# 使用验证
 
-To use validation use [class-validator](https://github.com/pleerock/class-validator).
-Example how to use class-validator with TypeORM:
+要使用验证，请使用 [class-validator](https://github.com/pleerock/class-validator)。
+以下是如何将 class-validator 与 TypeORM 一起使用的示例：
 
 ```typescript
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
@@ -49,21 +49,21 @@ export class Post {
 }
 ```
 
-Validation:
+验证：
 
 ```typescript
 import { validate } from "class-validator"
 
 let post = new Post()
-post.title = "Hello" // should not pass
-post.text = "this is a great post about hell world" // should not pass
-post.rating = 11 // should not pass
-post.email = "google.com" // should not pass
-post.site = "googlecom" // should not pass
+post.title = "Hello" // 不应通过验证
+post.text = "this is a great post about hell world" // 不应通过验证
+post.rating = 11 // 不应通过验证
+post.email = "google.com" // 不应通过验证
+post.site = "googlecom" // 不应通过验证
 
 const errors = await validate(post)
 if (errors.length > 0) {
-    throw new Error(`Validation failed!`)
+    throw new Error(`验证失败！`)
 } else {
     await dataSource.manager.save(post)
 }

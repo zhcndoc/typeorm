@@ -1,147 +1,147 @@
 # DataSource API
 
-- `options` - Options used to create this dataSource.
-  Learn more about [Data Source Options](./2-data-source-options.md).
+- `options` - 用于创建该 dataSource 的选项。
+  详细了解 [数据源选项](./2-data-source-options.md)。
 
 ```typescript
 const dataSourceOptions: DataSourceOptions = dataSource.options
 ```
 
-- `isInitialized` - Indicates if DataSource was initialized and initial connection / connection pool with database was established or not.
+- `isInitialized` - 指示 DataSource 是否已初始化以及是否已建立与数据库的初始连接/连接池。
 
 ```typescript
 const isInitialized: boolean = dataSource.isInitialized
 ```
 
-- `driver` - Underlying database driver used in this dataSource.
+- `driver` - 该 dataSource 使用的底层数据库驱动。
 
 ```typescript
 const driver: Driver = dataSource.driver
 ```
 
-- `manager` - `EntityManager` used to work with entities.
-  Learn more about [Entity Manager](../working-with-entity-manager/1-working-with-entity-manager.md) and [Repository](../working-with-entity-manager/2-working-with-repository.md).
+- `manager` - 用于操作实体的 `EntityManager`。
+  详细了解 [实体管理器](../working-with-entity-manager/1-working-with-entity-manager.md) 和 [仓库](../working-with-entity-manager/2-working-with-repository.md)。
 
 ```typescript
 const manager: EntityManager = dataSource.manager
-// you can call manager methods, for example find:
+// 你可以调用 manager 的方法，例如 find：
 const users = await manager.find()
 ```
 
-- `mongoManager` - `MongoEntityManager` used to work with entities for mongodb data source.
-  For more information about MongoEntityManager see [MongoDB](../drivers/mongodb.md) documentation.
+- `mongoManager` - 用于 mongodb 数据源操作实体的 `MongoEntityManager`。
+  有关 MongoEntityManager 的更多信息，请参阅 [MongoDB](../drivers/mongodb.md) 文档。
 
 ```typescript
 const manager: MongoEntityManager = dataSource.mongoManager
-// you can call manager or mongodb-manager specific methods, for example find:
+// 你可以调用 manager 或 mongodb-manager 特有的方法，例如 find：
 const users = await manager.find()
 ```
 
-- `initialize` - Initializes data source and opens connection pool to the database.
+- `initialize` - 初始化数据源并打开数据库连接池。
 
 ```typescript
 await dataSource.initialize()
 ```
 
-- `destroy` - Destroys the DataSource and closes all database connections.
-  Usually, you call this method when your application is shutting down.
+- `destroy` - 销毁 DataSource 并关闭所有数据库连接。
+  通常，在应用关闭时调用此方法。
 
 ```typescript
 await dataSource.destroy()
 ```
 
-- `synchronize` - Synchronizes database schema. When `synchronize: true` is set in data source options it calls this method.
-  Usually, you call this method when your application is starting.
+- `synchronize` - 同步数据库架构。当在数据源选项中设置 `synchronize: true` 时，会调用此方法。
+  通常在应用启动时调用。
 
 ```typescript
 await dataSource.synchronize()
 ```
 
-- `dropDatabase` - Drops the database and all its data.
-  Be careful with this method on production since this method will erase all your database tables and their data.
-  Can be used only after connection to the database is established.
+- `dropDatabase` - 删除数据库及其所有数据。
+  在生产环境中请谨慎使用此方法，因为它会清除所有数据库表及其数据。
+  仅可在数据库连接建立后使用。
 
 ```typescript
 await dataSource.dropDatabase()
 ```
 
-- `runMigrations` - Runs all pending migrations.
+- `runMigrations` - 运行所有待执行的迁移。
 
 ```typescript
 await dataSource.runMigrations()
 ```
 
-- `undoLastMigration` - Reverts last executed migration.
+- `undoLastMigration` - 撤销最后一次执行的迁移。
 
 ```typescript
 await dataSource.undoLastMigration()
 ```
 
-- `hasMetadata` - Checks if metadata for a given entity is registered.
+- `hasMetadata` - 检查是否已注册给定实体的元数据。
 
 ```typescript
 if (dataSource.hasMetadata(User))
     const userMetadata = dataSource.getMetadata(User)
 ```
 
-- `getMetadata` - Gets `EntityMetadata` of the given entity.
-  You can also specify a table name and if entity metadata with such table name is found it will be returned.
+- `getMetadata` - 获取给定实体的 `EntityMetadata`。
+  你也可以指定表名，如果找到对应表名的实体元数据，则返回该元数据。
 
 ```typescript
 const userMetadata = dataSource.getMetadata(User)
-// now you can get any information about User entity
+// 现在你可以获取关于 User 实体的任何信息
 ```
 
-- `getRepository` - Gets `Repository` of the given entity.
-  You can also specify a table name and if repository for given table is found it will be returned.
-  Learn more about [Repositories](../working-with-entity-manager/2-working-with-repository.md).
+- `getRepository` - 获取给定实体的 `Repository`。
+  你也可以指定表名，如果找到对应表的仓库，则返回该仓库。
+  详细了解 [仓库](../working-with-entity-manager/2-working-with-repository.md)。
 
 ```typescript
 const repository = dataSource.getRepository(User)
-// now you can call repository methods, for example find:
+// 现在你可以调用仓库方法，例如 find：
 const users = await repository.find()
 ```
 
-- `getTreeRepository` - Gets `TreeRepository` of the given entity.
-  You can also specify a table name and if repository for given table is found it will be returned.
-  Learn more about [Repositories](../working-with-entity-manager/2-working-with-repository.md).
+- `getTreeRepository` - 获取给定实体的 `TreeRepository`。
+  你也可以指定表名，如果找到对应表的仓库，则返回该仓库。
+  详细了解 [仓库](../working-with-entity-manager/2-working-with-repository.md)。
 
 ```typescript
 const repository = dataSource.getTreeRepository(Category)
-// now you can call tree repository methods, for example findTrees:
+// 现在你可以调用树型仓库方法，例如 findTrees：
 const categories = await repository.findTrees()
 ```
 
-- `getMongoRepository` - Gets `MongoRepository` of the given entity.
-  This repository is used for entities in MongoDB dataSource.
-  Learn more about [MongoDB support](../drivers/mongodb.md).
+- `getMongoRepository` - 获取给定实体的 `MongoRepository`。
+  该仓库用于 MongoDB 数据源中的实体。
+  详细了解 [MongoDB 支持](../drivers/mongodb.md)。
 
 ```typescript
 const repository = dataSource.getMongoRepository(User)
-// now you can call mongodb-specific repository methods, for example createEntityCursor:
+// 现在你可以调用 mongodb 特有的仓库方法，例如 createEntityCursor：
 const categoryCursor = repository.createEntityCursor()
 const category1 = await categoryCursor.next()
 const category2 = await categoryCursor.next()
 ```
 
-- `transaction` - Provides a single transaction where multiple database requests will be executed in a single database transaction.
-  Learn more about [Transactions](../advanced-topics/2-transactions.md).
+- `transaction` - 提供单个事务，其中的多个数据库请求将作为一个数据库事务执行。
+  详细了解 [事务](../advanced-topics/2-transactions.md)。
 
 ```typescript
 await dataSource.transaction(async (manager) => {
-    // NOTE: you must perform all database operations using given manager instance
-    // its a special instance of EntityManager working with this transaction
-    // and don't forget to await things here
+    // 注意：你必须使用给定的 manager 实例执行所有数据库操作
+    // 它是与当前事务关联的 EntityManager 特殊实例
+    // 并且不要忘记 await 这些操作
 })
 ```
 
-- `query` - Executes a raw SQL query.
+- `query` - 执行原始 SQL 查询。
 
 ```typescript
 const rawData = await dataSource.query(`SELECT * FROM USERS`)
 
-// You can also use parameters to avoid SQL injection
-// The syntax differs between the drivers
+// 你也可以使用参数以避免 SQL 注入
+// 不同驱动的语法有所不同
 
 // aurora-mysql, better-sqlite3, capacitor, cordova,
 // expo, mariadb, mysql, nativescript, react-native,
@@ -176,17 +176,17 @@ const rawData = await dataSource.query(
 )
 ```
 
-- `sql` - Executes a raw SQL query using template literals.
+- `sql` - 使用模板字符串执行原始 SQL 查询。
 
 ```typescript
 const rawData =
     await dataSource.sql`SELECT * FROM USERS WHERE name = ${"John"} and age = ${24}`
 ```
 
-Learn more about using the [SQL Tag syntax](../guides/7-sql-tag.md).
+详细了解使用 [SQL 标签语法](../guides/7-sql-tag.md)。
 
-- `createQueryBuilder` - Creates a query builder, which can be used to build queries.
-  Learn more about [QueryBuilder](../query-builder/1-select-query-builder.md).
+- `createQueryBuilder` - 创建查询构建器，用于构建查询。
+  详细了解 [查询构建器](../query-builder/1-select-query-builder.md)。
 
 ```typescript
 const users = await dataSource
@@ -197,18 +197,18 @@ const users = await dataSource
     .getMany()
 ```
 
-- `createQueryRunner` - Creates a query runner used to manage and work with a single real database dataSource.
-  Learn more about [QueryRunner](../query-runner.md).
+- `createQueryRunner` - 创建查询运行器，用于管理和操作单个真实数据库数据源。
+  详细了解 [QueryRunner](../query-runner.md)。
 
 ```typescript
 const queryRunner = dataSource.createQueryRunner()
 
-// you can use its methods only after you call connect
-// which performs real database connection
+// 只有调用 connect 后才能使用它的方法
+// 该方法用于执行真实的数据库连接
 await queryRunner.connect()
 
-// .. now you can work with query runner and call its methods
+// .. 现在你可以使用 query runner 并调用其方法了
 
-// very important - don't forget to release query runner once you finished working with it
+// 非常重要 - 完成工作后别忘了释放 query runner
 await queryRunner.release()
 ```

@@ -1,23 +1,23 @@
-# Query Runner
+# 查询运行器
 
-## What is a QueryRunner?
+## 什么是 QueryRunner？
 
-Each new `QueryRunner` instance takes a single connection from the connection pool, if the RDBMS supports connection pooling.
-For databases that do not support connection pools, it uses the same connection across the entire data source.
+每个新的 `QueryRunner` 实例都会从连接池中获取一个连接（如果关系数据库管理系统支持连接池）。
+对于不支持连接池的数据库，它会在整个数据源中使用相同的连接。
 
-The full QueryRunner API is documented in the [migrations section](./migrations/09-api.md).
+完整的 QueryRunner API 文档请参见[迁移章节](./migrations/09-api.md)。
 
-## Creating a new `QueryRunner` instance
+## 创建新的 `QueryRunner` 实例
 
-Use the `createQueryRunner` method to create a new `QueryRunner`:
+使用 `createQueryRunner` 方法来创建一个新的 `QueryRunner`：
 
 ```typescript
 const queryRunner = dataSource.createQueryRunner()
 ```
 
-## Using `QueryRunner`
+## 使用 `QueryRunner`
 
-After creating a new instance of `QueryRunner`, a connection will be acquired from the pool when you issue the first query:
+创建新的 `QueryRunner` 实例后，当你执行第一个查询时，会从连接池中获取一个连接：
 
 ```typescript
 const queryRunner = dataSource.createQueryRunner()
@@ -25,7 +25,7 @@ await queryRunner.query("SELECT 1")
 await queryRunner.release()
 ```
 
-You can also use `connect` method to directly get a connection from the connection pool:
+你也可以使用 `connect` 方法直接从连接池获取一个连接：
 
 ```typescript
 const queryRunner = dataSource.createQueryRunner()
@@ -33,21 +33,21 @@ const clientConnection = await queryRunner.connect()
 await queryRunner.release()
 ```
 
-**Important**: make sure to release the `QueryRunner` when it is no longer necessary to return the connection back to the connection pool:
+**重要**：确保在不再需要使用 `QueryRunner` 时调用释放方法，将连接返回给连接池：
 
 ```typescript
 await queryRunner.release()
 ```
 
-After the `QueryRunner` is released, it is no longer possible to use the query runner methods.
+释放 `QueryRunner` 后，将无法再使用其方法。
 
-`QueryRunner` also has its own `EntityManager` instance, which you can use through the `manager` property to run `EntityManager` queries on a particular database connection used by the `QueryRunner` instance:
+`QueryRunner` 还有自己独立的 `EntityManager` 实例，你可以通过 `manager` 属性使用它，对 `QueryRunner` 实例所使用的特定数据库连接执行 `EntityManager` 的查询：
 
 ```typescript
 let queryRunner: QueryRunner
 try {
     queryRunner = dataSource.createQueryRunner()
-    // use a single database connection to execute multiple queries
+    // 使用单个数据库连接执行多个查询
     await queryRunner.manager.update(
         Employee,
         { level: "junior" },
@@ -61,14 +61,14 @@ try {
 } catch (error) {
     console.error(error)
 } finally {
-    // remember to release connection after you are done using it
+    // 使用完成后记得释放连接
     await queryRunner.release()
 }
 ```
 
-## Explicit Resource Management
+## 显式资源管理
 
-`QueryRunner` also supports explicit resource management:
+`QueryRunner` 也支持显式的资源管理：
 
 ```typescript
 async function updateSalaries() {
@@ -83,7 +83,7 @@ async function updateSalaries() {
         { level: "senior" },
         { bonus: 0.1 },
     )
-    // no need anymore to manually release the QueryRunner
+    // 不再需要手动释放 QueryRunner
 }
 
 try {
@@ -93,4 +93,4 @@ try {
 }
 ```
 
-When declaring a query runner like this, it will be automatically released after the last statement in the containing scope was executed.
+像这样声明 query runner 时，它会在包含作用域中的最后一条语句执行完毕后自动释放。
