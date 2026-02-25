@@ -174,9 +174,9 @@ SELECT * FROM "user"
 LIMIT 10
 ```
 
-\*\* `skip` 和 `take` 应配合使用
+** `skip` 和 `take` 应配合使用**
 
-\*\* 如果您使用 MSSQL，并想使用 `take` 或 `limit`，需要同时指定 `order`，否则会收到以下错误：`'Invalid usage of the option NEXT in the FETCH statement.'`
+** 如果您使用 MSSQL，并想使用 `take` 或 `limit`，需要同时指定 `order`，否则会收到以下错误：`'Invalid usage of the option NEXT in the FETCH statement.'`
 
 ```typescript
 userRepository.find({
@@ -204,7 +204,7 @@ userRepository.find({
 })
 ```
 
-- `lock` - 为查询启用锁机制。仅可用于 `findOne` 和 `findOneBy` 方法。
+- `lock` - 为查询启用锁机制。仅可用于 `findOne` 和 `findOneBy` 方法。  
   `lock` 是一个对象，可以定义为：
 
 ```ts
@@ -247,6 +247,8 @@ userRepository.findOne({
 
 更多信息见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)
 
+## 示例
+
 查找选项完整示例：
 
 ```typescript
@@ -270,6 +272,10 @@ userRepository.find({
     order: {
         name: "ASC",
         id: "DESC",
+    },
+    lock: {
+        mode: "pessimistic_write",
+        onLocked: "nowait",
     },
     skip: 5,
     take: 10,
@@ -565,7 +571,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "likes" = "dislikes" - 4
 ```
 
-最简单的情况是，原始查询直接插入在等号后面。
+最简单的情况是，原始查询直接插入在等号后面。  
 但您也可以通过函数完全重写比较逻辑。
 
 ```ts
@@ -582,7 +588,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "currentDate" > NOW()
 ```
 
-如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。
+如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。  
 而应使用 `Raw` 函数的第二个参数，提供用于绑定查询的参数列表。
 
 ```ts

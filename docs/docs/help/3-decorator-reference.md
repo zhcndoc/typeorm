@@ -31,6 +31,7 @@ export class User {}
     engine: "MyISAM",
     database: "example_dev",
     schema: "schema_with_best_tables",
+    comment: "This is users table",
     synchronize: false,
     orderBy: {
         name: "ASC",

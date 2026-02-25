@@ -1,23 +1,23 @@
-# Vector Type Support in SQL Server
+# SQL Server 中的向量类型支持
 
-This sample demonstrates how to use the `vector` column type in SQL Server with TypeORM for storing and querying vector embeddings.
+本示例演示了如何在 SQL Server 中使用 TypeORM 的 `vector` 列类型来存储和查询向量嵌入。
 
-## Overview
+## 概述
 
-SQL Server supports the `vector` data type for storing high-dimensional vectors, which is useful for:
+SQL Server 支持 `vector` 数据类型用于存储高维向量，适用于：
 
-- Semantic search with embeddings
-- Recommendation systems
-- Similarity matching
-- Machine learning applications
+- 使用嵌入进行语义搜索
+- 推荐系统
+- 相似度匹配
+- 机器学习应用
 
-## Features Demonstrated
+## 演示功能
 
-1. **Vector Column Definition**: Define columns with specific vector dimensions
-2. **Storing Embeddings**: Save vector data as arrays of numbers
-3. **Vector Similarity Search**: Use `VECTOR_DISTANCE` function for cosine similarity
+1. **向量列定义**：定义具有特定向量维度的列
+2. **存储嵌入**：以数字数组形式保存向量数据
+3. **向量相似度搜索**：使用 `VECTOR_DISTANCE` 函数计算余弦相似度
 
-## Entity Definition
+## 实体定义
 
 ```typescript
 @Entity("document_chunks")
@@ -28,7 +28,7 @@ export class DocumentChunk {
     @Column("varchar", { length: "MAX" })
     content: string
 
-    // Vector column with 1998 dimensions
+    // 1998 维的向量列
     @Column("vector", { length: 1998 })
     embedding: number[]
 
@@ -41,20 +41,20 @@ export class DocumentChunk {
 }
 ```
 
-## Vector Similarity Search
+## 向量相似度搜索
 
-SQL Server provides the `VECTOR_DISTANCE` function for calculating distances between vectors:
+SQL Server 提供了 `VECTOR_DISTANCE` 函数来计算向量间的距离：
 
 ```typescript
 const queryEmbedding = [
-    /* your query vector */
+    /* 你的查询向量 */
 ]
 const documentIds = ["doc-id-1", "doc-id-2"]
 
-const results = await connection.query(
+const results = await dataSource.query(
     `
     DECLARE @question AS VECTOR (1998) = @0;
-    SELECT TOP (10) dc.*, 
+    SELECT TOP (10) dc.*,
            VECTOR_DISTANCE('cosine', @question, embedding) AS distance,
            d.fileName as "documentName"
     FROM document_chunks dc
@@ -66,31 +66,31 @@ const results = await connection.query(
 )
 ```
 
-## Distance Metrics
+## 距离度量
 
-The `VECTOR_DISTANCE` function supports different distance metrics:
+`VECTOR_DISTANCE` 函数支持不同的距离度量方法：
 
-- `'cosine'` - Cosine distance (most common for semantic search)
-- `'euclidean'` - Euclidean (L2) distance
-- `'dot'` - Negative dot product
+- `'cosine'` - 余弦距离（语义搜索中最常用）
+- `'euclidean'` - 欧几里得距离（L2 距离）
+- `'dot'` - 负点积
 
-## Requirements
+## 需求
 
-- SQL Server with vector support enabled
-- TypeORM with SQL Server driver (`mssql` package)
+- 启用向量支持的 SQL Server
+- 搭配 SQL Server 驱动（`mssql` 包）的 TypeORM
 
-## Running the Sample
+## 运行示例
 
-1. Make sure you have SQL Server running with vector support
-2. Update the connection settings in `app.ts` if needed
-3. Run:
+1. 确保你已有启用向量支持的 SQL Server 运行环境
+2. 如有需要，更新 `app.ts` 中的数据源配置
+3. 运行：
     ```bash
     npm install
     ts-node app.ts
     ```
 
-## Notes
+## 注意事项
 
-- Vector dimensions must be specified using the `length` option
-- Embeddings are stored as JSON strings internally and converted to/from arrays automatically
-- The maximum vector dimension depends on your SQL Server version and configuration
+- 必须通过 `length` 选项指定向量维度
+- 嵌入内部以 JSON 字符串形式存储，自动转换为/自数字数组
+- 最大向量维度取决于你的 SQL Server 版本及配置

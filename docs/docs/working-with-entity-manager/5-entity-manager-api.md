@@ -1,12 +1,12 @@
 # `EntityManager` API
 
-- `dataSource` - `EntityManager`使用的数据源。
+- `dataSource` - `EntityManager` 使用的数据源。
 
 ```typescript
 const dataSource = manager.dataSource
 ```
 
-- `queryRunner` - `EntityManager`使用的查询运行器。
+- `queryRunner` - `EntityManager` 使用的查询运行器。
   仅在事务性实体管理器实例中使用。
 
 ```typescript
@@ -176,7 +176,7 @@ await manager.insert(User, [
 ])
 ```
 
-- `update` - 通过实体 ID、IDs 或给定条件更新实体。按提供的部分实体设置字段。
+- `update` - 通过实体 ID、多个 ID、给定条件，或条件对象数组更新实体。按提供的部分实体设置字段。
 
 ```typescript
 await manager.update(User, { age: 18 }, { category: "ADULT" })
@@ -184,6 +184,26 @@ await manager.update(User, { age: 18 }, { category: "ADULT" })
 
 await manager.update(User, 1, { firstName: "Rizzrak" })
 // 执行 UPDATE user SET firstName = Rizzrak WHERE id = 1
+
+// 批量更新，每个操作条件不同
+await manager.update(User, [
+    { criteria: { id: 1 }, data: { firstName: "Rizzrak" } },
+    { criteria: { id: 2 }, data: { firstName: "Karzzir" } },
+    { criteria: { age: 18 }, data: { category: "ADULT" } },
+])
+// 执行三条独立的 UPDATE 查询：
+// UPDATE user SET firstName = Rizzrak WHERE id = 1
+// UPDATE user SET firstName = Karzzir WHERE id = 2
+// UPDATE user SET category = ADULT WHERE age = 18
+```
+
+你也可以传入**条件对象数组**，以在一次调用中匹配多组不同行，例如（这些条件使用 OR 连接）：
+
+```typescript
+await manager.update(User, [{ status: "expired" }, { flagged: true }], {
+    active: false,
+})
+// 执行 UPDATE user SET active = false WHERE status = 'expired' OR flagged = true
 ```
 
 - `updateAll` - 更新目标类型的所有实体（无 WHERE 条件）。按提供的部分实体设置字段。
@@ -215,13 +235,33 @@ await manager.upsert(
  **/
 ```
 
-- `delete` - 通过实体 ID、IDs 或给定条件删除实体。
+- `delete` - 通过实体 ID、多 ID、给定条件，或条件对象数组删除实体。
 
 ```typescript
 await manager.delete(User, 1)
 await manager.delete(User, [1, 2, 3])
 await manager.delete(User, { firstName: "Timber" })
+
+// 批量删除，每个操作条件不同
+await manager.delete(User, [{ firstName: "Timber" }, { age: 18 }, { id: 42 }])
+// 执行三条独立的 DELETE 查询：
+// DELETE FROM user WHERE firstName = Timber
+// DELETE FROM user WHERE age = 18
+// DELETE FROM user WHERE id = 42
 ```
+
+你可以传入**条件对象数组**，匹配多组不同的行（条件使用 OR 连接）。这与传入原始数组不同，后者被视为 ID 列表：
+
+```typescript
+// 原始数组 —— 解释为 WHERE id IN (1, 2, 3)
+await manager.delete(User, [1, 2, 3])
+
+// 对象数组 —— 每个元素都是独立条件（多个条件 OR 连接）
+await manager.delete(User, [{ id: 1 }, { email: "old@example.com" }])
+// 执行 DELETE FROM user WHERE id = 1 OR email = 'old@example.com'
+```
+
+注意：传入空对象 `{}` 或 `[{}]` 会抛出 `TypeORMError`，以防意外删除整表。
 
 - `deleteAll` - 删除目标类型的所有实体（无 WHERE 条件）。
 
@@ -348,10 +388,13 @@ const timber = await manager.findOneOrFail(User, {
 const timber = await manager.findOneByOrFail(User, { firstName: "Timber" })
 ```
 
-- `clear` - 清空指定表的所有数据（截断/删除该表）。
+- `clear` - 清空指定表的所有数据（截断表）。支持级联选项，同时清空所有引用此表的外键表数据（仅 PostgreSQL/CockroachDB 和 Oracle 支持；其他数据库设置 cascade 为 true 会抛错）。
 
 ```typescript
 await manager.clear(User)
+
+// 使用级联选项（仅 PostgreSQL/CockroachDB 和 Oracle 支持）
+await manager.clear(User, { cascade: true })
 ```
 
 - `getRepository` - 获取用于操作特定实体的 `Repository`。

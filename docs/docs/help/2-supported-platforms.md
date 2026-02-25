@@ -2,7 +2,7 @@
 
 ## NodeJS
 
-TypeORM 兼容 Node.js 16 及以上版本，目前每次提交都会在 Node.js 18 和 20 上进行测试。
+TypeORM 兼容 Node.js 20 及以上版本，目前每次提交都会在 Node.js 20 和 24 上进行测试。
 
 ## 浏览器
 
@@ -50,9 +50,10 @@ new DataSource({
 
 ## Cordova / Ionic 应用
 
-TypeORM 能够在 Cordova/Ionic 应用中使用，[cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件。
-你可以选择使用和浏览器包类似的模块加载器。
-关于如何在 Cordova 中使用 TypeORM 的示例，请见 [typeorm/cordova-example](https://github.com/typeorm/cordova-example)；在 Ionic 中请见 [typeorm/ionic-example](https://github.com/typeorm/ionic-example)。**重要**：用于 Ionic 需要自定义 webpack 配置文件！请查看示例了解所需更改。注意，目前使用 [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件时不支持事务。更多信息请参见 [Cordova SQLite 限制](https://github.com/storesafe/cordova-sqlite-storage#other-limitations)。
+TypeORM 能够在 Cordova/Ionic 应用中使用，[cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件。  
+你可以选择使用和浏览器包类似的模块加载器。  
+关于如何在 Cordova 中使用 TypeORM 的示例，请见 [typeorm/cordova-example](https://github.com/typeorm/cordova-example)；在 Ionic 中请见 [typeorm/ionic-example](https://github.com/typeorm/ionic-example)。**重要**：用于 Ionic 需要自定义 webpack 配置文件！请查看示例了解所需更改。  
+注意，目前使用 [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件时不支持事务。更多信息请参见 [Cordova SQLite 限制](https://github.com/storesafe/cordova-sqlite-storage#other-limitations)。
 
 ## Expo
 
@@ -60,8 +61,8 @@ TypeORM 能够在 Expo 应用中使用 [Expo SQLite API](https://docs.expo.io/ve
 
 ## NativeScript
 
-1. 执行 `tns install webpack`（原因见下文为什么需要 webpack）
-2. 执行 `tns plugin add nativescript-sqlite`
+1. 执行 `tns install webpack`（原因见下文为什么需要 webpack）  
+2. 执行 `tns plugin add nativescript-sqlite`  
 3. 在应用入口文件中创建 DataSource
 
     ```typescript
@@ -80,9 +81,9 @@ TypeORM 能够在 Expo 应用中使用 [Expo SQLite API](https://docs.expo.io/ve
 
 注意：此方式仅适用于 NativeScript 4.x 及以上版本
 
-_使用 NativeScript 时，**必须使用 webpack**。
-`typeorm/browser` 包是原始的 ES7 代码，带有 `import/export`，
-无法直接运行。必须进行打包。
+_使用 NativeScript 时，**必须使用 webpack**。  
+`typeorm/browser` 包是原始的 ES7 代码，带有 `import/export`，  
+无法直接运行。必须进行打包。  
 请使用 `tns run --bundle` 方法运行。_
 
 示例请见此处 [示例链接](https://github.com/championswimmer/nativescript-vue-typeorm-sample)！

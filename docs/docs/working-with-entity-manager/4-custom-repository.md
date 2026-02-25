@@ -59,7 +59,7 @@ export class UserController {
 你必须使用提供的实体管理器实例的 `withRepository` 方法：
 
 ```typescript
-await connection.transaction(async (manager) => {
+await dataSource.transaction(async (manager) => {
     // 在事务中你必须使用事务提供的 manager 实例，
     // 不能使用全局实体管理器或仓库，
     // 因为该 manager 是独立且事务性的

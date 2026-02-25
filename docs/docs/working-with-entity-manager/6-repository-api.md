@@ -14,21 +14,21 @@ const manager = repository.manager
 const metadata = repository.metadata
 ```
 
-- `queryRunner` - `EntityManager` 使用的查询运行器。
+- `queryRunner` - `EntityManager` 使用的查询运行器。  
   仅用于事务性实例的 EntityManager。
 
 ```typescript
 const queryRunner = repository.queryRunner
 ```
 
-- `target` - 此仓库管理的目标实体类。
+- `target` - 此仓库管理的目标实体类。  
   仅用于事务性实例的 EntityManager。
 
 ```typescript
 const target = repository.target
 ```
 
-- `createQueryBuilder` - 创建用于构建 SQL 查询的查询构建器。
+- `createQueryBuilder` - 创建用于构建 SQL 查询的查询构建器。  
   了解更多关于 [QueryBuilder](../query-builder/1-select-query-builder.md)。
 
 ```typescript
@@ -46,14 +46,14 @@ if (repository.hasId(user)) {
 }
 ```
 
-- `getId` - 获取给定实体的主键列属性值。
+- `getId` - 获取给定实体的主键列属性值。  
   如果实体有复合主键，则返回值是一个包含主键列名称和值的对象。
 
 ```typescript
 const userId = repository.getId(user) // userId === 1
 ```
 
-- `create` - 创建一个新的 `User` 实例。可选地接受一个包含用户属性的对象字面量，
+- `create` - 创建一个新的 `User` 实例。可选地接受一个包含用户属性的对象字面量，  
   这些属性将写入新创建的用户对象。
 
 ```typescript
@@ -72,8 +72,8 @@ const user = new User()
 repository.merge(user, { firstName: "Timber" }, { lastName: "Saw" }) // 等同于 user.firstName = "Timber"; user.lastName = "Saw";
 ```
 
-- `preload` - 根据给定的普通 JavaScript 对象创建一个新实体。如果实体已存在于数据库中，
-  则加载它（及其所有关联），用给定对象的新值替换所有属性，并返回新的实体。新的实体实际上是从数据库加载的实体，
+- `preload` - 根据给定的普通 JavaScript 对象创建一个新实体。如果实体已存在于数据库中，  
+  则加载它（及其所有关联），用给定对象的新值替换所有属性，并返回新的实体。新的实体实际上是从数据库加载的实体，  
   其所有属性都被新对象的值替换。
 
 > 注意：给定的类实体对象必须包含实体 ID / 主键用于查找。若未找到对应 ID 的实体，则返回 undefined。
@@ -91,11 +91,11 @@ const user = await repository.preload(partialUser)
 // { id: 1, firstName: "Rizzrak", lastName: "Saw", profile: { id: 1, ... } }
 ```
 
-- `save` - 保存给定的实体或实体数组。
-  如果实体已存在于数据库中，则执行更新。
-  如果实体不存在数据库中，则执行插入。
-  会在单一事务中保存所有给定实体（当实体的 manager 非事务状态时）。
-  同时支持部分更新，因为所有未定义属性都会被跳过。
+- `save` - 保存给定的实体或实体数组。  
+  如果实体已存在于数据库中，则执行更新。  
+  如果实体不存在数据库中，则执行插入。  
+  会在单一事务中保存所有给定实体（当实体的 manager 非事务状态时）。  
+  同时支持部分更新，因为所有未定义属性都会被跳过。  
   返回已保存的实体/实体数组。
 
 ```typescript
@@ -103,8 +103,8 @@ await repository.save(user)
 await repository.save([category1, category2, category3])
 ```
 
-- `remove` - 删除给定的实体或实体数组。
-  会在单一事务中删除所有给定实体（当实体的 manager 非事务状态时）。
+- `remove` - 删除给定的实体或实体数组。  
+  会在单一事务中删除所有给定实体（当实体的 manager 非事务状态时）。  
   返回被删除的实体/实体数组。
 
 ```typescript
@@ -148,6 +148,15 @@ const result = await repository.update(
     { returning: ["id", "firstName"] },
 )
 console.log(result.raw) // [{ id: 1, firstName: "Rizzrak" }]
+```
+
+你可以传入 **条件对象数组** 来一次匹配多组不同行（条件用 OR 连接）：
+
+```typescript
+await repository.update([{ status: "expired" }, { flagged: true }], {
+    active: false,
+})
+// 执行 UPDATE user SET active = false WHERE status = 'expired' OR flagged = true
 ```
 
 - `updateAll` - 更新目标类型的 _所有_ 实体（无 WHERE 子句）。设置来自部分实体的字段。
@@ -275,6 +284,13 @@ await repository.restore(1)
 await repository.softDelete([1, 2, 3])
 // 或通过其他属性软删除
 await repository.softDelete({ firstName: "Jake" })
+
+// 不同条件批量软删除
+await repository.softDelete([{ firstName: "Jake" }, { age: 25 }, { id: 42 }])
+// 执行三条独立 UPDATE 查询（设置 deletedAt 时间戳）：
+// UPDATE entity SET deletedAt = NOW() WHERE firstName = Jake
+// UPDATE entity SET deletedAt = NOW() WHERE age = 25
+// UPDATE entity SET deletedAt = NOW() WHERE id = 42
 ```
 
 - `softRemove` 和 `recover` - 这是 `softDelete` 和 `restore` 的另一种方式。
@@ -374,8 +390,8 @@ const timbers = await repository.findBy({
 })
 ```
 
-- `findAndCount` - 查找符合给定 `FindOptions` 的实体。
-  同时计数所有符合条件的实体数，
+- `findAndCount` - 查找符合给定 `FindOptions` 的实体。  
+  同时计数所有符合条件的实体数，  
   但忽略分页设置（from 和 take 选项）。
 
 ```typescript
@@ -386,8 +402,8 @@ const [timbers, timbersCount] = await repository.findAndCount({
 })
 ```
 
-- `findAndCountBy` - 查找符合给定 `FindOptionsWhere` 的实体。
-  同时计数所有符合条件的实体数，
+- `findAndCountBy` - 查找符合给定 `FindOptionsWhere` 的实体。  
+  同时计数所有符合条件的实体数，  
   但忽略分页设置（from 和 take 选项）。
 
 ```typescript
@@ -412,7 +428,7 @@ const timber = await repository.findOne({
 const timber = await repository.findOneBy({ firstName: "Timber" })
 ```
 
-- `findOneOrFail` - 查找第一个符合某 ID 或查找选项的实体。
+- `findOneOrFail` - 查找第一个符合某 ID 或查找选项的实体。  
   若无匹配项则返回拒绝的 Promise。
 
 ```typescript
@@ -423,7 +439,7 @@ const timber = await repository.findOneOrFail({
 })
 ```
 
-- `findOneByOrFail` - 查找第一个符合给定 `FindOptions` 的实体。
+- `findOneByOrFail` - 查找第一个符合给定 `FindOptions` 的实体。  
   若无匹配项则返回拒绝的 Promise。
 
 ```typescript
@@ -471,20 +487,23 @@ const rawData = await repository.query(
 )
 ```
 
-- `clear` - 清空指定表中的所有数据（截断或删除该表）。
+- `clear` - 清空指定表中的所有数据（截断该表）。支持级联选项，可同时清空所有拥有此表外键的表（仅支持 PostgreSQL/CockroachDB 和 Oracle；其他数据库若设置 cascade 为 true 会报错）。
 
 ```typescript
 await repository.clear()
+
+// 带级联选项（仅 PostgreSQL/CockroachDB 和 Oracle 支持）
+await repository.clear({ cascade: true })
 ```
 
 ### 额外选项
 
 可选的 `SaveOptions` 可作为参数传给 `save` 方法。
 
-- `data` - 额外的数据，随持久化方法传递，可在订阅者中使用。
-- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。
-- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。
-- `chunk`: number - 将保存操作分为多个批次执行。例如，若需保存 100,000 个对象但遇到问题，可通过设置 `{ chunk: 10000 }` 分成 10 批，每批保存 10,000 个。此选项适用于处理大量插入时驱动参数数量有限制的情况。
+- `data` - 额外的数据，随持久化方法传递，可在订阅者中使用。  
+- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。  
+- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。  
+- `chunk`: number - 将保存操作分为多个批次执行。例如，若需保存 100,000 个对象但遇到问题，可通过设置 `{ chunk: 10000 }` 分成 10 批，每批保存 10,000 个。此选项适用于处理大量插入时驱动参数数量有限制的情况。  
 - `reload`: boolean - 标识在持久化操作期间是否应重新加载正在持久化的实体。仅对不支持 RETURNING / OUTPUT 语句的数据库有效。默认启用。
 
 示例：
@@ -495,9 +514,9 @@ userRepository.save(users, { chunk: 1000 })
 
 可选的 `RemoveOptions` 可作为参数传给 `remove` 和 `delete` 方法。
 
-- `data` - 额外的数据，随删除方法传递，可在订阅者中使用。
-- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。
-- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。
+- `data` - 额外的数据，随删除方法传递，可在订阅者中使用。  
+- `listeners`: boolean - 表示是否调用监听器和订阅者。默认启用，设置 `{ listeners: false }` 可禁用。  
+- `transaction`: boolean - 默认启用事务，持久化操作中的所有查询都包含在事务中。设置 `{ transaction: false }` 可禁用。  
 - `chunk`: number - 将删除操作分为多个批次执行。例如，若需删除 100,000 个对象遇到问题，可通过设置 `{ chunk: 10000 }` 分成 10 批，每批删除 10,000 个。此选项适用于处理大量删除时驱动参数数量有限制的情况。
 
 示例：

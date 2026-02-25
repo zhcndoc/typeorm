@@ -203,7 +203,7 @@ dropDatabase(database: string, ifExist?: boolean): Promise<void>
 createSchema(schemaPath: string, ifNotExist?: boolean): Promise<void>
 ```
 
-- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。
+- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。  
   如果传入架构路径，则将在指定数据库中创建架构
 - `ifNotExist` - 如果为 `true`，当架构已存在时跳过创建，否则抛出错误
 
@@ -215,10 +215,10 @@ createSchema(schemaPath: string, ifNotExist?: boolean): Promise<void>
 dropSchema(schemaPath: string, ifExist?: boolean, isCascade?: boolean): Promise<void>
 ```
 
-- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。
+- `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。  
   如果传入架构路径，则将在指定数据库中删除架构
 - `ifExist` - 如果为 `true`，当架构未找到时跳过删除，否则抛出错误
-- `isCascade` - 如果为 `true`，自动删除架构中的对象（表、函数等）。
+- `isCascade` - 如果为 `true`，自动删除架构中的对象（表、函数等）。  
   仅适用于 Postgres。
 
 删除一个表架构。
@@ -313,8 +313,8 @@ changeColumns(table: Table|string, changedColumns: { oldColumn: TableColumn, new
 ```
 
 - `table` - 表对象或名称
-- `changedColumns` - 修改列数组。
-    - `oldColumn` - 旧 TableColumn 对象
+- `changedColumns` - 修改列数组。  
+    - `oldColumn` - 旧 TableColumn 对象  
     - `newColumn` - 新 TableColumn 对象
 
 修改表中的多个列。
@@ -568,10 +568,12 @@ dropIndices(table: Table|string, indices: TableIndex[]): Promise<void>
 ---
 
 ```ts
-clearTable(tableName: string): Promise<void>
+clearTable(tableName: string, options?: {cascade?: boolean}): Promise<void>
 ```
 
 - `tableName` - 表名
+- `options` - 额外选项  
+    - `cascade` - 指示是否清空带有外键约束的表中的行（仅支持 PostgreSQL/CockroachDB 和 Oracle；其他数据库若设置为 `true` 会抛出错误）。默认 `false`
 
 清空表的所有内容。
 
@@ -583,7 +585,7 @@ clearTable(tableName: string): Promise<void>
 enableSqlMemory(): void
 ```
 
-启用一种特殊的查询执行器模式，在该模式下 SQL 查询不会被执行，而是会被存储到查询执行器内部的特殊变量中。
+启用一种特殊的查询执行器模式，在该模式下 SQL 查询不会被执行，而是会被存储到查询执行器内部的特殊变量中。  
 你可以使用 `getMemorySql()` 方法获取存储的 SQL。
 
 ---

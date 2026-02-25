@@ -867,16 +867,15 @@ QueryBuilder 支持乐观锁和悲观锁。
 
 以下是支持的锁模式及对应 SQL 语句（不支持用空格表示，不支持时会抛出错误）：
 
-```text
-|                 | pessimistic_read                  | pessimistic_write       | dirty_read    | pessimistic_partial_write (已弃用，使用 onLocked 代替)          | pessimistic_write_or_fail (已弃用，使用 onLocked 代替)            | for_no_key_update   | for_key_share |
-| --------------- | --------------------------------- | ----------------------- | ------------- | -------------------------------------------------------------- | -------------------------------------------------------------- | ------------------- | ------------- |
-| MySQL           | FOR SHARE (8+)/LOCK IN SHARE MODE | FOR UPDATE              | (无)          | FOR UPDATE SKIP LOCKED                                         | FOR UPDATE NOWAIT                                              |                     |               |
-| Postgres        | FOR SHARE                         | FOR UPDATE              | (无)          | FOR UPDATE SKIP LOCKED                                         | FOR UPDATE NOWAIT                                              | FOR NO KEY UPDATE   | FOR KEY SHARE |
-| Oracle          | FOR UPDATE                        | FOR UPDATE              | (无)          |                                                                |                                                                |                     |               |
-| SQL Server      | WITH (HOLDLOCK, ROWLOCK)          | WITH (UPDLOCK, ROWLOCK) | WITH (NOLOCK) |                                                                |                                                                |                     |               |
-| AuroraDataApi   | LOCK IN SHARE MODE                | FOR UPDATE              | (无)          |                                                                |                                                                |                     |               |
-| CockroachDB     |                                  | FOR UPDATE              | (无)          |                                                                | FOR UPDATE NOWAIT                                              | FOR NO KEY UPDATE   |               |
-```
+|                       | pessimistic_read                             | pessimistic_write         | dirty_read      | pessimistic_partial_write\* | pessimistic_write_or_fail\* | for_no_key_update   | for_key_share   |
+| --------------------- | -------------------------------------------- | ------------------------- | --------------- | --------------------------- | --------------------------- | ------------------- | --------------- |
+| MySQL, MariaDB        | `FOR SHARE` (MySQL 8+), `LOCK IN SHARE MODE` | `FOR UPDATE`              | (nothing)       | `FOR UPDATE SKIP LOCKED`    | `FOR UPDATE NOWAIT`         |                     |                 |
+| Oracle                | `FOR UPDATE`                                 | `FOR UPDATE`              | (nothing)       |                             |                             |                     |                 |
+| Postgres, CockroachDB | `FOR SHARE`                                  | `FOR UPDATE`              | (nothing)       | `FOR UPDATE SKIP LOCKED`    | `FOR UPDATE NOWAIT`         | `FOR NO KEY UPDATE` | `FOR KEY SHARE` |
+| SAP HANA              | `FOR SHARE LOCK`                             | `FOR UPDATE`              | (nothing)       | `FOR UPDATE IGNORE LOCKED`  | `FOR UPDATE NOWAIT`         |                     |                 |
+| SQL Server            | `WITH (HOLDLOCK, ROWLOCK)`                   | `WITH (UPDLOCK, ROWLOCK)` | `WITH (NOLOCK)` |                             |                             |                     |                 |
+
+> **弃用提示:** `pessimistic_partial_write` 和 `pessimistic_write_or_fail` 已弃用，推荐使用 [onLocked](#setonlocked)（分别对应 `skip_locked` 和 `nowait`）。
 
 使用悲观读锁：
 
@@ -933,7 +932,7 @@ const users = await dataSource
     .getMany()
 ```
 
-如果传入锁定表参数，`FOR UPDATE OF` 子句只会锁定指定表。
+如果传入锁定表参数，`FOR UPDATE OF` 子句只会锁定指定表。锁定表只在 PostgreSQL / CockroachDB 中支持。
 
 ### `setOnLocked`
 
@@ -963,10 +962,11 @@ const users = await dataSource
 
 数据库对 `setOnLocked` 支持（基于锁模式）：
 
-- Postgres: `pessimistic_read`, `pessimistic_write`, `for_no_key_update`, `for_key_share`  
-- MySQL 8+: `pessimistic_read`, `pessimistic_write`  
-- MySQL < 8, MariaDB: `pessimistic_write`  
-- CockroachDB: `pessimistic_write`（仅 `nowait`）
+- MySQL < 8, MariaDB: `pessimistic_write`
+- MySQL 8+: `pessimistic_read`, `pessimistic_write`
+- Oracle: `pessimistic_write`
+- Postgres, Cockroach: `pessimistic_read`, `pessimistic_write`, `for_no_key_update`, `for_key_share`
+- SAP HANA: `pessimistic_read`, `pessimistic_write`
 
 ## 使用自定义索引
 
@@ -1190,7 +1190,7 @@ const users = await dataSource
 `QueryBuilder` 支持 [公共表表达式](https://en.wikipedia.org/wiki/Hierarchical_and_recursive_queries_in_SQL#Common_table_expression)，前提是数据库版本支持。Oracle 仍不支持。
 
 ```typescript
-const users = await connection
+const users = await dataSource
     .getRepository(User)
     .createQueryBuilder("user")
     .select("user.id", "id")
@@ -1207,7 +1207,7 @@ const users = await connection
 Postgres 中，`InsertQueryBuilder` 或 `UpdateQueryBuilder` 的结果可以用于公共表表达式：
 
 ```typescript
-const insertQueryBuilder = connection
+const insertQueryBuilder = dataSource
     .getRepository(User)
     .createQueryBuilder()
     .insert({
@@ -1215,7 +1215,7 @@ const insertQueryBuilder = connection
     })
     .returning(["id"])
 
-const users = await connection
+const users = await dataSource
     .getRepository(User)
     .createQueryBuilder("user")
     .addCommonTableExpression(insertQueryBuilder, "insert_results")
@@ -1228,7 +1228,7 @@ const users = await connection
 [时间旅行查询](https://www.cockroachlabs.com/blog/time-travel-queries-select-witty_subtitle-the_future/)目前仅支持 `CockroachDB`。
 
 ```typescript
-const repository = connection.getRepository(Account)
+const repository = dataSource.getRepository(Account)
 
 // 创建账户
 const account = new Account()

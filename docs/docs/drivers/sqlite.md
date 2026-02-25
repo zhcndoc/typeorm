@@ -2,12 +2,6 @@
 
 ## 安装
 
-- 对于 **SQLite**：
-
-```shell
-npm install sqlite3
-```
-
 - 对于 **Better SQLite**：
 
 ```shell
@@ -26,16 +20,18 @@ npm install sql.js
 
 有关常用数据源选项，请参见 [数据源选项](../data-source/2-data-source-options.md)。
 
-### `sqlite` 数据源选项
-
-- `database` - 数据库路径。例如："mydb.sql"
-
 ### `better-sqlite3` 数据源选项
 
-- `database` - 数据库路径。例如："mydb.sql"
-- `statementCacheSize` - SQLite 语句缓存大小，用于加快查询速度（默认 100）。
+- `database` - 数据库路径。例如， `"mydb.sqlite"`。
+- `enableWAL` - 启用 WAL 模式（默认 `false`）。详见 [SQLite WAL 模式](https://www.sqlite.org/wal.html)。
+- `fileMustExist` - 如果数据库不存在，则抛出错误，不会创建新文件。不影响内存或只读连接（默认 `false`）。
+- `key` - SQLCipher 的加密密钥。
+- `nativeBinding` - 原生插件的相对或绝对路径（`better_sqlite3.node`）。
 - `prepareDatabase` - 在 typeorm 使用数据库前调用的函数。你可以在这里访问原生的 better-sqlite3 Database 对象。
-- `nativeBinding` - 原生插件的相对或绝对路径（better_sqlite3.node）。
+- `readonly` - 以只读模式打开数据库连接（默认 `false`）。
+- `statementCacheSize` - SQLite 语句缓存大小，用于加快查询速度（默认 100）。
+- `timeout` - 在数据库锁定时，执行查询等待的毫秒数，超过后抛出 SQLITE_BUSY 错误（默认 5000）。
+- `verbose` - 函数，会在数据库连接执行每条 SQL 语句时调用，接收 SQL 字符串。
 
 ### `sql.js` 数据源选项
 
