@@ -204,7 +204,7 @@ userRepository.find({
 })
 ```
 
-- `lock` - 为查询启用锁机制。仅可用于 `findOne` 和 `findOneBy` 方法。  
+- `lock` - 为查询启用锁机制。仅可用于 `findOne` 和 `findOneBy` 方法。
   `lock` 是一个对象，可以定义为：
 
 ```ts
@@ -218,14 +218,6 @@ userRepository.find({
     mode: "pessimistic_read" |
         "pessimistic_write" |
         "dirty_read" |
-        /*
-            "pessimistic_partial_write" 和 "pessimistic_write_or_fail" 已废弃，
-            将在未来版本移除。
-
-            请使用 onLocked 替代。
-         */
-        "pessimistic_partial_write" |
-        "pessimistic_write_or_fail" |
         "for_no_key_update" |
         "for_key_share",
 
@@ -571,7 +563,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "likes" = "dislikes" - 4
 ```
 
-最简单的情况是，原始查询直接插入在等号后面。  
+最简单的情况是，原始查询直接插入在等号后面。
 但您也可以通过函数完全重写比较逻辑。
 
 ```ts
@@ -588,7 +580,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "currentDate" > NOW()
 ```
 
-如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。  
+如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。
 而应使用 `Raw` 函数的第二个参数，提供用于绑定查询的参数列表。
 
 ```ts

@@ -40,7 +40,7 @@ npm install mysql2
 
 - `supportBigNumbers` - 处理数据库中的大数字（`BIGINT` 和 `DECIMAL` 列）时，应启用此选项。（默认：`true`）
 
-- `bigNumberStrings` - 同时启用 `supportBigNumbers` 和 `bigNumberStrings` 会强制大数字（`BIGINT` 和 `DECIMAL` 列）始终以 JavaScript 字符串对象返回。（默认：`true`）  
+- `bigNumberStrings` - 同时启用 `supportBigNumbers` 和 `bigNumberStrings` 会强制大数字（`BIGINT` 和 `DECIMAL` 列）始终以 JavaScript 字符串对象返回。（默认：`true`）
 启用 `supportBigNumbers` 但未启用 `bigNumberStrings` 的情况下，只有当数字无法精确用 [JavaScript 数字对象](http://ecma262-5.com/ELS5_HTML.htm#Section_8.5) 表示（超出 `[-2^53, +2^53]` 范围）时才以字符串对象返回，否则返回数字对象。如果关闭 `supportBigNumbers`，则忽略该选项。
 
 - `dateStrings` - 强制将日期类型（`TIMESTAMP`、`DATETIME`、`DATE`）作为字符串返回，而非转换为 JavaScript Date 对象。可以为 true/false 或包含类型名的字符串数组，表示保留为字符串的类型。（默认：`false`）
@@ -51,7 +51,7 @@ npm install mysql2
 
 - `multipleStatements` - 允许每条查询使用多个 MySQL 语句。使用时请谨慎，可能增加 SQL 注入攻击风险。（默认：`false`）
 
-- `legacySpatialSupport` - 使用遗留的空间函数如 `GeomFromText` 和 `AsText`，它们在 MySQL 8.0 中被符合标准的 `ST_GeomFromText` 或 `ST_AsText` 替代。（当前默认：`true`）
+- `legacySpatialSupport` - 使用传统的空间函数，如 `GeomFromText` 和 `AsText`，这些函数在 MySQL 8.0 中已被符合标准的 `ST_GeomFromText` 或 `ST_AsText` 所取代。（默认值：`false`）
 
 - `flags` - 使用除默认外的其他连接标志列表，也可以屏蔽默认标志。更多信息请参见 [连接标志](https://github.com/mysqljs/mysql#connection-flags)。
 

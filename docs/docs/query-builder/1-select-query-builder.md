@@ -2,8 +2,8 @@
 
 ## 什么是 QueryBuilder？
 
-`QueryBuilder` 是 TypeORM 最强大的功能之一——  
-它允许你使用优雅且方便的语法构建 SQL 查询，  
+`QueryBuilder` 是 TypeORM 最强大的功能之一——
+它允许你使用优雅且方便的语法构建 SQL 查询，
 执行查询并自动转换为实体。
 
 一个简单的 `QueryBuilder` 示例：
@@ -191,8 +191,8 @@ const users = await dataSource
     .getMany()
 ```
 
-`SelectQueryBuilder` 返回两种类型的结果：**实体** 或 **原始结果**。  
-通常你会选择从数据库中选出真实的实体，如用户，使用 `getOne` 或 `getMany`。  
+`SelectQueryBuilder` 返回两种类型的结果：**实体** 或 **原始结果**。
+通常你会选择从数据库中选出真实的实体，如用户，使用 `getOne` 或 `getMany`。
 但有时你只需选取特定数据，比如用户照片总数的 _和_。这类数据不是实体，称为原始数据，可用 `getRawOne` 和 `getRawMany` 获取。例如：
 
 ```typescript
@@ -236,7 +236,7 @@ SELECT count(*) FROM users user WHERE user.name = 'Timber'
 
 ## 什么是别名？
 
-我们写了 `createQueryBuilder("user")`，那 `"user"` 是什么？  
+我们写了 `createQueryBuilder("user")`，那 `"user"` 是什么？
 它只是普通的 SQL 别名。除选中字段时，我们在各处都使用别名。
 
 `createQueryBuilder("user")` 等价于：
@@ -266,18 +266,18 @@ createQueryBuilder()
 SELECT ... FROM users user WHERE user.name = 'Timber'
 ```
 
-一个 QueryBuilder 不只限于一个别名，可以有多个。  
-每个 `SELECT` 可有自己的别名，  
-你可以从多张表查询，每张表各自带别名，  
-可以连接多张表，且都各有别名。  
+一个 QueryBuilder 不只限于一个别名，可以有多个。
+每个 `SELECT` 可有自己的别名，
+你可以从多张表查询，每张表各自带别名，
+可以连接多张表，且都各有别名。
 使用别名就是访问你选中的表或数据。
 
 ## 使用参数避免 SQL 注入
 
-我们用了 `where("user.name = :name", { name: "Timber" })`。  
-这里 `{ name: "Timber" }` 是参数，用于防止 SQL 注入。  
-我们本可以写成 `where("user.name = '" + name + "')"`，  
-但这不安全，会导致 SQL 注入风险。  
+我们用了 `where("user.name = :name", { name: "Timber" })`。
+这里 `{ name: "Timber" }` 是参数，用于防止 SQL 注入。
+我们本可以写成 `where("user.name = '" + name + "')"`，
+但这不安全，会导致 SQL 注入风险。
 安全做法是：
 
 ```typescript
@@ -401,7 +401,7 @@ createQueryBuilder("user")
 SELECT ... FROM users user WHERE user.registered = true AND NOT((user.firstName = 'Timber' OR user.lastName = 'Saw'))
 ```
 
-你能根据需要随意组合 `AND`、`OR`。  
+你能根据需要随意组合 `AND`、`OR`。
 注意，调用多次 `.where` 会覆盖之前的条件。
 
 提示：`orWhere` 与复杂的 `AND`、`OR` 表达式配合时要小心，它们默认没有优先级，需要自行构造合适的字符串避免歧义。
@@ -491,7 +491,7 @@ createQueryBuilder("user").orderBy({
 
 ## 添加 `DISTINCT ON` 表达式（仅限 Postgres）
 
-同时使用 distinct-on 和 order-by 时，distinct-on 中的字段必须匹配最左侧的 order-by 字段。  
+同时使用 distinct-on 和 order-by 时，distinct-on 中的字段必须匹配最左侧的 order-by 字段。
 如果 distinct-on 没有 order-by，结果的第一行是不可预测的。
 
 语法示例如：
@@ -542,8 +542,8 @@ createQueryBuilder("user").limit(10)
 SELECT ... FROM users user LIMIT 10
 ```
 
-不同数据库的查询会不同。  
-注意：对于复杂查询（有连接或子查询），`LIMIT` 可能表现不如预期。  
+不同数据库的查询会不同。
+注意：对于复杂查询（有连接或子查询），`LIMIT` 可能表现不如预期。
 分页推荐使用 `take`。
 
 ## 添加 `OFFSET` 表达式
@@ -603,7 +603,8 @@ export class Photo {
 现在你想加载用户 "Timber"及其所有照片：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndSelect("user.photos", "photo")
     .where("user.name = :name", { name: "Timber" })
     .getOne()
@@ -625,12 +626,13 @@ const user = await createQueryBuilder("user")
 }
 ```
 
-`leftJoinAndSelect` 会自动加载 Timber 的所有照片。  
-第一个参数是关联名称，第二个是关联表的别名，可在查询中使用。  
+`leftJoinAndSelect` 会自动加载 Timber 的所有照片。
+第一个参数是关联名称，第二个是关联表的别名，可在查询中使用。
 比如查询未被移除的照片：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndSelect("user.photos", "photo")
     .where("user.name = :name", { name: "Timber" })
     .andWhere("photo.isRemoved = :isRemoved", { isRemoved: false })
@@ -648,7 +650,8 @@ SELECT user.*, photo.* FROM users user
 你也可以把条件写到连接语句：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndSelect("user.photos", "photo", "photo.isRemoved = :isRemoved", {
         isRemoved: false,
     })
@@ -669,7 +672,8 @@ SELECT user.*, photo.* FROM users user
 如果想用 `INNER JOIN` 而非 `LEFT JOIN`，用 `innerJoinAndSelect`：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .innerJoinAndSelect(
         "user.photos",
         "photo",
@@ -697,7 +701,8 @@ SELECT user.*, photo.* FROM users user
 你也可以连接数据但不选取：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .innerJoin("user.photos", "photo")
     .where("user.name = :name", { name: "Timber" })
     .getOne()
@@ -718,7 +723,8 @@ SELECT user.* FROM users user
 不仅能连接关联实体，也能连接无关联的实体或表，例如：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndSelect(Photo, "photo", "photo.userId = user.id")
     .getMany()
 ```
@@ -726,7 +732,8 @@ const user = await createQueryBuilder("user")
 或者：
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndSelect("photos", "photo", "photo.userId = user.id")
     .getMany()
 ```
@@ -743,7 +750,8 @@ export class User {
 ```
 
 ```typescript
-const user = await createQueryBuilder("user")
+const user = await dataSource
+    .createQueryBuilder("user")
     .leftJoinAndMapOne(
         "user.profilePhoto",
         "user.photos",
@@ -754,8 +762,8 @@ const user = await createQueryBuilder("user")
     .getOne()
 ```
 
-它会加载 Timber 的头像照片并赋值到 `user.profilePhoto`。  
-若要加载并映射单个实体，使用 `leftJoinAndMapOne`；  
+它会加载 Timber 的头像照片并赋值到 `user.profilePhoto`。
+若要加载并映射单个实体，使用 `leftJoinAndMapOne`；
 加载多个实体，使用 `leftJoinAndMapMany`。
 
 ## 获取生成的查询
@@ -763,7 +771,8 @@ const user = await createQueryBuilder("user")
 有时想看 `QueryBuilder` 生成的 SQL 查询，可用 `getSql`：
 
 ```typescript
-const sql = createQueryBuilder("user")
+const sql = dataSource
+    .createQueryBuilder("user")
     .where("user.firstName = :firstName", { firstName: "Timber" })
     .orWhere("user.lastName = :lastName", { lastName: "Saw" })
     .getSql()
@@ -772,7 +781,8 @@ const sql = createQueryBuilder("user")
 调试时可用 `printSql`：
 
 ```typescript
-const users = await createQueryBuilder("user")
+const users = await dataSource
+    .createQueryBuilder("user")
     .where("user.firstName = :firstName", { firstName: "Timber" })
     .orWhere("user.lastName = :lastName", { lastName: "Saw" })
     .printSql()
@@ -783,7 +793,7 @@ const users = await createQueryBuilder("user")
 
 ## 获取原始结果
 
-`SelectQueryBuilder` 返回两种结果：**实体**和**原始结果**。  
+`SelectQueryBuilder` 返回两种结果：**实体**和**原始结果**。
 一般用 `getOne` 和 `getMany` 获取实体，但偶尔想获取特定数据（如用户照片总数的和），称作原始数据，使用 `getRawOne` 和 `getRawMany`。示例：
 
 ```typescript
@@ -867,15 +877,13 @@ QueryBuilder 支持乐观锁和悲观锁。
 
 以下是支持的锁模式及对应 SQL 语句（不支持用空格表示，不支持时会抛出错误）：
 
-|                       | pessimistic_read                             | pessimistic_write         | dirty_read      | pessimistic_partial_write\* | pessimistic_write_or_fail\* | for_no_key_update   | for_key_share   |
-| --------------------- | -------------------------------------------- | ------------------------- | --------------- | --------------------------- | --------------------------- | ------------------- | --------------- |
-| MySQL, MariaDB        | `FOR SHARE` (MySQL 8+), `LOCK IN SHARE MODE` | `FOR UPDATE`              | (nothing)       | `FOR UPDATE SKIP LOCKED`    | `FOR UPDATE NOWAIT`         |                     |                 |
-| Oracle                | `FOR UPDATE`                                 | `FOR UPDATE`              | (nothing)       |                             |                             |                     |                 |
-| Postgres, CockroachDB | `FOR SHARE`                                  | `FOR UPDATE`              | (nothing)       | `FOR UPDATE SKIP LOCKED`    | `FOR UPDATE NOWAIT`         | `FOR NO KEY UPDATE` | `FOR KEY SHARE` |
-| SAP HANA              | `FOR SHARE LOCK`                             | `FOR UPDATE`              | (nothing)       | `FOR UPDATE IGNORE LOCKED`  | `FOR UPDATE NOWAIT`         |                     |                 |
-| SQL Server            | `WITH (HOLDLOCK, ROWLOCK)`                   | `WITH (UPDLOCK, ROWLOCK)` | `WITH (NOLOCK)` |                             |                             |                     |                 |
-
-> **弃用提示:** `pessimistic_partial_write` 和 `pessimistic_write_or_fail` 已弃用，推荐使用 [onLocked](#setonlocked)（分别对应 `skip_locked` 和 `nowait`）。
+|                       | pessimistic_read                             | pessimistic_write         | dirty_read      | for_no_key_update   | for_key_share   |
+| --------------------- | -------------------------------------------- | ------------------------- | --------------- | ------------------- | --------------- |
+| MySQL, MariaDB        | `FOR SHARE` (MySQL 8+), `LOCK IN SHARE MODE` | `FOR UPDATE`              | (nothing)       |                     |                 |
+| Oracle                | `FOR UPDATE`                                 | `FOR UPDATE`              | (nothing)       |                     |                 |
+| Postgres, CockroachDB | `FOR SHARE`                                  | `FOR UPDATE`              | (nothing)       | `FOR NO KEY UPDATE` | `FOR KEY SHARE` |
+| SAP HANA              | `FOR SHARE LOCK`                             | `FOR UPDATE`              | (nothing)       |                     |                 |
+| SQL Server            | `WITH (HOLDLOCK, ROWLOCK)`                   | `WITH (UPDLOCK, ROWLOCK)` | `WITH (NOLOCK)` |                     |                 |
 
 使用悲观读锁：
 
@@ -1134,7 +1142,7 @@ export class User {
 }
 ```
 
-用普通查询时 `password` 不会返回。  
+用普通查询时 `password` 不会返回。
 用以下写法，可返回 `password`：
 
 ```typescript
@@ -1173,7 +1181,7 @@ export class User {
 }
 ```
 
-用普通查询不会返回软删除的行。  
+用普通查询不会返回软删除的行。
 加入 `withDeleted` 可查询所有，包括已删除的：
 
 ```typescript
@@ -1253,8 +1261,8 @@ account = await repository
 console.log(account)
 ```
 
-`timeTravelQuery()` 默认使用 `follower_read_timestamp()`，无参数时生效。  
-更多支持的时间戳参数及信息请参阅  
+`timeTravelQuery()` 默认使用 `follower_read_timestamp()`，无参数时生效。
+更多支持的时间戳参数及信息请参阅
 [CockroachDB 文档](https://www.cockroachlabs.com/docs/stable/as-of-system-time.html)。
 
 ## 调试

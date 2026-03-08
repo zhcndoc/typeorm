@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { ReactNode, ElementType } from "react"
 import React from "react"
 import clsx from "clsx"
 import Link from "@docusaurus/Link"
@@ -6,6 +6,18 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext"
 import Layout from "@theme/Layout"
 import Heading from "@theme/Heading"
 import CodeBlock from "@theme/CodeBlock"
+import {
+    Settings,
+    FileCode,
+    Database,
+    Search,
+    Rocket,
+    Globe,
+    Monitor,
+    Smartphone,
+    Atom,
+    AppWindow,
+} from "lucide-react"
 
 import styles from "./index.module.css"
 
@@ -15,37 +27,37 @@ const features = [
         title: "灵活的模式",
         description:
             "支持 DataMapper 和 ActiveRecord 两种模式，让您可以灵活选择最适合项目的方案。",
-        icon: "⚙️",
+        icon: Settings,
     },
     {
         title: "TypeScript 优先",
         description:
             "从头开始构建，支持 TypeScript，为您的数据库模型提供完整的类型安全。",
-        icon: "📝",
+        icon: FileCode,
     },
     {
         title: "多数据库支持",
         description:
             "支持 MySQL、PostgreSQL、MariaDB、SQLite、MS SQL Server、Oracle、MongoDB 等多种数据库。",
-        icon: "🗄️",
+        icon: Database,
     },
     {
         title: "强大的查询构建器",
         description:
             "优雅的语法用于构建包含连接、分页和缓存的复杂查询。",
-        icon: "🔍",
+        icon: Search,
     },
     {
         title: "迁移与模式",
         description:
             "对数据库迁移提供一流支持，并自动生成。",
-        icon: "🚀",
+        icon: Rocket,
     },
     {
         title: "跨平台",
         description:
             "适用于 Node.js、浏览器、移动端和桌面应用程序。",
-        icon: "🌐",
+        icon: Globe,
     },
 ]
 
@@ -150,10 +162,20 @@ function HomepageHeader() {
     )
 }
 
-function Feature({ title, description, icon }) {
+function Feature({
+    title,
+    description,
+    icon: Icon,
+}: {
+    title: string
+    description: string
+    icon: ElementType
+}) {
     return (
         <div className={clsx("col col--4", styles.featureItem)}>
-            <div className={styles.featureIcon}>{icon}</div>
+            <div className={styles.featureIcon}>
+                <Icon size={32} strokeWidth={1.5} />
+            </div>
             <div className={styles.featureContent}>
                 <Heading as="h3">{title}</Heading>
                 <p>{description}</p>
@@ -298,6 +320,14 @@ function SupportedDatabases() {
     )
 }
 
+const platforms = [
+    { name: "NodeJS", icon: Monitor },
+    { name: "Browser", icon: Globe },
+    { name: "Mobile", icon: Smartphone },
+    { name: "React Native", icon: Atom },
+    { name: "Electron", icon: AppWindow },
+]
+
 function PlatformsSection() {
     return (
         <section className={styles.platformsSection}>
@@ -309,12 +339,56 @@ function PlatformsSection() {
                     TypeORM 可以在 NodeJS、浏览器、Cordova、Ionic、React Native、NativeScript、Expo 和 Electron 平台运行。
                 </p>
                 <div className={styles.platformsIcons}>
-                    <span>🖥️ NodeJS</span>
-                    <span>🌐 Browser</span>
-                    <span>📱 Mobile</span>
-                    <span>⚛️ React Native</span>
-                    <span>🖼️ Electron</span>
+                    {platforms.map((p) => (
+                        <span key={p.name}>
+                            <p.icon size={18} strokeWidth={1.5} /> {p.name}
+                        </span>
+                    ))}
                 </div>
+            </div>
+        </section>
+    )
+}
+
+const teamHighlights = [
+    { name: "Michael Bromley", github: "michaelbromley" },
+    { name: "David Höck", github: "dlhck" },
+    { name: "Lucian Mocanu", github: "alumni" },
+    { name: "Naor Peled", github: "naorpeled" },
+    { name: "Giorgio Boa", github: "gioboa" },
+    { name: "Piotr Kuczynski", github: "pkuczynski" },
+    { name: "Mohammed Gomaa", github: "G0maa" },
+    { name: "Julian Pufler", github: "pujux" },
+    { name: "Simon Garner", github: "sgarner" },
+    { name: "Pieter Wigboldus", github: "w3nl" },
+    { name: "Mike Guida", github: "mguida22" },
+]
+
+function MaintainersSection() {
+    return (
+        <section className={styles.maintainersSection}>
+            <div className="container">
+                <Heading as="h2" className={styles.sectionTitle}>
+                    Maintained By
+                </Heading>
+                <div className={styles.maintainersAvatars}>
+                    {teamHighlights.map((m) => (
+                        <img
+                            key={m.github}
+                            src={`https://avatars.githubusercontent.com/${m.github}?s=100`}
+                            alt={m.name}
+                            title={m.name}
+                            className={styles.maintainerAvatar}
+                            loading="lazy"
+                        />
+                    ))}
+                </div>
+                <Link
+                    className="button button--primary button--md"
+                    to="/maintainers"
+                >
+                    Meet the Team
+                </Link>
             </div>
         </section>
     )
@@ -365,6 +439,7 @@ export default function Home(): ReactNode {
                 <CodeExampleSection />
                 <SupportedDatabases />
                 <PlatformsSection />
+                <MaintainersSection />
                 <CallToAction />
             </main>
         </Layout>

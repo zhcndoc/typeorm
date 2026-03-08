@@ -188,8 +188,6 @@ export class User {
 如果你保存这个实体：
 
 ```typescript
-import { getMongoManager } from "typeorm"
-
 const user = new User()
 user.firstName = "Timber"
 user.lastName = "Saw"
@@ -202,8 +200,7 @@ user.photos = [
     new Photo("me-and-chakram.jpg", "Me and Chakram", 200),
 ]
 
-const manager = getMongoManager()
-await manager.save(user)
+await myDataSource.manager.save(user)
 ```
 
 以下文档将被保存到数据库：
