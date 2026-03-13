@@ -2,38 +2,38 @@
 
 在 `WHERE` 条件中，`null` 和 `undefined` 的值在 TypeORM 中并不是严格有效的值。
 
-传递已知的 `null` 值在 TypeScript 中是不允许的（当你在 tsconfig.json 中启用了 `strictNullChecks` 时）编译时会报错。但是默认行为是在运行时遇到 `null` 值时会被忽略。同样，TypeScript 允许 `undefined` 值，但在运行时也会被忽略。
+传递已知的 `null` 值在 TypeScript 中是不允许的（当你在 tsconfig.json 中启用了 `strictNullChecks` 时）编译时会报错。默认行为是在运行时遇到 `null` 和 `undefined` 值时会抛出错误。
 
-接受 `null` 和 `undefined` 值有时会导致意想不到的结果，需要谨慎对待。尤其是在值来自用户输入且没有进行充分验证时，这一点尤为重要。
+`null` 和 `undefined` 值的处理方式可以通过数据源配置中的 `invalidWhereValuesBehavior` 选项自定义。该选项适用于高级操作，如查找操作、仓库方法和实体管理器的方法（更新、删除、软删除、恢复）。
 
-例如，调用 `Repository.findOneBy({ id: undefined })` 会返回表中的第一行，而 `Repository.findBy({ userId: null })` 则是不带过滤条件的，返回所有行。
-
-`null` 和 `undefined` 值的处理方式可以通过数据源配置中的 `invalidWhereValuesBehavior` 选项自定义。该选项适用于所有支持 `WHERE` 条件的操作，包括查询操作、查询构建器和仓库方法。
-
-:::note
-未来版本的 TypeORM 将修改当前行为，建议将 `null` 和 `undefined` 行为都设置为抛出错误，以便提前适配这些变化。
+:::warning
+此设置**不影响**查询构建器（QueryBuilder）的 `.where()`、`.andWhere()` 或 `.orWhere()` 方法。查询构建器是低级 API，`null`/`undefined` 值会直接传递。对于显式的 null 处理，请使用查询构建器中的 `IsNull()` 操作符或参数化条件。
+:::
 :::
 
 ## 默认行为
 
-默认情况下，TypeORM 会跳过 where 条件中的 `null` 和 `undefined` 值。这意味着如果你在 where 条件中包含 `null` 或 `undefined` 的属性，该属性将被忽略：
+默认情况下，TypeORM 在 where 条件中遇到 `null` 或 `undefined` 值时会抛出错误。这样可以防止意想不到的结果，并帮助及早发现潜在的错误：
 
 ```typescript
-// 这两个查询都会返回所有帖子，忽略 text 属性
+// 这两个查询都会抛出错误
+```
 const posts1 = await repository.find({
     where: {
         text: null,
     },
 })
+// Error: Null value encountered in property 'text' of a where condition.
 
 const posts2 = await repository.find({
     where: {
         text: undefined,
     },
 })
+// Error: Undefined value encountered in property 'text' of a where condition.
 ```
 
-正确匹配 where 条件中的 null 值应使用 `IsNull` 操作符（详情见 [查找选项](../working-with-entity-manager/3-find-options.md)）：
+正确匹配 where 条件中的 `null` 值应使用 `IsNull` 操作符（详情见 [查找选项](../working-with-entity-manager/3-find-options.md)）：
 
 ```typescript
 const posts = await repository.find({
@@ -61,7 +61,7 @@ const dataSource = new DataSource({
 
 `null` 的行为可以设置为以下三个值之一：
 
-#### `'ignore'`（默认）
+#### `'ignore'`
 
 where 条件中的 JavaScript `null` 值会被忽略，该属性会被跳过：
 
@@ -101,7 +101,7 @@ const posts = await repository.find({
 })
 ```
 
-#### `'throw'`
+#### `'throw'` (default)
 
 JavaScript `null` 值会导致抛出 TypeORMError：
 
@@ -128,7 +128,7 @@ const posts = await repository.find({
 
 `undefined` 的行为可以设置为以下两个值之一：
 
-#### `'ignore'`（默认）
+#### `'ignore'`
 
 where 条件中的 JavaScript `undefined` 值会被忽略，该属性会被跳过：
 
@@ -148,7 +148,7 @@ const posts = await repository.find({
 })
 ```
 
-#### `'throw'`
+#### `'throw'` (default)
 
 JavaScript `undefined` 值会导致抛出 TypeORMError：
 
@@ -199,37 +199,19 @@ const dataSource = new DataSource({
 
 ## 适用于所有 where 操作
 
-`invalidWhereValuesBehavior` 配置适用于**所有支持 where 条件的 TypeORM 操作**，不仅限于仓库的 find 方法：
+`invalidWhereValuesBehavior` 配置适用于 TypeORM 的高级操作，不包括查询构建器的直接 `.where()` 方法：
 
-### 查询构建器
+### 查找操作
 
 ```typescript
-// UpdateQueryBuilder
-await dataSource
-    .createQueryBuilder()
-    .update(Post)
-    .set({ title: "Updated" })
-    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
-    .execute()
+// Repository.find() / findOne() / findBy() / findOneBy()
+await repository.find({ where: { text: null } }) // 尊重 invalidWhereValuesBehavior 设置
 
-// DeleteQueryBuilder
-await dataSource
-    .createQueryBuilder()
-    .delete()
-    .from(Post)
-    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
-    .execute()
-
-// SoftDeleteQueryBuilder
-await dataSource
-    .createQueryBuilder()
-    .softDelete()
-    .from(Post)
-    .where({ text: null }) // 尊重 invalidWhereValuesBehavior 设置
-    .execute()
+// EntityManager.find() / findOne() / findBy() / findOneBy()
+await manager.find(Post, { where: { text: null } }) // 尊重 invalidWhereValuesBehavior 设置
 ```
 
-### 仓库方法
+### 仓库和实体管理器方法
 
 ```typescript
 // Repository.update()
@@ -248,4 +230,91 @@ await manager.delete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 
 await manager.softDelete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 设置
 ```
 
-所有这些操作都会一致地应用你配置的 `invalidWhereValuesBehavior` 设置。
+### 使用 setFindOptions 的查询构建器
+
+```typescript
+// setFindOptions 走查找选项路径，因此会尊重该设置
+await dataSource
+    .createQueryBuilder(Post, "post")
+    .setFindOptions({ where: { text: null } }) // 尊重 invalidWhereValuesBehavior 设置
+    .getMany()
+```
+
+### 不受影响：查询构建器的 `.where()`
+
+查询构建器的 `.where()`、`.andWhere()` 和 `.orWhere()` 是低级 API，不受此设置影响。`null` 和 `undefined` 值直接传递：
+
+```typescript
+// 这不会尊重 invalidWhereValuesBehavior — null 会直接传递
+await dataSource
+    .createQueryBuilder()
+    .update(Post)
+    .set({ title: "Updated" })
+    .where({ text: null })
+    .execute()
+```
+
+## 查询构建器 `.where()` 中 null 和 undefined 的行为
+
+由于查询构建器是低级 API，`null` 和 `undefined` 值不会被验证或转换。了解它们的行为对于避免意外结果很重要。
+
+### 查询构建器 `.where()` 中的 `null`
+
+当 `null` 作为对象样式 `.where()` 的值传入时，会生成针对 `NULL` 的 SQL 等式检查：
+
+```typescript
+await dataSource
+    .createQueryBuilder(Post, "post")
+    .where({ text: null })
+    .getMany()
+// 生成：WHERE post.text = NULL
+```
+
+在 SQL 中，`column = NULL` **总是为假** —— 没有任何值等于 NULL。此查询将返回**零条结果**，这几乎肯定不是你的本意。匹配 NULL 值，请使用 `IsNull()` 操作符：
+
+```typescript
+import { IsNull } from "typeorm"
+
+await dataSource
+    .createQueryBuilder(Post, "post")
+    .where({ text: IsNull() })
+    .getMany()
+// 生成：WHERE post.text IS NULL
+```
+
+或者使用字符串条件：
+
+```typescript
+await dataSource
+    .createQueryBuilder(Post, "post")
+    .where("post.text IS NULL")
+    .getMany()
+```
+
+### 查询构建器 `.where()` 中的 `undefined`
+
+当 `undefined` 作为值传入时，行为与上述相同 —— 生成 `WHERE column = NULL`，总是为假：
+
+```typescript
+await dataSource
+    .createQueryBuilder(Post, "post")
+    .where({ text: undefined })
+    .getMany()
+// 生成：WHERE post.text = NULL
+// 返回：零条结果
+```
+
+### 行为总结表
+
+| 值                                  | 高级 API（查找/仓库/管理器）          | 查询构建器 `.where()`            |
+| ----------------------------------- | ------------------------------------ | ------------------------------- |
+| `null` 配合 `"ignore"`              | 属性被跳过 — 无过滤                  | `WHERE col = NULL` — 返回零条结果 |
+| `null` 配合 `"sql-null"`            | 生成 `WHERE col IS NULL`             | `WHERE col = NULL` — 返回零条结果 |
+| `null` 配合 `"throw"`（默认）       | 抛出错误                            | `WHERE col = NULL` — 返回零条结果 |
+| `undefined` 配合 `"ignore"`         | 属性被跳过 — 无过滤                  | `WHERE col = NULL` — 返回零条结果 |
+| `undefined` 配合 `"throw"`（默认）  | 抛出错误                            | `WHERE col = NULL` — 返回零条结果 |
+| `IsNull()`                         | 生成 `WHERE col IS NULL`             | 生成 `WHERE col IS NULL`         |
+
+:::tip
+无论使用哪种 API，当你想匹配 SQL NULL 值时，请始终使用 `IsNull()`。它在高级和查询构建器两种语境下均可正确工作。
+:::

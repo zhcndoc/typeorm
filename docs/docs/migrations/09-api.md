@@ -178,59 +178,58 @@ hasColumn(table: Table|string, columnName: string): Promise<boolean>
 ---
 
 ```ts
-createDatabase(database: string, ifNotExist?: boolean): Promise<void>
+createDatabase(database: string, ifNotExists?: boolean): Promise<void>
 ```
 
 - `database` - 数据库名称
-- `ifNotExist` - 如果为 `true`，则当数据库已存在时跳过创建，否则抛出错误
+- `ifNotExists` - 如果设置为 `true`，当数据库已存在时静默忽略；否则抛出错误（默认）
 
 创建一个新数据库。
 
 ---
 
 ```ts
-dropDatabase(database: string, ifExist?: boolean): Promise<void>
+dropDatabase(database: string, ifExists?: boolean): Promise<void>
 ```
 
 - `database` - 数据库名称
-- `ifExist` - 如果为 `true`，则当数据库不存在时跳过删除，否则抛出错误
+- `ifExists` - 如果设置为 `true`，当数据库不存在时静默忽略；否则抛出错误（默认）
 
 删除数据库。
 
 ---
 
 ```ts
-createSchema(schemaPath: string, ifNotExist?: boolean): Promise<void>
+createSchema(schemaPath: string, ifNotExists?: boolean): Promise<void>
 ```
 
 - `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。  
   如果传入架构路径，则将在指定数据库中创建架构
-- `ifNotExist` - 如果为 `true`，当架构已存在时跳过创建，否则抛出错误
+- `ifNotExists` - 如果设置为 `true`，当架构已存在时静默忽略；否则抛出错误（默认）
 
 创建一个新的表架构。
 
 ---
 
 ```ts
-dropSchema(schemaPath: string, ifExist?: boolean, isCascade?: boolean): Promise<void>
+dropSchema(schemaPath: string, ifExists?: boolean, isCascade?: boolean): Promise<void>
 ```
 
 - `schemaPath` - 架构名。对于 SqlServer，可以接受架构路径（例如 'dbName.schemaName'）作为参数。  
   如果传入架构路径，则将在指定数据库中删除架构
-- `ifExist` - 如果为 `true`，当架构未找到时跳过删除，否则抛出错误
-- `isCascade` - 如果为 `true`，自动删除架构中的对象（表、函数等）。  
-  仅适用于 Postgres。
+- `ifExists` - 如果设置为 `true`，当架构不存在时静默忽略；否则抛出错误（默认）
+- `isCascade` - 如果为 `true`，自动删除架构中的对象（表、函数等）。仅适用于 Postgres。
 
 删除一个表架构。
 
 ---
 
 ```ts
-createTable(table: Table, ifNotExist?: boolean, createForeignKeys?: boolean, createIndices?: boolean): Promise<void>
+createTable(table: Table, ifNotExists?: boolean, createForeignKeys?: boolean, createIndices?: boolean): Promise<void>
 ```
 
 - `table` - 表对象。
-- `ifNotExist` - 如果为 `true`，当表已存在时跳过创建，否则抛出错误。默认 `false`
+- `ifNotExists` - 如果设置为 `true`，当表已存在时静默忽略；否则抛出错误（默认）
 - `createForeignKeys` - 指示是否在创建表时创建外键。默认 `true`
 - `createIndices` - 指示是否在创建表时创建索引。默认 `true`
 
@@ -239,15 +238,38 @@ createTable(table: Table, ifNotExist?: boolean, createForeignKeys?: boolean, cre
 ---
 
 ```ts
-dropTable(table: Table|string, ifExist?: boolean, dropForeignKeys?: boolean, dropIndices?: boolean): Promise<void>
+dropTable(table: Table|string, ifExists?: boolean, dropForeignKeys?: boolean, dropIndices?: boolean): Promise<void>
 ```
 
 - `table` - 要删除的表对象或表名
-- `ifExist` - 如果为 `true`，当表不存在时跳过删除，否则抛出错误
+- `ifExists` - 如果设置为 `true`，当表不存在时静默忽略；否则抛出错误（默认）
 - `dropForeignKeys` - 指示是否在删除表时删除外键。默认 `true`
 - `dropIndices` - 指示是否在删除表时删除索引。默认 `true`
 
 删除一个表。
+
+---
+
+```ts
+createView(view: View, syncWithMetadata?: boolean, oldView?: View): Promise<void>
+```
+
+- `view` - View object
+- `syncWithMetadata` - indicates whether to sync view with metadata (optional)
+- `oldView` - old View object to be replaced (optional)
+
+Creates a new view.
+
+---
+
+```ts
+dropView(view: View|string, ifExists?: boolean): Promise<void>
+```
+
+- `view` - View object or view name to be dropped
+- `ifExists` - when set to `true`, silently ignores if the view does not exist; otherwise throws an error (default)
+
+Drops a view.
 
 ---
 
@@ -322,22 +344,24 @@ changeColumns(table: Table|string, changedColumns: { oldColumn: TableColumn, new
 ---
 
 ```ts
-dropColumn(table: Table|string, column: TableColumn|string): Promise<void>
+dropColumn(table: Table|string, column: TableColumn|string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `column` - 要删除的 TableColumn 对象或列名
+- `ifExists` - 如果设置为 `true`，当列不存在时静默忽略；否则抛出错误（默认）
 
 删除表中的一个列。
 
 ---
 
 ```ts
-dropColumns(table: Table|string, columns: TableColumn[]|string[]): Promise<void>
+dropColumns(table: Table|string, columns: TableColumn[]|string[], ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `columns` - 要删除的 TableColumn 对象数组或列名数组
+- `ifExists` - 如果设置为 `true`，当列不存在时静默忽略；否则抛出错误（默认）
 
 删除表中的多个列。
 
@@ -366,10 +390,12 @@ updatePrimaryKeys(table: Table|string, columns: TableColumn[]): Promise<void>
 ---
 
 ```ts
-dropPrimaryKey(table: Table|string): Promise<void>
+dropPrimaryKey(table: Table|string, constraintName?: string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
+- `constraintName` - 约束名称（可选）
+- `ifExists` - 如果设置为 `true`，当主键不存在时静默忽略；否则抛出错误（默认）
 
 删除主键。
 
@@ -402,11 +428,12 @@ createUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[]): 
 ---
 
 ```ts
-dropUniqueConstraint(table: Table|string, uniqueOrName: TableUnique|string): Promise<void>
+dropUniqueConstraint(table: Table|string, uniqueOrName: TableUnique|string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `uniqueOrName` - 要删除的 TableUnique 对象或唯一约束名称
+- `ifExists` - 如果设置为 `true`，当约束不存在时静默忽略；否则抛出错误（默认）
 
 删除唯一约束。
 
@@ -415,11 +442,12 @@ dropUniqueConstraint(table: Table|string, uniqueOrName: TableUnique|string): Pro
 ---
 
 ```ts
-dropUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[]): Promise<void>
+dropUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[], ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `uniqueConstraints` - 要删除的 TableUnique 对象数组
+- `ifExists` - 如果设置为 `true`，当约束不存在时静默忽略；否则抛出错误（默认）
 
 删除唯一约束。
 
@@ -454,11 +482,12 @@ createCheckConstraints(table: Table|string, checkConstraints: TableCheck[]): Pro
 ---
 
 ```ts
-dropCheckConstraint(table: Table|string, checkOrName: TableCheck|string): Promise<void>
+dropCheckConstraint(table: Table|string, checkOrName: TableCheck|string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `checkOrName` - TableCheck 对象或检查约束名称
+- `ifExists` - 如果设置为 `true`，当约束不存在时静默忽略；否则抛出错误（默认）
 
 删除检查约束。
 
@@ -467,15 +496,70 @@ dropCheckConstraint(table: Table|string, checkOrName: TableCheck|string): Promis
 ---
 
 ```ts
-dropCheckConstraints(table: Table|string, checkConstraints: TableCheck[]): Promise<void>
+dropCheckConstraints(table: Table|string, checkConstraints: TableCheck[], ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `checkConstraints` - TableCheck 对象数组
+- `ifExists` - 如果设置为 `true`，当约束不存在时静默忽略；否则抛出错误（默认）
 
 删除检查约束。
 
 > 注意：MySQL 不支持检查约束。
+
+---
+
+```ts
+createExclusionConstraint(table: Table|string, exclusionConstraint: TableExclusion): Promise<void>
+```
+
+- `table` - Table object or name
+- `exclusionConstraint` - TableExclusion object
+
+Creates a new exclusion constraint.
+
+> Note: only PostgreSQL supports exclusion constraints.
+
+---
+
+```ts
+createExclusionConstraints(table: Table|string, exclusionConstraints: TableExclusion[]): Promise<void>
+```
+
+- `table` - Table object or name
+- `exclusionConstraints` - array of TableExclusion objects
+
+Creates new exclusion constraints.
+
+> Note: only PostgreSQL supports exclusion constraints.
+
+---
+
+```ts
+dropExclusionConstraint(table: Table|string, exclusionOrName: TableExclusion|string, ifExists?: boolean): Promise<void>
+```
+
+- `table` - Table object or name
+- `exclusionOrName` - TableExclusion object or exclusion constraint name
+- `ifExists` - when set to `true`, silently ignores if the constraint does not exist; otherwise throws an error (default)
+
+Drops an exclusion constraint.
+
+> Note: only PostgreSQL supports exclusion constraints.
+
+---
+
+```ts
+dropExclusionConstraints(table: Table|string, exclusionConstraints: TableExclusion[], ifExists?: boolean): Promise<void>
+```
+
+- `table` - Table object or name
+- `exclusionConstraints` - array of TableExclusion objects
+- `ifExists` - when set to `true`, silently ignores if the constraints do not exist; otherwise throws an error (default)
+
+Drops exclusion constraints.
+
+> Note: only PostgreSQL supports exclusion constraints.
 
 ---
 
@@ -502,22 +586,24 @@ createForeignKeys(table: Table|string, foreignKeys: TableForeignKey[]): Promise<
 ---
 
 ```ts
-dropForeignKey(table: Table|string, foreignKeyOrName: TableForeignKey|string): Promise<void>
+dropForeignKey(table: Table|string, foreignKeyOrName: TableForeignKey|string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `foreignKeyOrName` - TableForeignKey 对象或外键名称
+- `ifExists` - 如果设置为 `true`，当外键不存在时静默忽略；否则抛出错误（默认）
 
 删除外键。
 
 ---
 
 ```ts
-dropForeignKeys(table: Table|string, foreignKeys: TableForeignKey[]): Promise<void>
+dropForeignKeys(table: Table|string, foreignKeys: TableForeignKey[], ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `foreignKeys` - TableForeignKey 对象数组
+- `ifExists` - 如果设置为 `true`，当外键不存在时静默忽略；否则抛出错误（默认）
 
 删除多个外键。
 
@@ -546,22 +632,24 @@ createIndices(table: Table|string, indices: TableIndex[]): Promise<void>
 ---
 
 ```ts
-dropIndex(table: Table|string, index: TableIndex|string): Promise<void>
+dropIndex(table: Table|string, index: TableIndex|string, ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `index` - TableIndex 对象或索引名称
+- `ifExists` - 如果设置为 `true`，当索引不存在时静默忽略；否则抛出错误（默认）
 
 删除索引。
 
 ---
 
 ```ts
-dropIndices(table: Table|string, indices: TableIndex[]): Promise<void>
+dropIndices(table: Table|string, indices: TableIndex[], ifExists?: boolean): Promise<void>
 ```
 
 - `table` - 表对象或名称
 - `indices` - TableIndex 对象数组
+- `ifExists` - 如果设置为 `true`，当索引不存在时静默忽略；否则抛出错误（默认）
 
 删除多个索引。
 

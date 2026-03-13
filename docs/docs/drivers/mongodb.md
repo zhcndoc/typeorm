@@ -2,9 +2,9 @@
 
 ## MongoDB 支持
 
-TypeORM 具有基本的 MongoDB 支持。  
-TypeORM 大部分功能是针对关系型数据库的，  
-本页包含所有 MongoDB 特定的功能文档。
+TypeORM 具有基本的 MongoDB 支持（服务器要求 **6.0 或更高版本**，Node.js 驱动版本要求 **v6 或更高版本**）。
+
+TypeORM 大部分功能是针对关系型数据库的，本页包含所有 MongoDB 特定的功能文档。
 
 ## 安装
 
@@ -14,55 +14,71 @@ npm install mongodb
 
 ## 数据源选项
 
-- `url` - 连接 URL，执行连接操作的地址。请注意，其他数据源选项会覆盖 URL 中设置的参数。
+- `appName` - 创建此 MongoClient 实例的应用程序名称。MongoDB 会在建立每个连接时将此值打印到服务器日志，也会记录在慢查询日志和概要分析集合中。
 
-- `host` - 数据库主机。
+- `authMechanism` - 设置 MongoDB 用于连接认证的认证机制。
 
-- `port` - 数据库主机端口。MongoDB 默认端口为 `27017`。
+- `authSource` - 指定与用户凭据关联的数据库名称。
 
-- `username` - 数据库用户名（替代 `auth.user`）。
+- `autoEncryption` - 可选地启用使用中的自动加密。
 
-- `password` - 数据库密码（替代 `auth.password`）。
+- `checkServerIdentity` - 验证证书 `cert` 是否颁发给 `hostname`。
+
+- `compressors` - 一个数组或逗号分隔的字符串，指定用于启用客户端与 mongod/mongos 实例间网络压缩的压缩器。
+
+- `connectTimeoutMS` - 尝试连接超时的毫秒数。默认值：`30000`。
 
 - `database` - 数据库名称。
 
-- `poolSize` - 设置每个服务器或代理连接的最大连接池大小。
+- `directConnection` - 允许驱动程序强制使用包含单个主机的连接字符串，采用单一拓扑类型。
 
-- `tls` - 使用 TLS/SSL 连接（需要支持 ssl 的 mongod 服务器，2.4 或更高版本）。默认：`false`。
+- `driver` - 驱动程序对象，默认值为 `require("mongodb")`。
 
-- `tlsAllowInvalidCertificates` - 指定当服务器的 TLS 证书无效时驱动程序是否生成错误。默认：`false`。
-
-- `tlsCAFile` - 指定本地 .pem 文件的位置，该文件包含来自证书颁发机构的根证书链。
-
-- `tlsCertificateKeyFile` - 指定本地 .pem 文件的位置，该文件包含客户端的 TLS/SSL 证书和密钥。
-
-- `tlsCertificateKeyFilePassword` - 指定解密 `tlsCertificateKeyFile` 的密码。
-
-- `keepAlive` - 启动 TCP 套接字 keepAlive 前等待的毫秒数。默认：`30000`。
-
-- `connectTimeoutMS` - TCP 连接超时时间设置。默认：`30000`。
-
-- `socketTimeoutMS` - TCP 套接字超时时间设置。默认：`360000`。
-
-- `replicaSet` - 要连接的副本集名称。
-
-- `authSource` - 如果数据库认证依赖于其他数据库名称。
-
-- `writeConcern` - 写关注设置。
+- `family` - IP 协议族。
 
 - `forceServerObjectId` - 强制服务器分配 \_id 值而非驱动程序分配。默认：`false`。
 
-- `serializeFunctions` - 序列化对象上的函数。默认：`false`。
+- `host` - 数据库主机。
+
+- `hostReplicaSet` - 数据库主机副本集。
 
 - `ignoreUndefined` - 指定 BSON 序列化器是否忽略未定义字段。默认：`false`。
 
-- `raw` - 返回文档结果为原始 BSON 缓冲区。默认：`false`。
+- `localThresholdMS` - 选择多个合适 MongoDB 实例时的延迟窗口大小（单位：毫秒）。
 
-- `promoteLongs` - 如果 Long 值在 53 位解析范围内，提升为数字。默认：`true`。
+- `maxStalenessSeconds` - 指定二级副本允许的最大读取延迟时间（秒），超过此时间客户端将停止使用该节点进行读取操作。最小值为 90 秒。
+
+- `minPoolSize` - 连接池中的最小连接数。
+
+- `monitorCommands` - 为该客户端启用命令监控。
+
+- `noDelay` - TCP 连接禁用延迟。
+
+- `password` - 数据库密码。
+
+- `pkFactory` - 用于生成自定义 \_id 键的主键工厂对象。
+
+- `poolSize` - 连接池中最大连接数，映射至 MongoDB 驱动的 `maxPoolSize` 选项。
+
+- `port` - 数据库主机端口，MongoDB 默认端口为 `27017`。
 
 - `promoteBuffers` - 将二进制 BSON 值提升为原生 Node 缓冲区。默认：`false`。
 
-- `promoteValues` - 尽可能提升 BSON 值为原生类型，设置为 false 则只接收包装类型。默认：`true`。
+- `promoteLongs` - 如果 Long 值在 53 位解析范围内，提升为数字。默认值：`true`。
+
+- `promoteValues` - 尽可能将 BSON 值提升为原生类型，若设为 false，则仅接收包装类型。默认值：`true`。
+
+- `proxyHost` - 配置用于创建 TCP 连接的 Socks5 代理主机。
+
+- `proxyPassword` - 当代理需要用户名/密码认证时，配置 Socks5 代理密码。
+
+- `proxyPort` - 配置用于创建 TCP 连接的 Socks5 代理端口。
+
+- `proxyUsername` - 当代理需要用户名/密码认证时，配置 Socks5 代理用户名。
+
+- `raw` - 返回文档结果为原始 BSON 缓冲区。默认值：`false`。
+
+- `readConcern` - 指定集合的读关注级别。
 
 - `readPreference` - 偏好的读偏好。  
     - `ReadPreference.PRIMARY`  
@@ -71,17 +87,31 @@ npm install mongodb
     - `ReadPreference.SECONDARY_PREFERRED`  
     - `ReadPreference.NEAREST`
 
-- `pkFactory` - 生成自定义 \_id 键的主键工厂对象。
+- `readPreferenceTags` - 以逗号分隔的冒号分隔的键值对形式指定标签文档。
 
-- `readConcern` - 指定集合的读关注。（仅支持 MongoDB 3.2 或更高版本）
+- `replicaSet` - 如果 mongod 是副本集成员，指定副本集的名称。
 
-- `maxStalenessSeconds` - 为副本集二级读取指定最大延迟秒数，最小值为 90 秒。
+- `retryWrites` - 启用可重试写操作。
 
-- `appName` - 创建此 MongoClient 实例的应用程序名称。MongoDB 3.4 及更新版本会在建立每个连接时将此值打印到服务器日志，也会记录在慢查询日志和概要分析集合中。
+- `serializeFunctions` - 序列化对象上的函数。默认值：`false`。
 
-- `authMechanism` - 设置 MongoDB 用于连接认证的认证机制。
+- `socketTimeoutMS` - 在 socket 上尝试发送或接收的超时时间（毫秒）。默认值：`360000`。
 
-- `directConnection` - 指定是否强制将所有操作发送到指定主机。
+- `tls` - 启用或禁用连接的 TLS/SSL。默认值：`false`。
+
+- `tlsAllowInvalidCertificates` - 绕过对 mongod/mongos 实例所提供证书的验证。默认值：`false`。
+
+- `tlsCAFile` - 指定本地 .pem 文件的位置，该文件包含来自证书颁发机构的根证书链。
+
+- `tlsCertificateKeyFile` - 指定本地 .pem 文件的位置，该文件包含客户端的 TLS/SSL 证书和私钥。
+
+- `tlsCertificateKeyFilePassword` - 指定解密 `tlsCertificateKeyFile` 的密码。
+
+- `url` - 执行连接操作的连接 URL。请注意，其他数据源选项会覆盖 URL 中设置的参数。
+
+- `username` - 数据库用户名。
+
+- `writeConcern` - MongoDB 写关注，用于描述对写操作请求的确认级别。
 
 额外选项可添加到 `extra` 对象中，将直接传递给客户端库。详见 `mongodb` 文档中的 [Connection Options](https://mongodb-node.netlify.app/docs/drivers/node/current/connect/connection-options/)。
 
@@ -94,7 +124,8 @@ npm install mongodb
 简单实体示例：
 
 ```typescript
-import { Entity, ObjectId, ObjectIdColumn, Column } from "typeorm"
+import { ObjectId } from "mongodb"
+import { Entity, ObjectIdColumn, Column } from "typeorm"
 
 @Entity()
 export class User {
@@ -128,7 +159,8 @@ const myDataSource = new DataSource({
 TypeORM 中也可以这么做：
 
 ```typescript
-import { Entity, ObjectId, ObjectIdColumn, Column } from "typeorm"
+import { ObjectId } from "mongodb"
+import { Entity, ObjectIdColumn, Column } from "typeorm"
 
 export class Profile {
     @Column()
@@ -143,7 +175,8 @@ export class Profile {
 ```
 
 ```typescript
-import { Entity, ObjectId, ObjectIdColumn, Column } from "typeorm"
+import { ObjectId } from "mongodb"
+import { Entity, ObjectIdColumn, Column } from "typeorm"
 
 export class Photo {
     @Column()
@@ -365,9 +398,7 @@ const users = await myDataSource.getMongoRepository(User).find({
 
 ### `createCollectionIndexes`
 
-在集合中创建多个索引，此方法仅支持 MongoDB 2.6 或更高版本。  
-旧版本 MongoDB 会抛出“不支持命令”错误。  
-索引规范参见 [createIndexes](http://docs.mongodb.org/manual/reference/command/createIndexes/)。
+在集合中创建多个索引，索引规范定义见 [createIndexes](http://docs.mongodb.org/manual/reference/command/createIndexes/)。
 
 ### `deleteMany`
 

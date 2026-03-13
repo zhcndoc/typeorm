@@ -95,6 +95,8 @@ new DataSource({
 
 ### 移除已废弃的连接选项
 
+TypeORM 现在要求 **MongoDB 服务器版本为 6.0 或更高** 且使用 **`mongodb` Node.js 驱动版本 v6 或更高**（`^6.0.0 || ^7.0.0`）。不再支持 MongoDB 服务器 5.x 以及 `mongodb` 驱动 v5。
+
 下列 MongoDB 连接选项已被移除：
 
 | 已移除选项           | 替代操作                                               |
@@ -102,9 +104,20 @@ new DataSource({
 | `appname`            | 改用 `appName`（驼峰式）                               |
 | `fsync`              | 改用 `writeConcern: { journal: true }`                 |
 | `j`                  | 改用 `writeConcern: { journal: true }`                 |
-| `useNewUrlParser`    | 移除 — 自 MongoDB Driver v4.0 起无效                     |
-| `useUnifiedTopology` | 移除 — 自 MongoDB Driver v4.0 起无效                     |
+| `keepAlive`          | 移除 — 自 MongoDB 驱动 v6.0 起始终启用                  |
+| `keepAliveInitialDelay` | 移除 — 自 MongoDB 驱动 v6.0 起不可配置                  |
+| `ssl`                | 改用 `tls`                                             |
+| `sslCA`              | 改用 `tlsCAFile`                                       |
+| `sslCRL`             | 移除 — 现代驱动中无替代项                               |
+| `sslCert`            | 改用 `tlsCertificateKeyFile`                            |
+| `sslKey`             | 改用 `tlsCertificateKeyFile`                            |
+| `sslPass`            | 改用 `tlsCertificateKeyFilePassword`                    |
+| `sslValidate`        | 改用 `tlsAllowInvalidCertificates`（取反含义）          |
+| `useNewUrlParser`    | 移除 — 自 MongoDB 驱动 v4.0 起无效                      |
+| `useUnifiedTopology` | 移除 — 自 MongoDB 驱动 v4.0 起无效                      |
+| `w`                  | 改用 `writeConcern: { w: 1 }`                          |
 | `wtimeout`           | 改用 `writeConcern: { wtimeoutMS: 2500 }`               |
+| `wtimeoutMS`         | 改用 `writeConcern: { wtimeoutMS: 2500 }`               |
 
 ### `getMongoRepository` 和 `getMongoManager` 全局函数
 
@@ -120,6 +133,41 @@ const repository = getMongoRepository(User)
 // 之后
 const manager = dataSource.mongoManager
 const repository = dataSource.getMongoRepository(User)
+```
+
+### Types
+
+The internal MongoDB types are no longer exported. You can import `ObjectId` from `mongodb` instead of `typeorm`.
+
+## MS SQL Server
+
+### `domain` connection option removed
+
+The deprecated `domain` option on `SqlServerConnectionCredentialsOptions` has been removed. Use the `authentication` option with NTLM type instead:
+
+```typescript
+// Before
+new DataSource({
+    type: "mssql",
+    domain: "MYDOMAIN",
+    username: "user",
+    password: "pass",
+    // ...
+})
+
+// After
+new DataSource({
+    type: "mssql",
+    authentication: {
+        type: "ntlm",
+        options: {
+            domain: "MYDOMAIN",
+            userName: "user",
+            password: "pass",
+        },
+    },
+    // ...
+})
 ```
 
 ## Expo
@@ -138,11 +186,9 @@ Glob 模式现在由 `tinyglobby` 处理，替代了之前的 `glob`。虽然 `t
 
 ## 移除的废弃功能
 
-### `Connection` 与 `DataSource`
+### Redis
 
-`DataSource` 在 v0.3 中取代了 `Connection`，以更好地体现该类的抽象概念。为向后兼容，`Connection` 曾被保留为 `DataSource` 的别名，但现已移除。类似地，`ConnectionOptions` 现为 `DataSourceOptions`。
-
-此外，`DataSource` 类中的旧方法名称也已删除，比如 `Connection.connect()` 现只有 `DataSource.initialize()`，`Connection.close()` 变为 `DataSource.destroy()` 等。
+`RedisQueryResultCache` 中移除了对旧版（v3/v4）Redis 客户端的支持。
 
 ### 全局快捷函数
 
@@ -170,9 +216,65 @@ const repo = dataSource.getRepository(User)
 const qb = dataSource.createQueryBuilder("user")
 ```
 
+## Data Source
+
+### `Connection` vs `DataSource`
+
+`DataSource` replaced `Connection` in v0.3 to provide a better meaning to the abstract concept represented by this class. For backwards compatibility, `Connection` was kept as an alias to `DataSource`, now this alias was removed. Similarly, `ConnectionOptions` is now `DataSourceOptions`.
+
+In addition, the old method names of the `DataSource` class have been removed, so `Connection.connect()` is now only `DataSource.initialize()`, `Connection.close()` is `DataSource.destroy()` etc.
+
 ### `ConnectionManager`
 
 `ConnectionManager` 类已被移除。如果您曾使用它管理多个连接，请直接创建和管理您的 `DataSource` 实例。
+
+## 数据列
+
+### `readonly`
+
+已废弃的 `readonly` 列选项已被移除。请改用 `update` 选项——注意其含义是相反的：
+
+```typescript
+// 之前
+@Column({ readonly: true })
+authorName: string
+
+// 之后
+@Column({ update: false })
+authorName: string
+```
+
+### `unsigned`
+
+在 `ColumnNumericOptions` 中（用于如 `@Column("decimal", { unsigned: true })` 这类 decimal/float 类型重载的 `unsigned` 属性）已被移除，因为 MySQL 不再支持非整数字段的 `UNSIGNED`。`ColumnOptions` 中用于整数类型的 `unsigned` 选项未受影响，仍然可用。
+
+## 仓库
+
+### `findByIds`
+
+已废弃的 `findByIds` 方法已从 `EntityManager`、`Repository` 和 `BaseEntity` 中移除。请改用带 `In` 操作符的 `findBy`：
+
+```typescript
+// 之前
+const users = await repository.findByIds([1, 2, 3])
+
+// 之后
+import { In } from "typeorm"
+
+const users = await repository.findBy({ id: In([1, 2, 3]) })
+```
+
+### `exist`
+
+已废弃的 `Repository.exist()` 方法已被移除。请改用 `exists()` —— 两者行为完全相同：
+
+```typescript
+// 之前
+const hasUsers = await userRepository.exist({ where: { isActive: true } })
+
+// 之后
+const hasUsers = await userRepository.exists({ where: { isActive: true } })
+```
 
 ### `AbstractRepository`、`@EntityRepository` 和 `getCustomRepository`
 
@@ -203,6 +305,93 @@ const UserRepository = dataSource.getRepository(User).extend({
 ```
 
 以下错误类也被移除了：`CustomRepositoryDoesNotHaveEntityError`、`CustomRepositoryCannotInheritRepositoryError`、`CustomRepositoryNotFoundError`。
+
+### `@RelationCount` 装饰器与 `loadRelationCountAndMap`
+
+`@RelationCount` 装饰器和 `SelectQueryBuilder.loadRelationCountAndMap()` 方法已被移除。请改用 `@VirtualColumn` 或在查询构建器中使用子查询代替：
+
+```typescript
+// 之前
+@RelationCount((post: Post) => post.categories)
+categoryCount: number
+
+// 之后 — 使用带子查询的 @VirtualColumn
+// 请替换连接表名和列名以匹配你的数据库结构
+@VirtualColumn({
+    query: (alias) =>
+        `SELECT COUNT(*) FROM post_categories_category WHERE postId = ${alias}.id`,
+})
+categoryCount: number
+```
+
+## 查询构建器
+
+### `onConflict`
+
+`InsertQueryBuilder` 上的 `onConflict()` 方法已被移除。请改用 `orIgnore()` 或 `orUpdate()`：
+
+```typescript
+// 之前
+await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Post)
+    .values(post)
+    .onConflict(`("id") DO NOTHING`)
+    .execute()
+
+// 之后
+await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Post)
+    .values(post)
+    .orIgnore()
+    .execute()
+
+// 之前
+await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Post)
+    .values(post)
+    .onConflict(`("id") DO UPDATE SET "title" = :title`)
+    .setParameter("title", post.title)
+    .execute()
+
+// 之后
+await dataSource
+    .createQueryBuilder()
+    .insert()
+    .into(Post)
+    .values(post)
+    .orUpdate(["title"], ["id"])
+    .execute()
+```
+
+### `orUpdate`
+
+基于对象的 `orUpdate()` 重载（接受 `{ columns?, overwrite?, conflict_target? }`）已被移除。请改用数组形式签名：
+
+```typescript
+// 之前
+.orUpdate({ conflict_target: ["date"], overwrite: ["title"] })
+
+// 之后
+.orUpdate(["title"], ["date"])
+```
+
+### `replacePropertyNames`
+
+已废弃的受保护方法 `replacePropertyNames()` 已被移除。该方法自从属性名替换转由 `replacePropertyNamesForTheWholeQuery()` 处理后即为无操作。如果你在自定义 QueryBuilder 子类中重写了此方法，重写将不再被调用。
+
+### `setNativeParameters`
+
+`setNativeParameters()` 方法已被移除。请改用 `setParameters()`。
+
+### `WhereExpression` 类型别名
+
+已废弃的 `WhereExpression` 类型别名已被移除。请改用 `WhereExpressionBuilder`。
 
 ### 废弃的锁模式
 
@@ -240,18 +429,120 @@ const UserRepository = dataSource.getRepository(User).extend({
 { lock: { mode: "pessimistic_write", onLocked: "nowait" } }
 ```
 
-### `WhereExpression` 类型别名
+## 迁移
 
-已废弃的 `WhereExpression` 类型别名已被移除。请改用 `WhereExpressionBuilder`。
+### `getAllMigrations`
 
-### `Repository.exist()`
-
-已废弃的 `Repository.exist()` 方法已被移除。请改用 `exists()`，行为完全相同：
+已废弃的 `getAllMigrations()` 方法已被移除。请改用 `getMigrations()` —— 两者行为相同：
 
 ```typescript
 // 之前
-const hasUsers = await userRepository.exist({ where: { isActive: true } })
+const migrations = await migrationExecutor.getAllMigrations()
 
 // 之后
-const hasUsers = await userRepository.exists({ where: { isActive: true } })
+const migrations = migrationExecutor.getMigrations()
+```
+
+### `QueryRunner.loadedTables` 和 `loadedViews`
+
+已废弃的 `QueryRunner` 接口上的 `loadedTables` 和 `loadedViews` 属性已被移除。请改用 `getTables()` 和 `getViews()`：
+
+```typescript
+// 之前
+const tables = queryRunner.loadedTables
+const views = queryRunner.loadedViews
+
+// 之后
+const tables = await queryRunner.getTables()
+const views = await queryRunner.getViews()
+```
+
+## 配置
+
+### `invalidWhereValuesBehavior` 默认改为抛错
+
+where 条件中 null 和 undefined 值的默认行为发生了变化。此前，null 和 undefined 值会被静默忽略（属性被跳过）。现在，默认 **会抛出错误**。
+
+此变更避免了诸如 `findBy({ id: undefined })` 这类查询静默返回第一条数据而非报错的潜在错误。
+
+```typescript
+// v0.3：静默返回所有帖子（null 被忽略）
+// v1.0：抛出 TypeORMError
+await repository.find({ where: { text: null } })
+
+// v0.3：静默返回所有帖子（undefined 被忽略）
+// v1.0：抛出 TypeORMError
+await repository.find({ where: { text: undefined } })
+```
+
+要匹配 null 值，请使用 `IsNull()` 操作符：
+
+```typescript
+import { IsNull } from "typeorm"
+
+await repository.find({ where: { text: IsNull() } })
+```
+
+要恢复之前行为，请在数据源选项中设置 `invalidWhereValuesBehavior`：
+
+```typescript
+new DataSource({
+    // ...
+    invalidWhereValuesBehavior: {
+        null: "ignore",
+        undefined: "ignore",
+    },
+})
+```
+
+该设置影响所有高级 API —— 查询操作、仓库/管理器的变更方法和 `queryBuilder.setFindOptions()`（这是惟一影响到的 QueryBuilder 方法）。其余 QueryBuilder 方法（`.where()`、`.andWhere()`、`.orWhere()`）不受影响 —— null 和 undefined 值原样传递。详情请查看[Null 和 undefined 的处理](../data-source/5-null-and-undefined-handling.md)。
+
+### 取消通过环境变量配置支持
+
+废弃了 `ConnectionOptionsEnvReader` 类以及通过 `TYPEORM_CONNECTION`、`TYPEORM_URL` 和其他 `TYPEORM_*` 环境变量配置连接的功能，也不再支持 `ormconfig.env` 文件格式。TypeORM 也不再自动加载 `.env` 文件或依赖 `dotenv`。
+
+请改用 TypeScript 或 JavaScript 配置文件（`ormconfig.ts`、`ormconfig.js`），直接引用环境变量：
+
+```typescript
+// ormconfig.ts
+export default {
+    type: process.env.DB_TYPE,
+    url: process.env.DB_URL,
+    // ...
+}
+```
+
+### `name`
+
+废弃了 `DataSource` 和 `BaseDataSourceOptions` 上的 `name` 属性。命名连接在 v0.3 版本移除 `ConnectionManager` 时即被废弃。如果你曾用 `name` 识别连接，请改为直接管理 `DataSource` 实例。
+
+`ConnectionOptionsReader` 也已简化：`all()` 被重命名为 `get()`（返回所有配置数组），旧的 `get(name)` 和 `has(name)` 方法已被移除。
+
+```typescript
+const reader = new ConnectionOptionsReader()
+
+// 若 ormconfig 只有单个数据源
+const [options] = await reader.get()
+
+// 若要在多个数据源中获取指定配置
+const allOptions = await reader.get()
+const postgresOptions = allOptions.find((o) => o.type === "postgres")
+```
+
+## 容器系统
+
+废弃了 IoC 容器集成：`useContainer()`、`getFromContainer()`、`ContainerInterface`、`ContainedType` 和 `UseContainerOptions` 已被移除。TypeORM 现在始终直接实例化迁移和订阅者。如果需要依赖注入，请自行实例化类并传入 `DataSource` 选项：
+
+```typescript
+// 之前
+import { useContainer } from "typeorm"
+useContainer(myContainer)
+
+// 之后 — 直接传入预构建的实例
+new DataSource({
+    subscribers: [new MySubscriber(dep1, dep2)],
+    migrations: [new MyMigration(dep1)],
+    // ...
+})
+```
 ```

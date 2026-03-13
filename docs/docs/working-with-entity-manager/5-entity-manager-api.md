@@ -217,6 +217,7 @@ await manager.updateAll(User, { category: "ADULT" })
 
 当 upsert 操作因冲突导致更新时，像 `@UpdateDateColumn` 和 `@VersionColumn` 这样特殊的列会自动更新为当前值。
 
+带有 `update: false` 标记的列或定义为计算生成列（通过 `asExpression`/`generatedType`）的列**永远不会**包含在冲突时的更新集内。如果所有非冲突列都被这些规则排除（即没有可更新的列），则 upsert 降级为插入或忽略操作，现有行将保持完全不变。在支持冲突目标的数据库（例如 PostgreSQL、CockroachDB）中，这仅作用于指定的冲突列；在 MySQL 家族的数据库中，使用 `INSERT IGNORE`，该操作适用于所有唯一约束。
 ```typescript
 await manager.upsert(
     User,

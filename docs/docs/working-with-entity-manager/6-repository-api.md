@@ -175,6 +175,7 @@ await repository.updateAll(
 
 当 upsert 操作因冲突导致更新时，像 `@UpdateDateColumn` 和 `@VersionColumn` 这样的特殊列会自动更新为当前值。
 
+标记为 `update: false` 或定义为计算生成列（通过 `asExpression`/`generatedType`）的列**绝不会**包含在冲突时的更新集合中。如果所有非冲突列都被这些规则排除（即没有可更新的列），则 upsert 将退化为插入或忽略操作，且现有行将保持完全不变。在支持冲突目标的数据库（例如 PostgreSQL、CockroachDB）上，此规则限定于指定的冲突列；在 MySQL 系列数据库上，使用 `INSERT IGNORE`，它适用于所有唯一约束。
 ```typescript
 await repository.upsert(
     [

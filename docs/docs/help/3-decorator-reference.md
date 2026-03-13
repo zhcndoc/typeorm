@@ -235,8 +235,9 @@ export class User {
 
 #### `@ObjectIdColumn`
 
-将属性标记为 MongoDB 的 ObjectId。  
-该装饰器专用于 MongoDB，每个实体必须有一个 ObjectId 列。  
+将属性标记为 `ObjectId`。  
+该装饰器专用于 MongoDB。  
+每个 MongoDB 实体必须有一个 `ObjectId` 列。  
 示例：
 
 ```typescript

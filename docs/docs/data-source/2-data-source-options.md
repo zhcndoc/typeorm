@@ -75,16 +75,16 @@
 - `isolateWhereStatements` - 启用 where 语句隔离，自动将每个 where 子句用括号包裹。
   例如 `.where("user.firstName = :search OR user.lastName = :search")` 会变成 `WHERE (user.firstName = ? OR user.lastName = ?)`，而不是 `WHERE user.firstName = ? OR user.lastName = ?`。
 
-- `invalidWhereValuesBehavior` - 控制 TypeORM 中 where 条件对 null 和 undefined 值的处理方式（影响所有操作，包括查找、查询构建器、仓库方法）。
+- `invalidWhereValuesBehavior` - 控制高阶操作（查找操作、仓库方法、实体管理器方法）中 where 条件对 null 和 undefined 值的处理方式，不直接影响 QueryBuilder 的 `.where()`。
     - 对 `null` 的处理选项：
-        - `'ignore'`（默认） - 跳过 null 属性
+        - `'ignore'` - 跳过 null 属性
         - `'sql-null'` - 将 null 转换为 SQL NULL
-        - `'throw'` - 抛出错误
+        - `'throw'`（默认）- 抛出错误
     - 对 `undefined` 的处理选项：
-        - `'ignore'`（默认） - 跳过 undefined 属性
-        - `'throw'` - 抛出错误
+        - `'ignore'` - 跳过 undefined 属性
+        - `'throw'`（默认）- 抛出错误
 
-    示例：`invalidWhereValuesBehavior: { null: 'sql-null', undefined: 'throw' }`。
+    示例：`invalidWhereValuesBehavior: { null: 'sql-null', undefined: 'ignore' }`。
 
     了解更多关于[Null 和 Undefined 的处理](./5-null-and-undefined-handling.md)。
 
