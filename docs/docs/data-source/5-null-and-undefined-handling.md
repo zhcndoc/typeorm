@@ -16,21 +16,20 @@
 默认情况下，TypeORM 在 where 条件中遇到 `null` 或 `undefined` 值时会抛出错误。这样可以防止意想不到的结果，并帮助及早发现潜在的错误：
 
 ```typescript
-// 这两个查询都会抛出错误
-```
+// 两个查询都会抛出错误
 const posts1 = await repository.find({
     where: {
         text: null,
     },
 })
-// Error: Null value encountered in property 'text' of a where condition.
+// 错误信息: 在 where 条件的 'text' 属性中遇到了 null 值。
 
 const posts2 = await repository.find({
     where: {
         text: undefined,
     },
 })
-// Error: Undefined value encountered in property 'text' of a where condition.
+// 错误信息: 在 where 条件的 'text' 属性中遇到了 undefined 值。
 ```
 
 正确匹配 where 条件中的 `null` 值应使用 `IsNull` 操作符（详情见 [查找选项](../working-with-entity-manager/3-find-options.md)）：
