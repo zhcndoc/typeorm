@@ -2,7 +2,7 @@
 
 ## MongoDB 支持
 
-TypeORM 具有基本的 MongoDB 支持（服务器要求 **6.0 或更高版本**，Node.js 驱动版本要求 **v6 或更高版本**）。
+TypeORM 提供基础的 MongoDB 支持（Node.js 驱动 **v7 或更高版本**）。
 
 TypeORM 大部分功能是针对关系型数据库的，本页包含所有 MongoDB 特定的功能文档。
 
@@ -495,10 +495,6 @@ const users = await myDataSource.getMongoRepository(User).find({
 ### `replaceOne`
 
 替换单个文档。
-
-### `stats`
-
-获取集合的所有统计信息。
 
 ### `updateMany`
 

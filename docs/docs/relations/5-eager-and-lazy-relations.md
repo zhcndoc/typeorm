@@ -66,6 +66,40 @@ const questions = await questionRepository.find()
 急切关联只能用于关系的一方，
 两边都使用 `eager: true` 是不允许的。
 
+默认情况下，急切关联使用 `LEFT JOIN` 进行加载。如果关联同时标记为 `nullable: false`（并且它拥有连接列，即 `ManyToOne` 或拥有方的 `OneToOne`），TypeORM 会改用 `INNER JOIN`，这可以生成更高效的查询计划。
+
+### 关联加载策略
+
+默认情况下，急切关联通过向主查询添加 SQL JOIN 来加载（`"join"` 策略）。如果你在使用嵌套 join 时加载了过多数据，可以切换到 `"query"` 策略，它通过单独的数据库查询来加载关联：
+
+```typescript
+// 单次查询
+const questions = await questionRepository.find({
+    relationLoadStrategy: "query",
+})
+
+// 或者为整个 DataSource 设置默认值
+const dataSource = new DataSource({
+    // ...
+    relationLoadStrategy: "query",
+})
+```
+
+你还可以使用 `loadEagerRelations` 来控制是否加载急切关联：
+
+```typescript
+// 完全禁用急切关联加载
+const questions = await questionRepository.find({
+    loadEagerRelations: false,
+})
+
+// 仅加载显式指定的关联，抑制嵌套的急切关联
+const questions = await questionRepository.find({
+    relations: { categories: true },
+    loadEagerRelations: false,
+})
+```
+
 ## 懒加载关联
 
 懒加载关联中的实体会在你访问它们时加载。

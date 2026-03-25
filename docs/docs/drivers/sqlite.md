@@ -71,4 +71,11 @@ npm install sql.js
 
 ## 列类型
 
-`int`、`int2`、`int8`、`integer`、`tinyint`、`smallint`、`mediumint`、`bigint`、`decimal`、`numeric`、`float`、`double`、`real`、`double precision`、`datetime`、`varying character`、`character`、`native character`、`varchar`、`nchar`、`nvarchar2`、`unsigned big int`、`boolean`、`blob`、`text`、`clob`、`date`
+`int`, `int2`, `int8`, `integer`, `tinyint`, `smallint`, `mediumint`, `bigint`, `decimal`, `numeric`, `float`, `double`, `real`, `double precision`, `datetime`, `varying character`, `character`, `native character`, `varchar`, `nchar`, `nvarchar2`, `unsigned big int`, `boolean`, `blob`, `text`, `clob`, `date`, `json`, `jsonb`
+
+TypeORM 在 SQLite 中支持 `json` 和 `jsonb` 两种类型：
+
+- `json` 存储为 `TEXT`。
+- `jsonb` 存储为 SQLite 的二进制 JSON 格式。TypeORM 在持久化期间自动使用 `jsonb()` 函数包装值，并在检索期间使用 `json()` 函数，以提供透明支持和更好的性能。
+
+JSONB 支持需要 SQLite 3.45.0 或更高版本。当使用 `jsonb` 列类型时，TypeORM 将在数据库模式中使用 `jsonb` 类型，SQLite 在内部将其作为二进制 `BLOB` 处理。

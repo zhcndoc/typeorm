@@ -214,14 +214,14 @@ export class PostSubscriber implements EntitySubscriberInterface {
     /**
      * 查询执行前调用。
      */
-    beforeQuery(event: BeforeQueryEvent<any>) {
+    beforeQuery(event: BeforeQueryEvent) {
         console.log(`BEFORE QUERY: `, event.query)
     }
 
     /**
      * 查询执行后调用。
      */
-    afterQuery(event: AfterQueryEvent<any>) {
+    afterQuery(event: AfterQueryEvent) {
         console.log(`AFTER QUERY: `, event.query)
     }
 

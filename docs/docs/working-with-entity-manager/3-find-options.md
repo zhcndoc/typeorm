@@ -57,7 +57,11 @@ LEFT JOIN "videos" ON "videos"."id" = "user"."videoId"
 LEFT JOIN "video_attributes" ON "video_attributes"."id" = "videos"."video_attributesId"
 ```
 
-- `where` - 实体应根据的简单条件进行查询。
+- `relationLoadStrategy` - 控制关联关系的加载方式：`"join"`（默认）使用 SQL JOIN，`"query"` 使用单独的查询。详情请参见 [Eager and Lazy Relations](../relations/5-eager-and-lazy-relations.md#relation-load-strategy)。
+
+- `loadEagerRelations` - 控制是否自动加载急加载关联关系（标记为 `eager: true`）。默认为 `true`。详情请参见 [Eager and Lazy Relations](../relations/5-eager-and-lazy-relations.md#relation-load-strategy)。
+
+- `where` - 实体查询应满足的简单条件。
 
 ```typescript
 userRepository.find({
@@ -134,7 +138,7 @@ SELECT * FROM "user"
 ORDER BY "name" ASC, "id" DESC
 ```
 
-- `withDeleted` - 包括通过 `softDelete` 或 `softRemove` 软删除的实体，例如，其 `@DeleteDateColumn` 列已设置。默认情况下，不包括软删除的实体。
+- `withDeleted` - 包括通过 `softDelete` 或 `softRemove` 软删除的实体，即其 `@DeleteDateColumn` 列已设置。默认情况下，不包括软删除的实体。
 
 ```typescript
 userRepository.find({
@@ -152,14 +156,14 @@ userRepository.find({
 })
 ```
 
-执行以下查询：
+将执行以下查询：
 
 ```sql
 SELECT * FROM "user"
 OFFSET 5
 ```
 
-- `take` - 限制（分页） - 应取的最大实体数量。
+- `take` - 限制（分页）- 应取的最大实体数量。
 
 ```typescript
 userRepository.find({
@@ -174,9 +178,9 @@ SELECT * FROM "user"
 LIMIT 10
 ```
 
-** `skip` 和 `take` 应配合使用**
+**`skip` 和 `take` 应配合使用**
 
-** 如果您使用 MSSQL，并想使用 `take` 或 `limit`，需要同时指定 `order`，否则会收到以下错误：`'Invalid usage of the option NEXT in the FETCH statement.'`
+**如果您使用 MSSQL，并想使用 `take` 或 `limit`，需要同时指定 `order`，否则 `take` 和 `limit` 将无法正常工作，您会收到以下错误：`'Invalid usage of the option NEXT in the FETCH statement.'`**
 
 ```typescript
 userRepository.find({
@@ -196,7 +200,7 @@ ORDER BY "columnName" ASC
 LIMIT 10 OFFSET 0
 ```
 
-- `cache` - 启用或禁用查询结果缓存。详情及配置见 [缓存](../query-builder/6-caching.md)。
+- `cache` - 启用或禁用查询结果缓存。详情请参见 [缓存](../query-builder/6-caching.md)。
 
 ```typescript
 userRepository.find({
@@ -226,7 +230,7 @@ userRepository.find({
 }
 ```
 
-例如：
+示例：
 
 ```typescript
 userRepository.findOne({
@@ -237,7 +241,7 @@ userRepository.findOne({
 })
 ```
 
-更多信息见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)
+更多信息请参见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)
 
 ## 示例
 
@@ -563,7 +567,7 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "likes" = "dislikes" - 4
 ```
 
-最简单的情况是，原始查询直接插入在等号后面。
+在最简单的情况下，原始字符串直接插入在等号后面。
 但您也可以通过函数完全重写比较逻辑。
 
 ```ts
@@ -580,8 +584,9 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "currentDate" > NOW()
 ```
 
-如果需要提供用户输入，请不要直接在查询中包含用户输入，这可能带来 SQL 注入风险。
-而应使用 `Raw` 函数的第二个参数，提供用于绑定查询的参数列表。
+如果需要提供用户输入，请不要直接在查询中包含用户输入，
+因为这会使您容易受到 SQL 注入攻击。相反，您可以使用 `Raw` 函数的第二个参数
+来提供要绑定到查询的参数列表。
 
 ```ts
 import { Raw } from "typeorm"
@@ -597,7 +602,8 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "currentDate" > '2020-10-06'
 ```
 
-如果需要提供数组类型的用户输入，可以使用特殊表达式语法将其绑定为 SQL 语句中的值列表：
+如果需要以数组形式提供用户输入，您可以使用特殊的表达式语法
+将它们绑定为 SQL 语句中的值列表：
 
 ```ts
 import { Raw } from "typeorm"

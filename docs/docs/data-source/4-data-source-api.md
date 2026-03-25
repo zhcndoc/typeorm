@@ -7,7 +7,7 @@
 const dataSourceOptions: DataSourceOptions = dataSource.options
 ```
 
-- `isInitialized` - 指示 DataSource 是否已初始化以及是否已建立与数据库的初始连接/连接池。
+- `isInitialized` - 指示 `DataSource` 是否已初始化，以及与数据库的连接/连接池是否已建立。
 
 ```typescript
 const isInitialized: boolean = dataSource.isInitialized

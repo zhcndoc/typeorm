@@ -7,22 +7,22 @@
 
 - 使用 `@OneToOne` 的 [一对一](./2-one-to-one-relations.md)  
 - 使用 `@ManyToOne` 的 [多对一](./3-many-to-one-one-to-many-relations.md)  
-- 使用 `@OneToMany` 的 [一对多](./3-many-to-one-one-to-many-relations.md)  
+- 使用 `@OneToOne` 的 [一对多](./3-many-to-one-one-to-many-relations.md)  
 - 使用 `@ManyToMany` 的 [多对多](./4-many-to-many-relations.md)  
 
 ## 关联选项
 
 你可以为关联关系指定以下几个选项：
 
-- `eager: boolean`（默认值：`false`） - 设置为 `true` 时，使用 `find*` 方法或此实体的 `QueryBuilder` 查询时，关联总是会和主实体一起加载。  
-- `cascade: boolean | ("insert" | "update")[]`（默认值：`false`） - 设置为 `true` 时，相关联对象会自动插入和更新到数据库。你也可以指定一个 [cascade 选项数组](#cascade-选项)。  
-- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"` （默认值：`RESTRICT`）- 指定当引用对象被删除时，外键应如何处理。  
-- `nullable: boolean`（默认值：`true`） - 表示此关联的列是否可以为 null，默认允许为 null。  
-- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"`（默认值：`disable`） - 当启用级联保存父实体，但数据库中还存在未关联的子实体时，控制这些子实体该如何处理。  
-  - _delete_ 会将这些子实体从数据库删除。  
-  - _soft-delete_ 会将子实体标记为软删除。  
-  - _nullify_ 会移除关联键。  
-  - _disable_ 会保持关联，删除时需使用子实体自己的仓库方法。
+- `eager: boolean` (default: `false`) - 如果设置为 true，在使用 `find*` 方法或 `QueryBuilder` 查询此实体时，关联将始终与主实体一起加载
+- `cascade: boolean | ("insert" | "update")[]` (default: `false`) - 如果设置为 true，相关对象将被插入和更新到数据库中。你也可以指定 [级联选项](#cascade-options) 的数组。
+- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"` (default: `RESTRICT`) - 指定当引用的对象被删除时，外键应如何表现
+- `nullable: boolean` (default: `true`) - 指示此关系的列是否可为空。默认可为空。对于 `ManyToOne` 和拥有的 `OneToOne` 关系，设置 `nullable: false` 还会使 TypeORM 在加载关系时使用 `INNER JOIN` 而不是 `LEFT JOIN`，因为相关实体保证存在。
+- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"` (default: `disable`) - 当父级被保存（启用级联）时，如果数据库中仍存在子级/子级集合，这将控制它们应该发生什么。
+    - _delete_ 将从数据库中删除这些子级。
+    - _soft-delete_ 会将子级标记为软删除。
+    - _nullify_ 将删除关系键。
+    - _disable_ 将保持关系完整。要删除，必须使用它们自己的仓库。
 
 ## 级联操作示例
 
@@ -115,28 +115,28 @@ export class Post {
     @Column()
     text: string
 
-    // categories 上启用全部级联操作
+    // 启用 `cascade` 且 `PostCategory` 尚未插入时，保存 Post 会将两个实体都级联插入到数据库
     @ManyToMany((type) => PostCategory, {
         cascade: true,
     })
     @JoinTable()
     categories: PostCategory[]
 
-    // 只级联插入：如果给此关联设置了新的 PostDetails 实例，保存 Post 时将自动插入到数据库
+    // 设置 `cascade` 为 ["insert"] 时，如果给此关联设置了新的 `PostDetail` 实例，保存 Post 时将自动插入到数据库
     @ManyToMany((type) => PostDetails, (details) => details.posts, {
         cascade: ["insert"],
     })
     @JoinTable()
     details: PostDetails[]
 
-    // 只级联更新：如果对现有 PostImage 做了修改，保存 Post 时会自动更新数据库
+    // 设置 `cascade` 为 ["update"] 时，如果修改了现有的 `PostImage`，保存 Post 时会自动更新数据库
     @ManyToMany((type) => PostImage, (image) => image.posts, {
         cascade: ["update"],
     })
     @JoinTable()
     images: PostImage[]
 
-    // 级联插入和更新：有新的 PostInformation 实例或更新现有的，会自动插入或更新
+    // 设置 `cascade` 为 ["insert", "update"] 时，添加新的 `PostInformation` 实例或修改现有实例都会自动插入或更新
     @ManyToMany((type) => PostInformation, (information) => information.posts, {
         cascade: ["insert", "update"],
     })
@@ -194,7 +194,7 @@ category: Category;
 
 ## `@JoinTable` 选项
 
-`@JoinTable` 用于多对多关系，描述“连接表”的列。  
+`@JoinTable` 用于多对多关系，描述"连接表"的列。  
 连接表是 TypeORM 自动创建的特殊单独表，包含指向相关实体的列。  
 你可以使用 `@JoinColumn` 修改连接表的列名和对应引用列名，  
 同时也可以自定义生成的连接表名称。

@@ -778,18 +778,30 @@ const sql = dataSource
     .getSql()
 ```
 
-调试时可用 `printSql`：
+出于调试目的，你可以使用 `getSql()` 或 `getQuery()` 来检查生成的 SQL：
 
 ```typescript
-const users = await dataSource
+const qb = dataSource
     .createQueryBuilder("user")
     .where("user.firstName = :firstName", { firstName: "Timber" })
     .orWhere("user.lastName = :lastName", { lastName: "Saw" })
-    .printSql()
-    .getMany()
+
+console.log(qb.getSql())
+// SELECT ... WHERE "user"."firstName" = $1 OR "user"."lastName" = $2
+
+const users = await qb.getMany()
 ```
 
-查询结果会返回用户，同时打印 SQL 到控制台。
+`getSql()` 返回带有参数占位符的 SQL。`getQuery()` 返回相同的 SQL 字符串。如果要查看参数值，请使用 `getQueryAndParameters()`，它返回一个 `[sql, parameters]` 元组。
+
+当你在 DataSource 选项中启用查询日志记录时，所有执行的查询也会通过配置的记录器自动记录：
+
+```typescript
+new DataSource({
+    // ...
+    logging: ["query"],
+})
+```
 
 ## 获取原始结果
 

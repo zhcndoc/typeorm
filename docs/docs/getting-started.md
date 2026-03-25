@@ -1163,16 +1163,14 @@ const photos = await AppDataSource.getRepository(Photo)
 
 这里有一些简化 TypeORM 工作及与其他模块集成的扩展：
 
-- 与 [TypeDI](https://github.com/pleerock/typedi) 集成的 [TypeORM 扩展](https://github.com/typeorm/typeorm-typedi-extensions)
-- 与 [routing-controllers](https://github.com/pleerock/routing-controllers) 集成的 [TypeORM 扩展](https://github.com/typeorm/typeorm-routing-controllers-extensions)
-- 根据现有数据库生成模型 - [typeorm-model-generator](https://github.com/Kononnable/typeorm-model-generator)
-- 夹具加载器 - [typeorm-fixtures-cli](https://github.com/RobinCK/typeorm-fixtures)
-- ER图生成器 - [typeorm-uml](https://github.com/eugene-manuilov/typeorm-uml/)
-- 另一款 ER 图生成器 - [erdia](https://www.npmjs.com/package/erdia/)
+- 从现有数据库生成模型 - [typeorm-model-generator](https://github.com/Kononnable/typeorm-model-generator)
+- Fixtures 加载器 - [typeorm-fixtures-cli](https://github.com/RobinCK/typeorm-fixtures)
+- ER 图生成器 - [typeorm-uml](https://github.com/eugene-manuilov/typeorm-uml/)
+- 另一个 ER 图生成器 - [erdia](https://www.npmjs.com/package/erdia/)
 - 创建、删除和填充数据库 - [typeorm-extension](https://github.com/tada5hi/typeorm-extension)
-- 生成迁移/实体后自动更新 `data-source.ts` - [typeorm-codebase-sync](https://www.npmjs.com/package/typeorm-codebase-sync)
-- 方便操作 relations - [typeorm-relations](https://npmjs.com/package/typeorm-relations)
-- 根据 GraphQL 查询自动生成 relations - [typeorm-relations-graphql](https://npmjs.com/package/typeorm-relations-graphql)
+- 在生成 [迁移](/docs/migrations/why)/实体后自动更新 `data-source.ts` - [typeorm-codebase-sync](https://www.npmjs.com/package/typeorm-codebase-sync)
+- 轻松操作 `relations` 对象 - [typeorm-relations](https://npmjs.com/package/typeorm-relations)
+- 基于 GraphQL 查询自动生成 `relations` - [typeorm-relations-graphql](https://npmjs.com/package/typeorm-relations-graphql)
 
 ## 贡献
 
