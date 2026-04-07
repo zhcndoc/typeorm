@@ -22,9 +22,10 @@ import { OrmUtils } from "../../util/OrmUtils"
 import { Query } from "../Query"
 import type { ColumnType } from "../types/ColumnTypes"
 import type { IsolationLevel } from "../types/IsolationLevel"
+import { validateIsolationLevel } from "../validate-isolation-level"
 import { MetadataTableType } from "../types/MetadataTableType"
 import type { ReplicationMode } from "../types/ReplicationMode"
-import type { OracleDriver } from "./OracleDriver"
+import { OracleDriver } from "./OracleDriver"
 
 /**
  * Runs queries on a single oracle database connection.
@@ -111,22 +112,17 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Starts transaction.
+     *
      * @param isolationLevel
      */
     async startTransaction(
         isolationLevel: IsolationLevel = "READ COMMITTED",
     ): Promise<void> {
+        validateIsolationLevel(
+            OracleDriver.supportedIsolationLevels,
+            isolationLevel,
+        )
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
-
-        // await this.query("START TRANSACTION");
-        if (
-            isolationLevel !== "SERIALIZABLE" &&
-            isolationLevel !== "READ COMMITTED"
-        ) {
-            throw new TypeORMError(
-                `Oracle only supports SERIALIZABLE and READ COMMITTED isolation`,
-            )
-        }
 
         this.isTransactionActive = true
         try {
@@ -190,6 +186,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Executes a given SQL query.
+     *
      * @param query
      * @param parameters
      * @param useStructuredResult
@@ -308,6 +305,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Returns raw data stream.
+     *
      * @param query
      * @param parameters
      * @param onEnd
@@ -368,6 +366,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
     /**
      * Returns all available schema names including system schemas.
      * If database parameter specified, returns schemas of that database.
+     *
      * @param database
      */
     async getSchemas(database?: string): Promise<string[]> {
@@ -376,6 +375,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if database with the given name exist.
+     *
      * @param database
      */
     async hasDatabase(database: string): Promise<boolean> {
@@ -402,6 +402,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if schema with the given name exist.
+     *
      * @param schema
      */
     async hasSchema(schema: string): Promise<boolean> {
@@ -420,6 +421,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if table with the given name exist in the database.
+     *
      * @param tableOrName
      */
     async hasTable(tableOrName: Table | string): Promise<boolean> {
@@ -431,6 +433,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if column with the given name exist in the given table.
+     *
      * @param tableOrName
      * @param columnName
      */
@@ -446,6 +449,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new database.
+     *
      * @param database
      * @param ifNotExists
      */
@@ -477,6 +481,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops database.
+     *
      * @param database
      * @param ifExists
      */
@@ -486,6 +491,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new table schema.
+     *
      * @param schemaPath
      * @param ifNotExists
      */
@@ -500,6 +506,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops table schema.
+     *
      * @param schemaPath
      * @param ifExists
      */
@@ -511,6 +518,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new table.
+     *
      * @param table
      * @param ifNotExists
      * @param createForeignKeys
@@ -581,6 +589,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the table.
+     *
      * @param tableOrName
      * @param ifExists
      * @param dropForeignKeys
@@ -652,6 +661,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new view.
+     *
      * @param view
      * @param syncWithMetadata
      */
@@ -671,6 +681,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the view.
+     *
      * @param target
      * @param ifExists
      */
@@ -692,6 +703,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Renames the given table.
+     *
      * @param oldTableOrName
      * @param newTableName
      */
@@ -893,6 +905,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new column from the column in the table.
+     *
      * @param tableOrName
      * @param column
      */
@@ -1049,6 +1062,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new columns from the column in the table.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -1063,6 +1077,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Renames column in the given table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newTableColumnOrName
@@ -1098,6 +1113,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newColumn
@@ -1593,6 +1609,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param changedColumns
      */
@@ -1607,6 +1624,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops column in the table.
+     *
      * @param tableOrName
      * @param columnOrName
      * @param ifExists
@@ -1784,6 +1802,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the columns in the table.
+     *
      * @param tableOrName
      * @param columns
      * @param ifExists
@@ -1800,6 +1819,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new primary key.
+     *
      * @param tableOrName
      * @param columnNames
      * @param constraintName
@@ -1829,6 +1849,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Updates composite primary keys.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -1912,6 +1933,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a primary key.
+     *
      * @param tableOrName
      * @param constraintName
      * @param ifExists
@@ -1940,6 +1962,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new unique constraint.
+     *
      * @param tableOrName
      * @param uniqueConstraint
      */
@@ -1967,6 +1990,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      */
@@ -1982,6 +2006,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a unique constraint.
+     *
      * @param tableOrName
      * @param uniqueOrName
      * @param ifExists
@@ -2012,6 +2037,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      * @param ifExists
@@ -2029,6 +2055,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates new check constraint.
+     *
      * @param tableOrName
      * @param checkConstraint
      */
@@ -2056,6 +2083,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates new check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      */
@@ -2071,6 +2099,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops check constraint.
+     *
      * @param tableOrName
      * @param checkOrName
      * @param ifExists
@@ -2101,6 +2130,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      * @param ifExists
@@ -2118,6 +2148,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionConstraint
      */
@@ -2130,6 +2161,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      */
@@ -2142,6 +2174,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionOrName
      * @param ifExists
@@ -2156,6 +2189,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      * @param ifExists
@@ -2170,6 +2204,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new foreign key.
+     *
      * @param tableOrName
      * @param foreignKey
      */
@@ -2198,6 +2233,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new foreign keys.
+     *
      * @param tableOrName
      * @param foreignKeys
      */
@@ -2213,6 +2249,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a foreign key from the table.
+     *
      * @param tableOrName
      * @param foreignKeyOrName
      * @param ifExists
@@ -2252,6 +2289,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a foreign keys from the table.
+     *
      * @param tableOrName
      * @param foreignKeys
      * @param ifExists
@@ -2269,6 +2307,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new index.
+     *
      * @param tableOrName
      * @param index
      */
@@ -2291,6 +2330,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new indices
+     *
      * @param tableOrName
      * @param indices
      */
@@ -2306,6 +2346,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops an index from the table.
+     *
      * @param tableOrName
      * @param indexOrName
      * @param ifExists
@@ -2338,6 +2379,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops an indices from the table.
+     *
      * @param tableOrName
      * @param indices
      * @param ifExists
@@ -2356,6 +2398,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
     /**
      * Clears all table contents.
      * Note: this operation uses SQL's TRUNCATE query which cannot be reverted in transactions.
+     *
      * @param tableName
      * @param options
      * @param options.cascade
@@ -2465,6 +2508,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Loads all tables (with given names) from the database and creates a Table from them.
+     *
      * @param tableNames
      */
     protected async loadTables(tableNames?: string[]): Promise<Table[]> {
@@ -2935,6 +2979,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds and returns SQL for create table.
+     *
      * @param table
      * @param createForeignKeys
      */
@@ -3055,6 +3100,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop table sql.
+     *
      * @param tableOrName
      * @param ifExists
      */
@@ -3104,6 +3150,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop view sql.
+     *
      * @param view
      */
     protected dropViewSql(view: View): Query {
@@ -3115,6 +3162,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds remove view sql.
+     *
      * @param view
      */
     protected deleteViewDefinitionSql(view: View): Query {
@@ -3126,6 +3174,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create index sql.
+     *
      * @param table
      * @param index
      */
@@ -3142,6 +3191,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop index sql.
+     *
      * @param indexOrName
      */
     protected dropIndexSql(indexOrName: TableIndex | string): Query {
@@ -3153,6 +3203,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create primary key sql.
+     *
      * @param table
      * @param columnNames
      * @param constraintName
@@ -3179,6 +3230,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop primary key sql.
+     *
      * @param table
      */
     protected dropPrimaryKeySql(table: Table): Query {
@@ -3200,6 +3252,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create unique constraint sql.
+     *
      * @param table
      * @param uniqueConstraint
      */
@@ -3219,6 +3272,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop unique constraint sql.
+     *
      * @param table
      * @param uniqueOrName
      */
@@ -3238,6 +3292,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create check constraint sql.
+     *
      * @param table
      * @param checkConstraint
      */
@@ -3254,6 +3309,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop check constraint sql.
+     *
      * @param table
      * @param checkOrName
      */
@@ -3273,6 +3329,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create foreign key sql.
+     *
      * @param table
      * @param foreignKey
      */
@@ -3302,6 +3359,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop foreign key sql.
+     *
      * @param table
      * @param foreignKeyOrName
      */
@@ -3323,6 +3381,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds a query for create column.
+     *
      * @param column
      */
     protected buildCreateColumnSql(column: TableColumn) {
@@ -3350,6 +3409,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Escapes given table or view path.
+     *
      * @param target
      */
     protected escapePath(target: Table | View | string): string {
@@ -3365,6 +3425,7 @@ export class OracleQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Change table comment.
+     *
      * @param tableOrName
      * @param comment
      */

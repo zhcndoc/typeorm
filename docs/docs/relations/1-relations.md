@@ -14,15 +14,15 @@
 
 你可以为关联关系指定以下几个选项：
 
-- `eager: boolean` (default: `false`) - 如果设置为 true，在使用 `find*` 方法或 `QueryBuilder` 查询此实体时，关联将始终与主实体一起加载
-- `cascade: boolean | ("insert" | "update")[]` (default: `false`) - 如果设置为 true，相关对象将被插入和更新到数据库中。你也可以指定 [级联选项](#cascade-options) 的数组。
-- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"` (default: `RESTRICT`) - 指定当引用的对象被删除时，外键应如何表现
-- `nullable: boolean` (default: `true`) - 指示此关系的列是否可为空。默认可为空。对于 `ManyToOne` 和拥有的 `OneToOne` 关系，设置 `nullable: false` 还会使 TypeORM 在加载关系时使用 `INNER JOIN` 而不是 `LEFT JOIN`，因为相关实体保证存在。
-- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"` (default: `disable`) - 当父级被保存（启用级联）时，如果数据库中仍存在子级/子级集合，这将控制它们应该发生什么。
-    - _delete_ 将从数据库中删除这些子级。
-    - _soft-delete_ 会将子级标记为软删除。
-    - _nullify_ 将删除关系键。
-    - _disable_ 将保持关系完整。要删除，必须使用它们自己的仓库。
+- `eager: boolean`（默认值：`false`）- 如果设置为 true，则在使用此实体的 `find*` 方法或 `QueryBuilder` 时，该关联将始终与主实体一起加载。
+- `cascade: boolean | ("insert" | "update")[]`（默认值：`false`）- 如果设置为 true，相关对象将在数据库中插入和更新。你也可以指定一个 [级联选项](#cascade-options) 数组。
+- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"`（默认值：`RESTRICT`）- 指定当被引用对象被删除时，外键应如何表现。
+- `nullable: boolean`（默认值：`true`）- 指示此关联的列是否可为空。默认情况下为可空。对于 `ManyToOne` 和拥有方（owning）的 `OneToOne` 关联，设置 `nullable: false` 还会导致 TypeORM 在加载关联时使用 `INNER JOIN` 而不是 `LEFT JOIN`，因为相关实体保证存在。
+- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"`（默认值：`nullify`）- 当保存父实体（已启用级联）时，如果数据库中仍存在未关联的子实体，此选项将控制如何处理它们。
+    - _nullify_ 将移除关联键。如果外键列不可为空，由于无法将其设置为 `null`，孤立行将被删除。
+    - _delete_ 将从数据库中删除这些子实体。
+    - _soft-delete_ 将子实体标记为软删除。
+    - _disable_ 将保持关联完整。若要删除，必须使用其自身的 repository。
 
 ## 级联操作示例
 

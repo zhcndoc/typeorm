@@ -25,9 +25,10 @@ import { OrmUtils } from "../../util/OrmUtils"
 import { Query } from "../Query"
 import type { ColumnType } from "../types/ColumnTypes"
 import type { IsolationLevel } from "../types/IsolationLevel"
+import { validateIsolationLevel } from "../validate-isolation-level"
 import { MetadataTableType } from "../types/MetadataTableType"
 import type { ReplicationMode } from "../types/ReplicationMode"
-import type { SapDriver } from "./SapDriver"
+import { SapDriver } from "./SapDriver"
 
 /**
  * Runs queries on a single SQL Server database connection.
@@ -103,9 +104,14 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Starts transaction.
+     *
      * @param isolationLevel
      */
     async startTransaction(isolationLevel?: IsolationLevel): Promise<void> {
+        validateIsolationLevel(
+            SapDriver.supportedIsolationLevels,
+            isolationLevel,
+        )
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
 
         if (
@@ -171,6 +177,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Switches AUTOCOMMIT mode on/off
+     *
      * @see https://help.sap.com/docs/HANA_SERVICE_CF/7c78579ce9b14a669c1f3295b0d8ca16/d538d11053bd4f3f847ec5ce817a3d4c.html?locale=en-US
      * @param options
      * @param options.status
@@ -190,6 +197,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Executes a given SQL query.
+     *
      * @param query
      * @param parameters
      * @param useStructuredResult
@@ -333,6 +341,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Returns raw data stream.
+     *
      * @param query
      * @param parameters
      * @param onEnd
@@ -420,6 +429,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
     /**
      * Returns all available schema names including system schemas.
      * If database parameter specified, returns schemas of that database.
+     *
      * @param database
      */
     async getSchemas(database?: string): Promise<string[]> {
@@ -432,6 +442,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if database with the given name exist.
+     *
      * @param database
      */
     async hasDatabase(database: string): Promise<boolean> {
@@ -467,6 +478,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if schema with the given name exist.
+     *
      * @param schema
      */
     async hasSchema(schema: string): Promise<boolean> {
@@ -487,6 +499,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if table with the given name exist in the database.
+     *
      * @param tableOrName
      */
     async hasTable(tableOrName: Table | string): Promise<boolean> {
@@ -507,6 +520,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Checks if column with the given name exist in the given table.
+     *
      * @param tableOrName
      * @param columnName
      */
@@ -532,6 +546,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new database.
+     *
      * @param database
      * @param ifNotExists
      */
@@ -544,6 +559,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops database.
+     *
      * @param database
      * @param ifExists
      */
@@ -553,6 +569,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new table schema.
+     *
      * @param schemaPath
      * @param ifNotExists
      */
@@ -583,6 +600,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops table schema
+     *
      * @param schemaPath
      * @param ifExists
      * @param isCascade
@@ -614,6 +632,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new table.
+     *
      * @param table
      * @param ifNotExists
      * @param createForeignKeys
@@ -661,6 +680,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the table.
+     *
      * @param tableOrName
      * @param ifExists
      * @param dropForeignKeys
@@ -710,6 +730,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new view.
+     *
      * @param view
      * @param syncWithMetadata
      */
@@ -730,6 +751,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the view.
+     *
      * @param target
      * @param ifExists
      */
@@ -754,6 +776,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Renames a table.
+     *
      * @param oldTableOrName
      * @param newTableName
      */
@@ -964,6 +987,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new column from the column in the table.
+     *
      * @param tableOrName
      * @param column
      */
@@ -1162,6 +1186,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new columns from the column in the table.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -1176,6 +1201,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Renames column in the given table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newTableColumnOrName
@@ -1209,6 +1235,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newColumn
@@ -1632,6 +1659,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param changedColumns
      */
@@ -1646,6 +1674,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops column in the table.
+     *
      * @param tableOrName
      * @param columnOrName
      * @param ifExists
@@ -1897,6 +1926,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops the columns in the table.
+     *
      * @param tableOrName
      * @param columns
      * @param ifExists
@@ -1913,6 +1943,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new primary key.
+     *
      * @param tableOrName
      * @param columnNames
      */
@@ -1940,6 +1971,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Updates composite primary keys.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -2093,6 +2125,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a primary key.
+     *
      * @param tableOrName
      * @param constraintName
      * @param ifExists
@@ -2203,6 +2236,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new unique constraint.
+     *
      * @param tableOrName
      * @param uniqueConstraint
      */
@@ -2217,6 +2251,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      */
@@ -2231,6 +2266,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops unique constraint.
+     *
      * @param tableOrName
      * @param uniqueOrName
      * @param ifExists
@@ -2247,6 +2283,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      * @param ifExists
@@ -2263,6 +2300,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new check constraint.
+     *
      * @param tableOrName
      * @param checkConstraint
      */
@@ -2290,6 +2328,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      */
@@ -2305,6 +2344,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops check constraint.
+     *
      * @param tableOrName
      * @param checkOrName
      * @param ifExists
@@ -2335,6 +2375,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      * @param ifExists
@@ -2352,6 +2393,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionConstraint
      */
@@ -2366,6 +2408,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      */
@@ -2380,6 +2423,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionOrName
      * @param ifExists
@@ -2396,6 +2440,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      * @param ifExists
@@ -2412,6 +2457,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new foreign key.
+     *
      * @param tableOrName
      * @param foreignKey
      */
@@ -2440,6 +2486,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new foreign keys.
+     *
      * @param tableOrName
      * @param foreignKeys
      */
@@ -2455,6 +2502,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a foreign key from the table.
+     *
      * @param tableOrName
      * @param foreignKeyOrName
      * @param ifExists
@@ -2494,6 +2542,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops a foreign keys from the table.
+     *
      * @param tableOrName
      * @param foreignKeys
      * @param ifExists
@@ -2511,6 +2560,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new index.
+     *
      * @param tableOrName
      * @param index
      */
@@ -2533,6 +2583,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Creates a new indices
+     *
      * @param tableOrName
      * @param indices
      */
@@ -2548,6 +2599,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops an index.
+     *
      * @param tableOrName
      * @param indexOrName
      * @param ifExists
@@ -2581,6 +2633,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Drops an indices from the table.
+     *
      * @param tableOrName
      * @param indices
      * @param ifExists
@@ -2599,6 +2652,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
     /**
      * Clears all table contents.
      * Note: this operation uses SQL's TRUNCATE query which cannot be reverted in transactions.
+     *
      * @param tablePath
      * @param options
      * @param options.cascade
@@ -2716,6 +2770,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Loads all tables (with given names) from the database and creates a Table from them.
+     *
      * @param tableNames
      */
     protected async loadTables(tableNames?: string[]): Promise<Table[]> {
@@ -3115,6 +3170,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds and returns SQL for create table.
+     *
      * @param table
      * @param createForeignKeys
      */
@@ -3263,6 +3319,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop table sql.
+     *
      * @param tableOrName
      * @param ifExists
      */
@@ -3311,6 +3368,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop view sql.
+     *
      * @param viewOrPath
      */
     protected dropViewSql(viewOrPath: View | string): Query {
@@ -3319,6 +3377,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds remove view sql.
+     *
      * @param viewOrPath
      */
     protected async deleteViewDefinitionSql(
@@ -3349,6 +3408,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create index sql.
+     *
      * @param table
      * @param index
      */
@@ -3373,6 +3433,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop index sql.
+     *
      * @param table
      * @param indexOrName
      */
@@ -3396,6 +3457,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create primary key sql.
+     *
      * @param table
      * @param columnNames
      */
@@ -3416,6 +3478,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop primary key sql.
+     *
      * @param table
      */
     protected dropPrimaryKeySql(table: Table): Query {
@@ -3433,6 +3496,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create check constraint sql.
+     *
      * @param table
      * @param checkConstraint
      */
@@ -3449,6 +3513,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop check constraint sql.
+     *
      * @param table
      * @param checkOrName
      */
@@ -3468,6 +3533,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds create foreign key sql.
+     *
      * @param tableOrName
      * @param foreignKey
      */
@@ -3514,6 +3580,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds drop foreign key sql.
+     *
      * @param tableOrName
      * @param foreignKeyOrName
      */
@@ -3535,6 +3602,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Escapes a given comment so it's safe to include in a query.
+     *
      * @param comment
      */
     protected escapeComment(comment?: string) {
@@ -3549,6 +3617,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Escapes given table or view path.
+     *
      * @param target
      */
     protected escapePath(target: Table | View | string): string {
@@ -3563,6 +3632,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Builds a query for create column.
+     *
      * @param column
      * @param explicitDefault
      * @param explicitNullable
@@ -3599,6 +3669,7 @@ export class SapQueryRunner extends BaseQueryRunner implements QueryRunner {
 
     /**
      * Change table comment.
+     *
      * @param tableOrName
      * @param newComment
      */

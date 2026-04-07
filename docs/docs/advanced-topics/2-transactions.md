@@ -43,17 +43,22 @@ await myDataSource.manager.transaction(
 )
 ```
 
-隔离级别的实现并非对所有数据库都通用。
+隔离级别的实现在不同数据库之间**并非**通用的。每个驱动都会声明其支持的隔离级别，如果你请求了不支持的级别，TypeORM 将会抛出错误。
 
-以下数据库驱动支持标准的隔离级别（`READ UNCOMMITTED`、`READ COMMITTED`、`REPEATABLE READ`、`SERIALIZABLE`）：
+| 数据库驱动 | 支持的隔离级别 |
+| --------------- | ----------------------------------------------------------------------------------- |
+| MySQL / MariaDB | `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`             |
+| PostgreSQL      | `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`             |
+| CockroachDB     | `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`             |
+| SQL Server      | `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`, `SNAPSHOT` |
+| Oracle          | `READ COMMITTED`, `SERIALIZABLE`                                                    |
+| SAP HANA        | `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`                                 |
+| SQLite          | `READ UNCOMMITTED`\*, `SERIALIZABLE`                                                |
+| Spanner         | `READ UNCOMMITTED`, `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`             |
 
-- MySQL
-- Postgres
-- SQL Server
+\* SQLite 的 `READ UNCOMMITTED` 仅在启用[共享缓存模式](https://www.sqlite.org/sharedcache.html)时生效。在默认模式下，无论设置如何，SQLite 始终使用 `SERIALIZABLE` 隔离级别。
 
-**SQLite** 默认事务为 `SERIALIZABLE`，但如果启用了 _共享缓存模式_，事务可以使用 `READ UNCOMMITTED` 隔离级别。
-
-**Oracle** 仅支持 `READ COMMITTED` 和 `SERIALIZABLE` 隔离级别。
+SQL Server 还支持通过数据源选项（`isolationLevel` 和 `connectionIsolationLevel`）设置默认隔离级别，但这些设置受限于[上游连接池的限制](../drivers/microsoft-sqlserver.md#connection-pool-does-not-reset-isolation-level)。每个事务的隔离级别不受影响。
 
 ## 使用 `QueryRunner` 创建和控制单个数据库连接的状态
 

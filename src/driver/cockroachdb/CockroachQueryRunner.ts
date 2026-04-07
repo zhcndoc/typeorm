@@ -24,9 +24,10 @@ import { VersionUtils } from "../../util/VersionUtils"
 import { Query } from "../Query"
 import type { ColumnType } from "../types/ColumnTypes"
 import type { IsolationLevel } from "../types/IsolationLevel"
+import { validateIsolationLevel } from "../validate-isolation-level"
 import { MetadataTableType } from "../types/MetadataTableType"
 import type { ReplicationMode } from "../types/ReplicationMode"
-import type { CockroachDriver } from "./CockroachDriver"
+import { CockroachDriver } from "./CockroachDriver"
 
 /**
  * Runs queries on a single postgres database connection.
@@ -153,6 +154,7 @@ export class CockroachQueryRunner
     /**
      * Release a connection back to the pool, optionally specifying an Error to release with.
      * Per pg-pool documentation this will prevent the pool from re-using the broken connection.
+     *
      * @param err
      */
     private async releaseConnection(err?: Error) {
@@ -183,9 +185,15 @@ export class CockroachQueryRunner
 
     /**
      * Starts transaction.
+     *
      * @param isolationLevel
      */
     async startTransaction(isolationLevel?: IsolationLevel): Promise<void> {
+        validateIsolationLevel(
+            CockroachDriver.supportedIsolationLevels,
+            isolationLevel,
+        )
+
         this.isTransactionActive = true
         this.transactionRetries = 0
         try {
@@ -267,6 +275,7 @@ export class CockroachQueryRunner
 
     /**
      * Executes a given SQL query.
+     *
      * @param query
      * @param parameters
      * @param useStructuredResult
@@ -409,6 +418,7 @@ export class CockroachQueryRunner
 
     /**
      * Returns raw data stream.
+     *
      * @param query
      * @param parameters
      * @param onEnd
@@ -452,6 +462,7 @@ export class CockroachQueryRunner
     /**
      * Returns all available schema names including system schemas.
      * If database parameter specified, returns schemas of that database.
+     *
      * @param database
      */
     async getSchemas(database?: string): Promise<string[]> {
@@ -460,6 +471,7 @@ export class CockroachQueryRunner
 
     /**
      * Checks if database with the given name exist.
+     *
      * @param database
      */
     async hasDatabase(database: string): Promise<boolean> {
@@ -480,6 +492,7 @@ export class CockroachQueryRunner
 
     /**
      * Checks if schema with the given name exist.
+     *
      * @param schema
      */
     async hasSchema(schema: string): Promise<boolean> {
@@ -500,6 +513,7 @@ export class CockroachQueryRunner
 
     /**
      * Checks if table with the given name exist in the database.
+     *
      * @param tableOrName
      */
     async hasTable(tableOrName: Table | string): Promise<boolean> {
@@ -519,6 +533,7 @@ export class CockroachQueryRunner
 
     /**
      * Checks if column with the given name exist in the given table.
+     *
      * @param tableOrName
      * @param columnName
      */
@@ -543,6 +558,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new database.
+     *
      * @param database
      * @param ifNotExists
      */
@@ -559,6 +575,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops database.
+     *
      * @param database
      * @param ifExists
      */
@@ -570,6 +587,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new table schema.
+     *
      * @param schemaPath
      * @param ifNotExists
      */
@@ -592,6 +610,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops table schema.
+     *
      * @param schemaPath
      * @param ifExists
      * @param isCascade
@@ -616,6 +635,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new table.
+     *
      * @param table
      * @param ifNotExists
      * @param createForeignKeys
@@ -737,6 +757,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops the table.
+     *
      * @param target
      * @param ifExists
      * @param dropForeignKeys
@@ -837,6 +858,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new view.
+     *
      * @param view
      * @param syncWithMetadata
      */
@@ -857,6 +879,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops the view.
+     *
      * @param target
      * @param ifExists
      */
@@ -880,6 +903,7 @@ export class CockroachQueryRunner
 
     /**
      * Renames the given table.
+     *
      * @param oldTableOrName
      * @param newTableName
      */
@@ -1109,6 +1133,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new column from the column in the table.
+     *
      * @param tableOrName
      * @param column
      */
@@ -1303,6 +1328,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new columns from the column in the table.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -1317,6 +1343,7 @@ export class CockroachQueryRunner
 
     /**
      * Renames column in the given table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newTableColumnOrName
@@ -1350,6 +1377,7 @@ export class CockroachQueryRunner
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param oldTableColumnOrName
      * @param newColumn
@@ -2151,6 +2179,7 @@ export class CockroachQueryRunner
 
     /**
      * Changes a column in the table.
+     *
      * @param tableOrName
      * @param changedColumns
      */
@@ -2165,6 +2194,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops column in the table.
+     *
      * @param tableOrName
      * @param columnOrName
      * @param ifExists
@@ -2386,6 +2416,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops the columns in the table.
+     *
      * @param tableOrName
      * @param columns
      * @param ifExists
@@ -2402,6 +2433,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new primary key.
+     *
      * @param tableOrName
      * @param columnNames
      * @param constraintName
@@ -2431,6 +2463,7 @@ export class CockroachQueryRunner
 
     /**
      * Updates composite primary keys.
+     *
      * @param tableOrName
      * @param columns
      */
@@ -2514,6 +2547,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops a primary key.
+     *
      * @param tableOrName
      * @param constraintName
      * @param ifExists
@@ -2540,6 +2574,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new unique constraint.
+     *
      * @param tableOrName
      * @param uniqueConstraint
      */
@@ -2569,6 +2604,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      */
@@ -2583,6 +2619,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops unique constraint.
+     *
      * @param tableOrName
      * @param uniqueOrName
      * @param ifExists
@@ -2615,6 +2652,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops unique constraints.
+     *
      * @param tableOrName
      * @param uniqueConstraints
      * @param ifExists
@@ -2635,6 +2673,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new check constraint.
+     *
      * @param tableOrName
      * @param checkConstraint
      */
@@ -2662,6 +2701,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      */
@@ -2677,6 +2717,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops check constraint.
+     *
      * @param tableOrName
      * @param checkOrName
      * @param ifExists
@@ -2707,6 +2748,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops check constraints.
+     *
      * @param tableOrName
      * @param checkConstraints
      * @param ifExists
@@ -2724,6 +2766,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionConstraint
      */
@@ -2738,6 +2781,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates new exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      */
@@ -2752,6 +2796,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops exclusion constraint.
+     *
      * @param tableOrName
      * @param exclusionOrName
      * @param ifExists
@@ -2768,6 +2813,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops exclusion constraints.
+     *
      * @param tableOrName
      * @param exclusionConstraints
      * @param ifExists
@@ -2784,6 +2830,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new foreign key.
+     *
      * @param tableOrName
      * @param foreignKey
      */
@@ -2812,6 +2859,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new foreign keys.
+     *
      * @param tableOrName
      * @param foreignKeys
      */
@@ -2826,6 +2874,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops a foreign key from the table.
+     *
      * @param tableOrName
      * @param foreignKeyOrName
      * @param ifExists
@@ -2865,6 +2914,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops a foreign keys from the table.
+     *
      * @param tableOrName
      * @param foreignKeys
      * @param ifExists
@@ -2881,6 +2931,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new index.
+     *
      * @param tableOrName
      * @param index
      */
@@ -2917,6 +2968,7 @@ export class CockroachQueryRunner
 
     /**
      * Creates a new indices
+     *
      * @param tableOrName
      * @param indices
      */
@@ -2931,6 +2983,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops an index from the table.
+     *
      * @param tableOrName
      * @param indexOrName
      * @param ifExists
@@ -2964,6 +3017,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops an indices from the table.
+     *
      * @param tableOrName
      * @param indices
      * @param ifExists
@@ -2981,6 +3035,7 @@ export class CockroachQueryRunner
     /**
      * Clears all table contents.
      * Note: this operation uses SQL's TRUNCATE query which cannot be reverted in transactions.
+     *
      * @param tableName
      * @param options
      * @param options.cascade
@@ -3133,6 +3188,7 @@ export class CockroachQueryRunner
 
     /**
      * Loads all tables (with given names) from the database and creates a Table from them.
+     *
      * @param tableNames
      */
     protected async loadTables(tableNames?: string[]): Promise<Table[]> {
@@ -3792,6 +3848,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create table sql.
+     *
      * @param table
      * @param createForeignKeys
      */
@@ -3946,6 +4003,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop table sql.
+     *
      * @param tableOrPath
      */
     protected dropTableSql(tableOrPath: Table | string): Query {
@@ -3987,6 +4045,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop view sql.
+     *
      * @param viewOrPath
      */
     protected dropViewSql(viewOrPath: View | string): Query {
@@ -3995,6 +4054,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds remove view sql.
+     *
      * @param viewOrPath
      */
     protected async deleteViewDefinitionSql(
@@ -4017,6 +4077,7 @@ export class CockroachQueryRunner
 
     /**
      * Drops ENUM type from given schemas.
+     *
      * @param schemaNames
      */
     protected async dropEnumTypes(schemaNames: string[]): Promise<void> {
@@ -4037,6 +4098,7 @@ export class CockroachQueryRunner
 
     /**
      * Checks if enum with the given name exist in the database.
+     *
      * @param table
      * @param column
      */
@@ -4061,6 +4123,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create ENUM type sql.
+     *
      * @param table
      * @param column
      * @param enumName
@@ -4079,6 +4142,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create ENUM type sql.
+     *
      * @param table
      * @param column
      * @param enumName
@@ -4095,6 +4159,7 @@ export class CockroachQueryRunner
     /**
      * Builds create index sql.
      * UNIQUE indices creates as UNIQUE constraints.
+     *
      * @param table
      * @param index
      */
@@ -4113,6 +4178,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop index sql.
+     *
      * @param table
      * @param indexOrName
      * @param ifExists
@@ -4134,6 +4200,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create primary key sql.
+     *
      * @param table
      * @param columnNames
      * @param constraintName
@@ -4158,6 +4225,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop primary key sql.
+     *
      * @param table
      * @param ifExists
      */
@@ -4179,6 +4247,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create unique constraint sql.
+     *
      * @param table
      * @param uniqueConstraint
      */
@@ -4198,6 +4267,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop unique constraint sql.
+     *
      * @param table
      * @param uniqueOrName
      */
@@ -4217,6 +4287,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create check constraint sql.
+     *
      * @param table
      * @param checkConstraint
      */
@@ -4233,6 +4304,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop check constraint sql.
+     *
      * @param table
      * @param checkOrName
      * @param ifExists
@@ -4254,6 +4326,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds create foreign key sql.
+     *
      * @param table
      * @param foreignKey
      */
@@ -4282,6 +4355,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds drop foreign key sql.
+     *
      * @param table
      * @param foreignKeyOrName
      * @param ifExists
@@ -4305,6 +4379,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds sequence name from given table and column.
+     *
      * @param table
      * @param columnOrName
      */
@@ -4334,6 +4409,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds ENUM type name from given table and column.
+     *
      * @param table
      * @param column
      * @param withSchema
@@ -4390,6 +4466,7 @@ export class CockroachQueryRunner
 
     /**
      * Escapes a given comment so it's safe to include in a query.
+     *
      * @param comment
      */
     protected escapeComment(comment?: string) {
@@ -4404,6 +4481,7 @@ export class CockroachQueryRunner
 
     /**
      * Escapes given table or view path.
+     *
      * @param target
      */
     protected escapePath(target: Table | View | string): string {
@@ -4418,6 +4496,7 @@ export class CockroachQueryRunner
 
     /**
      * Builds a query for create column.
+     *
      * @param table
      * @param column
      */
@@ -4464,6 +4543,7 @@ export class CockroachQueryRunner
     }
     /**
      * Change table comment.
+     *
      * @param tableOrName
      * @param comment
      */

@@ -78,17 +78,23 @@ npm install mssql
 
 - `options.isolationLevel` - 事务的默认隔离级别。隔离级别由 `require('tedious').ISOLATION_LEVEL` 提供：
 
-    - `READ_UNCOMMITTED`
-    - `READ_COMMITTED`
-    - `REPEATABLE_READ`
+- `options.isolationLevel` - 事务运行时的默认隔离级别。请参阅 [已知问题 > 连接池不重置隔离级别](#connection-pool-does-not-reset-isolation-level)。
+    - `READ UNCOMMITTED`
+    - `READ COMMITTED`
+    - `REPEATABLE READ`
     - `SERIALIZABLE`
     - `SNAPSHOT`
 
-    （默认：`READ_COMMITTED`）
+    （默认：`READ COMMITTED`）
 
-- `options.connectionIsolationLevel` - 新连接的默认隔离级别。所有无事务查询均使用此设置。隔离级别同上。
+- `options.connectionIsolationLevel` - 新连接的默认隔离级别。所有事务外的查询都将使用此设置执行。请参阅 [已知问题 > 连接池不重置隔离级别](#connection-pool-does-not-reset-isolation-level)。
+    - `READ UNCOMMITTED`
+    - `READ COMMITTED`
+    - `REPEATABLE READ`
+    - `SERIALIZABLE`
+    - `SNAPSHOT`
 
-    （默认：`READ_COMMITTED`）
+    （默认：`READ COMMITTED`）
 
 - `options.readOnlyIntent` - 布尔值，决定连接是否向 SQL Server 可用性组请求只读访问权限。详情请见此处。（默认：`false`）。
 
@@ -190,5 +196,17 @@ const results = await dataSource.query(
 
 **要求：**
 
-- 使用支持向量功能的 SQL Server 版本
-- 必须通过 `length` 选项指定向量维度
+- 启用向量支持的 SQL Server 版本
+- 必须使用 `length` 选项指定向量维度
+
+## 已知问题
+
+### 连接池不重置隔离级别
+
+当底层 [node-mssql](https://github.com/tediousjs/node-mssql) 驱动首次创建连接时，`options.isolationLevel` 和 `options.connectionIsolationLevel` 数据源选项会被正确应用。然而，`node-mssql` 在将连接归还到连接池时不会调用 `connection.reset()`。这意味着如果任何操作更改了池化连接上的隔离级别（例如，在不同级别上显式开启事务），该更改将会保留并泄漏给该连接的下一个使用者。
+
+实际上，这使得 `options.isolationLevel` 和 `options.connectionIsolationLevel` 对于同时使用每事务隔离级别的应用程序来说并不可靠。
+
+**每事务隔离级别不受影响。** 通过 `startTransaction()` 或 `transaction()` 回调设置隔离级别始终能正常工作，因为它是显式应用于活动连接的。
+
+这是一个上游限制，已在 [tediousjs/node-mssql#1483](https://github.com/tediousjs/node-mssql/issues/1483) 中跟踪。
