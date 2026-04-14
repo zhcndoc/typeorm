@@ -558,7 +558,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@BeforeInsert`
 
@@ -575,7 +575,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@AfterInsert`
 
@@ -592,7 +592,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@BeforeUpdate`
 
@@ -609,7 +609,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@AfterUpdate`
 
@@ -626,7 +626,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@BeforeRemove`
 
@@ -643,7 +643,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@AfterRemove`
 
@@ -660,7 +660,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@BeforeSoftRemove`
 
@@ -677,7 +677,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@AfterSoftRemove`
 
@@ -694,7 +694,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@BeforeRecover`
 
@@ -711,7 +711,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@AfterRecover`
 
@@ -728,7 +728,7 @@ export class Post {
 }
 ```
 
-了解更多关于[监听器](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [listeners](../listeners-and-subscribers.md).
 
 #### `@EventSubscriber`
 
@@ -770,7 +770,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
 }
 ```
 
-了解更多关于[订阅者](../advanced-topics/4-listeners-and-subscribers.md)。
+Learn more about [subscribers](../listeners-and-subscribers.md).
 
 ## 其他装饰器
 
@@ -813,7 +813,7 @@ export class User {
 }
 ```
 
-了解更多关于[索引](../advanced-topics/3-indices.md)。
+了解更多关于[索引](../indexes.md)。
 
 #### `@Unique`
 
@@ -840,7 +840,7 @@ export class User {
 }
 ```
 
-> 注意：MySQL 将唯一约束存储为唯一索引。
+> Note: MySQL stores unique constraints as unique indexes
 
 #### `@Check`
 

@@ -228,10 +228,10 @@ dropSchema(schemaPath: string, ifExists?: boolean, isCascade?: boolean): Promise
 createTable(table: Table, ifNotExists?: boolean, createForeignKeys?: boolean, createIndices?: boolean): Promise<void>
 ```
 
-- `table` - 表对象。
-- `ifNotExists` - 如果设置为 `true`，当表已存在时静默忽略；否则抛出错误（默认）
-- `createForeignKeys` - 指示是否在创建表时创建外键。默认 `true`
-- `createIndices` - 指示是否在创建表时创建索引。默认 `true`
+- `table` - Table object.
+- `ifNotExists` - when set to `true`, silently ignores if the table already exists; otherwise throws an error (default)
+- `createForeignKeys` - indicates whether foreign keys will be created on table creation. Default `true`
+- `createIndices` - indicates whether indexes will be created on table creation. Default `true`
 
 创建一个新表。
 
@@ -241,10 +241,10 @@ createTable(table: Table, ifNotExists?: boolean, createForeignKeys?: boolean, cr
 dropTable(table: Table|string, ifExists?: boolean, dropForeignKeys?: boolean, dropIndices?: boolean): Promise<void>
 ```
 
-- `table` - 要删除的表对象或表名
-- `ifExists` - 如果设置为 `true`，当表不存在时静默忽略；否则抛出错误（默认）
-- `dropForeignKeys` - 指示是否在删除表时删除外键。默认 `true`
-- `dropIndices` - 指示是否在删除表时删除索引。默认 `true`
+- `table` - Table object or table name to be dropped
+- `ifExists` - when set to `true`, silently ignores if the table does not exist; otherwise throws an error (default)
+- `dropForeignKeys` - indicates whether foreign keys will be dropped on table deletion. Default `true`
+- `dropIndices` - indicates whether indexes will be dropped on table deletion. Default `true`
 
 删除一个表。
 
@@ -410,7 +410,7 @@ createUniqueConstraint(table: Table|string, uniqueConstraint: TableUnique): Prom
 
 创建新的唯一约束。
 
-> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `createIndex()` 方法。
+> Note: does not work for MySQL, because MySQL stores unique constraints as unique indexes. Use `createIndex()` method instead.
 
 ---
 
@@ -423,7 +423,7 @@ createUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[]): 
 
 创建新的唯一约束。
 
-> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `createIndices()` 方法。
+> Note: does not work for MySQL, because MySQL stores unique constraints as unique indexes. Use `createIndices()` method instead.
 
 ---
 
@@ -437,7 +437,7 @@ dropUniqueConstraint(table: Table|string, uniqueOrName: TableUnique|string, ifEx
 
 删除唯一约束。
 
-> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `dropIndex()` 方法。
+> Note: does not work for MySQL, because MySQL stores unique constraints as unique indexes. Use `dropIndex()` method instead.
 
 ---
 
@@ -451,7 +451,7 @@ dropUniqueConstraints(table: Table|string, uniqueConstraints: TableUnique[], ifE
 
 删除唯一约束。
 
-> 注意：MySQL 不支持此方法，因为 MySQL 将唯一约束存储为唯一索引。应该使用 `dropIndices()` 方法。
+> Note: does not work for MySQL, because MySQL stores unique constraints as unique indexes. Use `dropIndices()` method instead.
 
 ---
 
@@ -627,7 +627,7 @@ createIndices(table: Table|string, indices: TableIndex[]): Promise<void>
 - `table` - 表对象或名称
 - `indices` - TableIndex 对象数组
 
-创建多个索引。
+Creates new indexes.
 
 ---
 
@@ -647,11 +647,11 @@ dropIndex(table: Table|string, index: TableIndex|string, ifExists?: boolean): Pr
 dropIndices(table: Table|string, indices: TableIndex[], ifExists?: boolean): Promise<void>
 ```
 
-- `table` - 表对象或名称
-- `indices` - TableIndex 对象数组
-- `ifExists` - 如果设置为 `true`，当索引不存在时静默忽略；否则抛出错误（默认）
+- `table` - Table object or name
+- `indices` - array of TableIndex objects
+- `ifExists` - when set to `true`, silently ignores if the indexes do not exist; otherwise throws an error (default)
 
-删除多个索引。
+Drops indexes.
 
 ---
 

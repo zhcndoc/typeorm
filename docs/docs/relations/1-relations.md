@@ -14,15 +14,16 @@
 
 你可以为关联关系指定以下几个选项：
 
-- `eager: boolean`（默认值：`false`）- 如果设置为 true，则在使用此实体的 `find*` 方法或 `QueryBuilder` 时，该关联将始终与主实体一起加载。
-- `cascade: boolean | ("insert" | "update")[]`（默认值：`false`）- 如果设置为 true，相关对象将在数据库中插入和更新。你也可以指定一个 [级联选项](#cascade-options) 数组。
-- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"`（默认值：`RESTRICT`）- 指定当被引用对象被删除时，外键应如何表现。
-- `nullable: boolean`（默认值：`true`）- 指示此关联的列是否可为空。默认情况下为可空。对于 `ManyToOne` 和拥有方（owning）的 `OneToOne` 关联，设置 `nullable: false` 还会导致 TypeORM 在加载关联时使用 `INNER JOIN` 而不是 `LEFT JOIN`，因为相关实体保证存在。
-- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"`（默认值：`nullify`）- 当保存父实体（已启用级联）时，如果数据库中仍存在未关联的子实体，此选项将控制如何处理它们。
-    - _nullify_ 将移除关联键。如果外键列不可为空，由于无法将其设置为 `null`，孤立行将被删除。
+- `eager: boolean` (default: `false`) - 如果设置为 `true`，在使用 `find*` 方法或对该实体使用 `QueryBuilder` 时，关系将始终随主实体一起加载
+- `cascade: boolean | ("insert" | "update")[]` (default: `false`) - 如果设置为 `true`，相关对象将在数据库中插入和更新。你也可以指定一个 [级联选项数组](#cascade-options)。
+- `onDelete: "RESTRICT"|"CASCADE"|"SET NULL"` (default: `RESTRICT`) - 指定当被引用对象被删除时外键的行为
+- `deferrable: "INITIALLY DEFERRED"|"INITIALLY IMMEDIATE"` - 如果设置，外键约束将是可延迟的（例如在提交时验证）。对于多对多关系，这将同时应用于联接表的两个外键。PostgreSQL、better-sqlite3 和 SAP HANA 支持此功能。
+- `nullable: boolean` (default: `true`) - 表示此关系的列是否可为空。默认可为空。对于 `ManyToOne` 和拥有 `OneToOne` 关系，设置 `nullable: false` 也会导致 TypeORM 在加载关系时使用 `INNER JOIN` 而不是 `LEFT JOIN`，因为相关实体一定存在。
+- `orphanedRowAction: "nullify" | "delete" | "soft-delete" | "disable"` (default: `nullify`) - 当保存父实体（启用了级联）而没有仍在数据库中的子实体时，控制将发生什么。
+    - _nullify_ 将移除关系键。如果外键列不可为空，则会删除孤立行，因为它不能被设置为 `null`。
     - _delete_ 将从数据库中删除这些子实体。
-    - _soft-delete_ 将子实体标记为软删除。
-    - _disable_ 将保持关联完整。若要删除，必须使用其自身的 repository。
+    - _soft-delete_ 将标记子实体为软删除。
+    - _disable_ 将保持关系完整。要删除，必须使用它们自己的存储库。
 
 ## 级联操作示例
 
@@ -145,6 +146,19 @@ export class Post {
 }
 ```
 
+:::note Cascade remove
+当使用 `cascade: ["remove"]` 或 `cascade: true` 时，调用 `manager.remove(entity)` 也会删除该实体上已加载的相关实体。TypeORM 仅遍历对象上已加载的关系——如果关系未加载，其子实体不会被级联删除。确保在删除前加载关系：
+
+```typescript
+const post = await manager.findOne(Post, {
+    where: { id: 1 },
+    relations: { categories: true },
+})
+await manager.remove(post) // categories 也会被删除
+```
+
+:::
+
 ## `@JoinColumn` 选项
 
 `@JoinColumn` 不仅定义了哪一侧包含带有外键的连接列，  
@@ -191,6 +205,8 @@ category: Category;
 ])
 category: Category;
 ```
+
+> **注意：** 当使用复合 `@JoinColumn` 或 `@JoinTable` 时，TypeORM 会自动对外键列进行排序，以匹配被引用实体的主键顺序。这确保了与 MySQL、MSSQL 和 SAP HANA 等数据库的兼容性，这些数据库要求外键列按索引顺序引用主键列。
 
 ## `@JoinTable` 选项
 

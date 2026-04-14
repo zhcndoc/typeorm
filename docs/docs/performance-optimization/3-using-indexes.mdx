@@ -1,0 +1,309 @@
+---
+sidebar_label: 索引
+---
+
+import Tabs from "@theme/Tabs"
+import TabItem from "@theme/TabItem"
+import {
+    DatabaseTabs,
+    DatabaseTab,
+} from "@site/src/components/tabs/database-tabs"
+
+# 使用索引
+
+索引是数据结构，允许数据库在不扫描整个表的情况下定位行。没有索引，查询必须检查每一行才能找到匹配项。有了索引，数据库可以直接跳转到相关行——显著减少检查的行数。
+
+索引会加速读取操作，但会增加写入（插入、更新、删除）的开销，因为索引需要保持同步，因此应谨慎创建，仅在必要时使用。
+
+索引的良好候选列是那些在 `WHERE` 子句、连接和排序中频繁使用的列。当多列用作过滤条件时，可以考虑创建[复合索引](../indexes.md#indexes-with-multiple-columns)，但请记住列顺序很重要——应将选择性最高（唯一值最多）的列放在前面。
+
+## 分析查询性能
+
+大多数数据库允许你检查查询的执行方式，这称为执行计划。理解执行计划有助于你识别缺失的索引，并通过比较获取相同数据的不同方式来优化查询构造。
+
+<DatabaseTabs>
+<DatabaseTab value="cockroachdb">
+
+使用 `EXPLAIN ANALYZE`（与 PostgreSQL 语法相同）：
+
+```sql
+EXPLAIN ANALYZE SELECT * FROM "user" WHERE "firstName" = 'Timber';
+```
+
+查找 `full scan`（无索引）与使用特定索引名称的 `scan`。
+
+:::info 了解更多
+
+- [索引](https://www.cockroachlabs.com/docs/stable/indexes.html)
+- [EXPLAIN](https://www.cockroachlabs.com/docs/stable/explain.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="spanner">
+
+使用 [查询计划可视化工具](https://cloud.google.com/spanner/docs/query-execution-plans#query_plan_visualizer) 在 Google Cloud 控制台中，或通过 `gcloud` CLI 以 `PLAN`/`PROFILE` 模式运行查询：
+
+```bash
+gcloud spanner databases execute-sql DATABASE_ID \
+    --instance=INSTANCE_ID \
+    --query-mode=PROFILE \
+    --sql="SELECT * FROM user WHERE firstName = 'Timber'"
+```
+
+在返回的计划中查找 `Table Scan`（无索引）与 `Index Scan`。
+
+:::info 了解更多
+
+- [二级索引](https://cloud.google.com/spanner/docs/secondary-indexes)
+- [查询执行计划](https://cloud.google.com/spanner/docs/query-execution-plans)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mariadb">
+
+使用 `EXPLAIN` 或 `ANALYZE` 检查查询执行计划：
+
+```sql
+ANALYZE SELECT * FROM user WHERE firstName = 'Timber';
+```
+
+检查 `type` 列——`ALL` 表示全表扫描，而 `ref`、`range` 或 `index` 表示使用了索引。`key` 列显示选择了哪个索引。
+
+:::info 了解更多
+
+- [优化与索引](https://mariadb.com/kb/en/optimization-and-indexes/)
+- [EXPLAIN](https://mariadb.com/kb/en/explain/)
+- [ANALYZE 语句](https://mariadb.com/kb/en/analyze-statement/)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mongodb">
+
+使用查询上的 `explain()` 方法查看执行计划：
+
+```javascript
+db.user.find({ firstName: "Timber" }).explain("executionStats")
+```
+
+查找 `COLLSCAN`（集合扫描——无索引）与 `IXSCAN`（索引扫描）。
+
+:::info 了解更多
+
+- [索引](https://www.mongodb.com/docs/manual/indexes/)
+- [解释结果](https://www.mongodb.com/docs/manual/reference/explain-results/)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mysql">
+
+使用 `EXPLAIN` 检查查询执行计划：
+
+```sql
+EXPLAIN SELECT * FROM user WHERE firstName = 'Timber';
+```
+
+检查 `type` 列——`ALL` 表示全表扫描，而 `ref`、`range` 或 `index` 表示使用了索引。`key` 列显示选择了哪个索引。
+
+:::tip Aurora MySQL
+这也适用于 Amazon Aurora MySQL，它使用相同的查询引擎和 EXPLAIN 语法。参见 [Aurora MySQL 调优](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Tuning.html) 获取 Aurora 特定指导。
+:::
+
+:::info 了解更多
+
+- [优化与索引](https://dev.mysql.com/doc/refman/en/optimization-indexes.html)
+- [EXPLAIN 输出格式](https://dev.mysql.com/doc/refman/en/explain-output.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="oracle">
+
+使用 `EXPLAIN PLAN` 检查执行计划：
+
+```sql
+EXPLAIN PLAN FOR SELECT * FROM "user" WHERE "firstName" = 'Timber';
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+```
+
+查找 `TABLE ACCESS FULL`（无索引）与 `INDEX RANGE SCAN` 或 `INDEX UNIQUE SCAN`。
+
+:::info 了解更多
+
+- [索引和索引组织表](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/indexes-and-index-organized-tables.html)
+- [生成和显示执行计划](https://docs.oracle.com/en/database/oracle/oracle-database/23/tgsql/generating-and-displaying-execution-plans.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="postgres">
+
+使用 `EXPLAIN ANALYZE` 查看 PostgreSQL 如何执行查询以及是否使用了索引：
+
+```sql
+EXPLAIN ANALYZE SELECT * FROM "user" WHERE "firstName" = 'Timber';
+```
+
+查找 `Seq Scan`（全表扫描——未使用索引）与 `Index Scan` 或 `Index Only Scan`（使用了索引）。
+
+:::tip Aurora PostgreSQL
+这也适用于 Amazon Aurora PostgreSQL，它使用相同的查询引擎和 EXPLAIN 语法。Aurora 还提供[查询计划管理](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Optimize.html)用于捕获和控制执行计划。
+:::
+
+:::info 了解更多
+
+- [索引](https://www.postgresql.org/docs/current/indexes.html)
+- [EXPLAIN](https://www.postgresql.org/docs/current/sql-explain.html)
+- [使用 EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="sap">
+
+使用 `EXPLAIN PLAN FOR` 检查执行计划：
+
+```sql
+EXPLAIN PLAN FOR SELECT * FROM "user" WHERE "firstName" = 'Timber';
+SELECT * FROM EXPLAIN_PLAN_TABLE;
+```
+
+在运算符列中查找 `TABLE SCAN`（无索引）与 `INDEX SCAN` 或 `INDEX SEEK`。
+
+:::info 了解更多
+
+- [索引](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/indexes)
+- [EXPLAIN PLAN](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/explain-plan-statement-data-manipulation)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mssql">
+
+使用执行计划分析查询。在 SQL Server Management Studio 中，按下 `Ctrl+M` 包含实际执行计划，然后运行查询。程序化方式：
+
+```sql
+SET STATISTICS IO ON;
+SELECT * FROM [user] WHERE firstName = 'Timber';
+SET STATISTICS IO OFF;
+```
+
+在执行计划中查找 `Table Scan`（无索引）与 `Index Seek` 或 `Index Scan`。
+
+:::info 了解更多
+
+- [索引](https://learn.microsoft.com/en-us/sql/relational-databases/indexes/indexes)
+- [执行计划](https://learn.microsoft.com/en-us/sql/relational-databases/performance/execution-plans)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="sqlite">
+
+使用 `EXPLAIN QUERY PLAN` 查看 SQLite 如何解析查询：
+
+```sql
+EXPLAIN QUERY PLAN SELECT * FROM user WHERE firstName = 'Timber';
+```
+
+在输出中查找 `SCAN`（无索引）与 `SEARCH`（使用了索引）。
+
+:::info 了解更多
+
+- [查询规划](https://www.sqlite.org/queryplanner.html)
+- [EXPLAIN QUERY PLAN](https://www.sqlite.org/eqp.html)
+
+:::
+
+</DatabaseTab>
+</DatabaseTabs>
+
+## 在 TypeORM 中定义索引
+
+TypeORM 支持使用 `@Index` 装饰器在表列上创建索引。
+
+<Tabs>
+<TabItem value="basic" label="基础索引">
+
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
+
+@Entity()
+export class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    @Index()
+    email: string
+
+    @Column()
+    firstName: string
+}
+```
+
+</TabItem>
+<TabItem value="composite" label="复合索引">
+
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
+
+@Entity()
+@Index(["lastName", "firstName"]) // 最具选择性的列放在前面
+export class User {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    firstName: string
+
+    @Column()
+    lastName: string
+}
+```
+
+</TabItem>
+<TabItem value="join" label="连接列">
+
+```typescript
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    Index,
+} from "typeorm"
+import { User } from "./User"
+
+@Entity()
+export class Post {
+    @PrimaryGeneratedColumn()
+    id: number
+
+    @Column()
+    title: string
+
+    @ManyToOne(() => User)
+    @Index() // 为外键列建立索引以加速连接
+    author: User
+}
+```
+
+</TabItem>
+</Tabs>
+
+有关不同类型索引（唯一、空间、全文、并发等）的全面概述，请阅读[索引](../indexes.md)指南。
+
+正确的索引往往是你能做出的最大性能改进——首先使用上述执行计划工具分析最慢的查询，然后在最重要的位置添加索引。

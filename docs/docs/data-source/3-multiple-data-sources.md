@@ -145,13 +145,13 @@ const users = await dataSource
     .from(User, "user")
     .addFrom(Photo, "photo")
     .andWhere("photo.userId = user.id")
-    .getMany() // userId 不是外键，因为这是跨数据库请求
+    .getMany()
 ```
 
 此代码会生成如下 SQL 查询（根据数据库类型不同）：
 
 ```sql
-SELECT * FROM "secondSchema"."question" "question", "thirdSchema"."photo" "photo"
+SELECT * FROM "secondSchema"."user" "user", "thirdSchema"."photo" "photo"
     WHERE "photo"."userId" = "user"."id"
 ```
 

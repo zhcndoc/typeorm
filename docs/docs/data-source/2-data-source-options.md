@@ -22,20 +22,20 @@
   了解更多关于 [实体](../entity/1-entities.md)。
   了解更多关于 [实体模式](../entity/6-separating-entity-definition.md)。
 
-- `subscribers` - 需要加载并用于此数据源的订阅者。
-  它接受实体类和目录路径加载。
-  目录支持 glob 模式。
-  例如：`subscribers: [PostSubscriber, AppSubscriber, "subscribers/*.js", "modules/**/subscribers/*.js"]`。
-  了解更多关于 [订阅者](../advanced-topics/4-listeners-and-subscribers.md)。
+- `subscribers` - Subscribers to be loaded and used for this data source.
+  It accepts both entity classes and directories from which to load.
+  Directories support glob patterns.
+  Example: `subscribers: [PostSubscriber, AppSubscriber, "subscribers/*.js", "modules/**/subscribers/*.js"]`.
+  Learn more about [Subscribers](../listeners-and-subscribers.md)。
 
-- `logging` - 指示是否启用日志记录。
-  如果设置为 `true`，将启用查询和错误日志。
-  你也可以指定不同类型的日志记录，例如 `["query", "error", "schema"]`。
-  了解更多关于 [日志记录](../advanced-topics/5-logging.md)。
+- `logging` - Indicates if logging is enabled or not.
+  If set to `true` then query and error logging will be enabled.
+  You can also specify different types of logging to be enabled, for example `["query", "error", "schema"]`.
+  Learn more about [Logging](../logging.md)。
 
-- `logger` - 用于日志记录的日志器。可选值有 "advanced-console"、"formatted-console"、"simple-console" 和 "file"。
-  默认是 "advanced-console"。你也可以指定实现了 `Logger` 接口的日志器类。
-  了解更多关于 [日志记录](../advanced-topics/5-logging.md)。
+- `logger` - Logger to be used for logging purposes. Possible values are "advanced-console", "formatted-console", "simple-console" and "file"。
+  Default is "advanced-console"。You can also specify a logger class that implements `Logger` interface。
+  Learn more about [Logging](../logging.md)。
 
 - `maxQueryExecutionTime` - 如果查询执行时间超过此最大执行时间（毫秒），日志器将记录该查询。
 
@@ -52,11 +52,12 @@
   使用此选项时要非常小心，请勿在生产环境中使用——否则你会丢失所有生产数据。
   该选项适用于调试和开发阶段。
 
-- `synchronize` - 指示是否在每次应用启动时自动创建数据库模式。
-  使用此选项时要非常小心，请勿在生产环境中使用——否则你可能会丢失生产数据。
-  该选项适用于调试和开发阶段。
-  作为替代，你可以使用 CLI 来运行 schema:sync 命令。
-  注意，对于 MongoDB，因其无模式（schemaless），此选项不会创建模式，而是仅通过创建索引实现同步。
+- `synchronize` - Indicates if database schema should be auto created on every application launch。
+  Be careful with this option and don't use this in production - otherwise you can lose production data。
+  This option is useful during debug and development。
+  As an alternative to it, you can use CLI and run schema:sync command。
+  Note that for MongoDB database it does not create schema, because MongoDB is schemaless。
+  Instead, it syncs just by creating indexes。
 
 - `migrations` - 需要加载并用于此数据源的[迁移](../migrations/01-why.md)。
 

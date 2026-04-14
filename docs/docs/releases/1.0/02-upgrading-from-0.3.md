@@ -453,9 +453,25 @@ Glob 模式（用于实体/迁移文件发现）现在由 `tinyglobby` 处理，
 
 当 `orphanedRowAction` 为 `"nullify"`（默认值）且外键列为非空时，孤立子记录现在将被**删除**，而不是抛出数据库约束违规错误。以前，TypeORM 会尝试将外键设置为 `null`，这在非空列上会失败。
 
-如果你之前依赖该错误来防止意外删除子记录，请在关联上设置 `orphanedRowAction: "disable"` 以保留旧行为。
+This only applies when the relation is loaded on the entity instance. TypeORM does not automatically load relations — it only traverses relation values that are already populated on the object. To ensure orphaned children are handled, load the relation before calling `remove` or `save`:
 
-### 多对多中间表行与软删除实体
+```typescript
+const parent = await manager.findOne(Parent, {
+    where: { id: 1 },
+    relations: { children: true },
+})
+await manager.remove(parent)
+```
+
+If the relation is not loaded (i.e. the property is `undefined`), TypeORM will not detect or delete orphaned children, which may result in foreign key constraint violations.
+
+If you were relying on the error to prevent accidental child deletion, set `orphanedRowAction: "disable"` on the relation to preserve the old behavior.
+
+### Cascade remove now works for one-to-many relations
+
+Calling `manager.remove(entity)` with `cascade: true` or `cascade: ["remove"]` on a one-to-many relation now correctly deletes child entities before the parent. Previously, the child entities were not cascade-removed, causing the DELETE to fail with a foreign key constraint violation. Additionally, cascade operations are now scoped to the matching operation type — for example, `save()` only follows `insert`/`update` cascades and no longer traverses `remove`-only relations.
+
+### Many-to-many junction rows and soft-deleted entities
 
 对具有多对多关联的软删除实体调用 `recover()` 不再会抛出重复键违规错误。`softRemove` 不会触及中间表行，但 TypeORM 之前在加载实体进行恢复时无法看到它们，导致尝试重复插入。
 

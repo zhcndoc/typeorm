@@ -100,7 +100,7 @@ npm install mssql
 
 - `options.encrypt` - 布尔值，决定连接是否加密。若在 Windows Azure 上，应设置为 true。（默认：`true`）。
 
-- `options.cryptoCredentialsDetails` - 使用加密时，可提供的对象，将作为调用 [tls.createSecurePair](http://nodejs.org/docs/latest/api/tls.html#tls_tls_createsecurepair_credentials_isserver_requestcert_rejectunauthorized) 的第一个参数。（默认：`{}`）。
+- `options.cryptoCredentialsDetails` - 使用加密时，可提供的对象，将作为调用 [tls.createSecurePair](http://nodejs.org/docs/latest/api/tls.html#tls_tls_createsecurepair) 的第一个参数。（默认：`{}`）。
 
 - `options.rowCollectionOnDone` - 布尔值，若为 true，将在请求的 `done*` 事件中暴露接收到的行。参见 done，[`doneInProc`](http://tediousjs.github.io/tedious/api-request.html#event_doneInProc) 和 [`doneProc`](http://tediousjs.github.io/tedious/api-request.html#event_doneProc)。（默认：`false`）
 
@@ -122,18 +122,17 @@ npm install mssql
 
 - `options.appName` - 用于在 SQL Server 的分析、日志或跟踪工具中标识特定应用的应用名称。（默认：`node-mssql`）
 
-- `options.trustServerCertificate` - 布尔值，控制当无可验证服务器证书时是否进行加密。（默认：`false`）
+- `options.trustServerCertificate` - 布尔值，控制当无可验证服务器证书时是否进行加密。（默认：`false`）。
 
-- `options.multiSubnetFailover` - 布尔值，控制驱动是否应并行连接 DNS 返回的所有 IP。（默认：`false`）
+- `options.multiSubnetFailover` - 布尔值，控制驱动是否应并行连接 DNS 返回的所有 IP。（默认：`false`）。
 
-- `options.debug.packet` - 布尔值，控制是否发出带有包详情文本的 `debug` 事件。（默认：`false`）
+- `options.debug.packet` - 布尔值，控制是否发出带有包详情文本的 `debug` 事件。（默认：`false`）。
 
-- `options.debug.data` - 布尔值，控制是否发出带有包数据详情文本的 `debug` 事件。（默认：`false`）
+- `options.debug.data` - 布尔值，控制是否发出带有包数据详情文本的 `debug` 事件。（默认：`false`）。
 
-- `options.debug.payload` - 布尔值，控制是否发出带有包负载详情文本的 `debug` 事件。（默认：`false`）
+- `options.debug.payload` - 布尔值，控制是否发出带有包负载详情文本的 `debug` 事件。（默认：`false`）。
 
-- `options.debug.token` - 布尔值，控制是否发出带有令牌流令牌描述文本的 `debug` 事件。（默认：`false`）
-
+- `options.debug.token` - 布尔值，控制是否发出带有令牌流令牌描述文本的 `debug` 事件。（默认：`false`）。
 
 ## 列类型
 
@@ -203,10 +202,10 @@ const results = await dataSource.query(
 
 ### 连接池不重置隔离级别
 
-当底层 [node-mssql](https://github.com/tediousjs/node-mssql) 驱动首次创建连接时，`options.isolationLevel` 和 `options.connectionIsolationLevel` 数据源选项会被正确应用。然而，`node-mssql` 在将连接归还到连接池时不会调用 `connection.reset()`。这意味着如果任何操作更改了池化连接上的隔离级别（例如，在不同级别上显式开启事务），该更改将会保留并泄漏给该连接的下一个使用者。
+The driver-specific `options.isolationLevel` and `options.connectionIsolationLevel` data source options are correctly applied when a connection is first created by the underlying [node-mssql](https://github.com/tediousjs/node-mssql) driver. However, `node-mssql` does not call `connection.reset()` when returning connections to the pool. This means that if any operation changes the isolation level on a pooled connection (e.g., an explicit transaction at a different level), the change persists and leaks to the next consumer of that connection.
 
 实际上，这使得 `options.isolationLevel` 和 `options.connectionIsolationLevel` 对于同时使用每事务隔离级别的应用程序来说并不可靠。
 
-**每事务隔离级别不受影响。** 通过 `startTransaction()` 或 `transaction()` 回调设置隔离级别始终能正常工作，因为它是显式应用于活动连接的。
+**Recommended alternative:** Use the top-level `isolationLevel` DataSource option (available on all drivers) instead. This applies the isolation level explicitly on each transaction start, bypassing the pool limitation entirely. See [Transactions > Default Isolation Level](../transactions.md#default-isolation-level).
 
 这是一个上游限制，已在 [tediousjs/node-mssql#1483](https://github.com/tediousjs/node-mssql/issues/1483) 中跟踪。

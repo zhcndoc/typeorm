@@ -300,4 +300,4 @@ sequelize.define(
 export class User {}
 ```
 
-了解更多关于 [索引](../advanced-topics/3-indices.md)
+了解更多关于 [索引](../indexes.md)

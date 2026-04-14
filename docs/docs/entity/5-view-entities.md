@@ -25,7 +25,7 @@
 })
 ```
 
-或者是QueryBuilder的实例：
+或者是 QueryBuilder 的实例：
 
 ```typescript
 @ViewEntity({
@@ -148,7 +148,7 @@ name: string;
 
 ## 物化视图索引
 
-如果使用 `PostgreSQL`，支持为物化视图创建索引。
+在使用 `PostgreSQL` 时支持为物化视图创建索引。
 
 ```typescript
 @ViewEntity({
@@ -176,7 +176,7 @@ export class PostCategory {
 }
 ```
 
-但是，目前物化视图的索引只支持唯一索引(`unique`)选项，其他索引选项将被忽略。
+但是，`unique` 是目前物化视图中唯一支持的索引选项。其余索引选项将被忽略。
 
 ```typescript
 @Index("name-idx", { unique: true })

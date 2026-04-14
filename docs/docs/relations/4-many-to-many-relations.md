@@ -46,10 +46,11 @@ export class Question {
 }
 ```
 
-`@JoinTable()` 是 `@ManyToMany` 关系必须的。  
-你必须在关系的一方（拥有方）上放置 `@JoinTable`。
+`@JoinTable()` 是 `@ManyToMany` 关系所必需的。  
+你必须将 `@JoinTable` 放置在关系的一侧（拥有方）。  
+`deferrable` 关系选项适用于联接表上的两个外键；请参阅 [关系选项](./1-relations.md#relation-options)。
 
-该示例会生成如下表：
+该示例将生成如下表：
 
 ```text
 +-------------+--------------+----------------------------+

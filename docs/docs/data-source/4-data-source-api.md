@@ -124,8 +124,8 @@ const category1 = await categoryCursor.next()
 const category2 = await categoryCursor.next()
 ```
 
-- `transaction` - 提供单个事务，其中的多个数据库请求将作为一个数据库事务执行。
-  详细了解 [事务](../advanced-topics/2-transactions.md)。
+- `transaction` - Provides a single transaction where multiple database requests will be executed in a single database transaction.
+  Learn more about [Transactions](../transactions.md).
 
 ```typescript
 await dataSource.transaction(async (manager) => {

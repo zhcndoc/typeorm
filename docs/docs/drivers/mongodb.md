@@ -262,7 +262,19 @@ await myDataSource.manager.save(user)
 }
 ```
 
-## 使用 `MongoEntityManager` 和 `MongoRepository`
+## Selecting specific fields with `select`
+
+You can project only the fields you need using the `select` option on `find*` methods. The object is translated into a MongoDB [projection](https://www.mongodb.com/docs/manual/tutorial/project-fields-from-query-results/); nested embedded documents use object syntax and are flattened to dot-path projections.
+
+```typescript
+const products = await myDataSource.getMongoRepository(Product).find({
+    select: { name: true, specs: { weight: true } },
+})
+```
+
+The example above returns each product with only `name` and `specs.weight` populated (plus the entity id). Unknown property names, whether at the top level or inside an embedded document, throw `EntityPropertyNotFoundError` — matching the behavior of SQL drivers.
+
+## Using `MongoEntityManager` and `MongoRepository`
 
 你可以使用 `EntityManager` 中的大多数方法（关系型数据库特定的方法，如 `query` 和 `transaction` 除外）。  
 例如：
