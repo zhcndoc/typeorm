@@ -1,0 +1,289 @@
+---
+sidebar_label: 交易
+---
+
+import {
+    DatabaseTabs,
+    DatabaseTab,
+} from "@site/src/components/tabs/database-tabs"
+
+# 事务（Transactions）
+
+## 创建和使用事务
+
+使用 `DataSource` 或 `EntityManager` 来创建事务。
+示例：
+
+```typescript
+await myDataSource.transaction(async (transactionalEntityManager) => {
+    // 使用 transactionalEntityManager 执行查询
+})
+```
+
+或
+
+```typescript
+await myDataSource.manager.transaction(async (transactionalEntityManager) => {
+    // 使用 transactionalEntityManager 执行查询
+})
+```
+
+你希望在事务中运行的所有内容都必须在回调中执行：
+
+```typescript
+await myDataSource.manager.transaction(async (transactionalEntityManager) => {
+    await transactionalEntityManager.save(users)
+    await transactionalEntityManager.save(photos)
+    // ...
+})
+```
+
+在事务中工作时最重要的限制是要**始终**使用提供的实体管理器实例——在这个示例中就是 `transactionalEntityManager`。不要使用全局实体管理器。
+所有操作**必须**使用提供的事务性实体管理器来执行。
+
+## 指定隔离级别
+
+通过将其作为第一个参数传入，可以为事务指定隔离级别：
+
+```typescript
+await myDataSource.manager.transaction(
+    "SERIALIZABLE",
+    (transactionalEntityManager) => {},
+)
+```
+
+## 支持的隔离级别
+
+隔离级别的实现并不对所有数据库都保持一致。每个驱动会声明它支持哪些级别，如果你请求了不支持的级别，TypeORM 将抛出错误。
+
+<DatabaseTabs>
+<DatabaseTab value="cockroachdb">
+
+- `READ COMMITTED` — 需要集群设置 `sql.txn.read_committed_isolation.enabled`，并且在较新的版本中默认启用
+- `SERIALIZABLE`（默认）
+
+CockroachDB 根本不实现更弱的隔离级别。当你通过 SQL 请求 `READ UNCOMMITTED` 或 `REPEATABLE READ`（例如 `BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED`）时，CockroachDB 接受该语法，静默忽略你请求的弱隔离级别，并改为以更严格的级别运行事务——没有警告，也没有错误：
+
+- `READ UNCOMMITTED` → 以 `READ COMMITTED` 运行
+- `REPEATABLE READ` → 以 `SERIALIZABLE` 运行
+
+:::info 了解更多
+
+- [CockroachDB Read Committed](https://www.cockroachlabs.com/docs/stable/read-committed)
+- [CockroachDB Transactions](https://www.cockroachlabs.com/docs/stable/transactions)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="spanner">
+
+- `REPEATABLE READ` \*
+- `SERIALIZABLE`
+
+\* Spanner 上的 `REPEATABLE READ` 目前处于 [预览（Preview）](https://cloud.google.com/products#product-launch-stages) 阶段，尚未全面可用。它提供快照隔离，并允许写偏斜（write-skew）异常——当这点很重要时请使用 `SELECT ... FOR UPDATE`。
+
+:::info 了解更多
+
+- [Spanner Isolation Levels](https://cloud.google.com/spanner/docs/isolation-levels)
+- [Spanner Transactions](https://cloud.google.com/spanner/docs/transactions)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mariadb">
+
+- `READ UNCOMMITTED`
+- `READ COMMITTED`
+- `REPEATABLE READ`
+- `SERIALIZABLE`
+
+:::info 了解更多
+
+- [MariaDB SET TRANSACTION](https://mariadb.com/kb/en/set-transaction/)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mssql">
+
+- `READ UNCOMMITTED`
+- `READ COMMITTED`
+- `REPEATABLE READ`
+- `SERIALIZABLE`
+- `SNAPSHOT`
+
+:::warning 与驱动相关的选项
+
+SQL Server 还支持驱动特定的 `options.isolationLevel` 和 `options.connectionIsolationLevel` 设置，但它们受制于一个 [上游连接池限制（pool limitation）](./drivers/microsoft-sqlserver.md#connection-pool-does-not-reset-isolation-level)。本页面中覆盖的顶层 `isolationLevel` 选项不受影响，因为它会在每个事务上被显式应用。
+
+:::
+
+:::info 了解更多
+
+- [SQL Server SET TRANSACTION ISOLATION LEVEL](https://learn.microsoft.com/en-us/sql/t-sql/statements/set-transaction-isolation-level-transact-sql)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="mysql">
+
+- `READ UNCOMMITTED`
+- `READ COMMITTED`
+- `REPEATABLE READ`
+- `SERIALIZABLE`
+
+:::warning 通过 RDS Data API 的 Aurora MySQL
+
+**`aurora-mysql` 驱动不支持隔离级别。** 请求任何级别都会抛出校验错误。
+
+这是传输限制，而不是引擎限制。Aurora MySQL 的数据库引擎 [完整支持](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.IsolationLevels.html)标准隔离级别集合，但 `aurora-mysql` 驱动通过无状态的 [RDS Data API](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html) 与集群通信，而不是使用持久的 MySQL 协议连接；并且 Data API 没有办法把隔离级别绑定到某个事务上：
+
+- [`BeginTransaction`](https://docs.aws.amazon.com/rdsdataservice/latest/APIReference/API_BeginTransaction.html) 只接受 `resourceArn`、`secretArn`、`database` 和 `schema` —— 没有隔离级别参数。
+- Data API 以不透明的方式为你复用后端连接。通过单独的 `ExecuteStatement` 在 `BeginTransaction` 之前发送 `SET TRANSACTION ISOLATION LEVEL ...`，无法保证它会绑定到事务实际运行的后端会话上，因此该设置会被静默丢弃。
+- [不支持多语句 SQL](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.troubleshooting.html)，所以也无法作为单个调用发送 `SET TRANSACTION ...; START TRANSACTION;`。
+- MySQL 会在已经开始的事务内部执行 `SET TRANSACTION ISOLATION LEVEL` 时拒绝该操作，并返回 [错误 1568](https://dev.mysql.com/doc/refman/8.0/en/set-transaction.html)，因此用于 Aurora PostgreSQL 的做法（在已启动事务内部把 `SET` 作为第一条语句发出）在 MySQL 上不可用。
+
+:::
+
+:::tip 通过 `mysql` 驱动使用 Aurora MySQL
+
+如果你需要对 Aurora MySQL 集群使用“每个事务单独指定”的隔离级别，请使用标准 `mysql` 驱动并指向集群的写入端点（writer endpoint），而不是 `aurora-mysql`。该路径会使用常规的 MySQL 协议连接（通过 `mysql2`），并支持上面列出的完整隔离级别集合。
+
+:::
+
+:::info 了解更多
+
+- [MySQL SET TRANSACTION](https://dev.mysql.com/doc/refman/8.0/en/set-transaction.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="oracle">
+
+- `READ COMMITTED`
+- `SERIALIZABLE`
+
+:::info 了解更多
+
+- [Oracle Data Concurrency and Consistency](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/data-concurrency-and-consistency.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="postgres">
+
+- `READ UNCOMMITTED`
+- `READ COMMITTED`
+- `REPEATABLE READ`
+- `SERIALIZABLE`
+
+:::tip Aurora PostgreSQL
+
+`aurora-postgres` 驱动支持同一组隔离级别，它通过 RDS Data API 与 Aurora PostgreSQL 集群通信。
+
+:::
+
+:::info 了解更多
+
+- [PostgreSQL Transaction Isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="sap">
+
+- `READ COMMITTED`
+- `REPEATABLE READ`
+- `SERIALIZABLE`
+
+:::info 了解更多
+
+- [SAP HANA Transaction Isolation Levels](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/5e7cb20c7b8c44a19cc61c64ca4fcb3b.html)
+
+:::
+
+</DatabaseTab>
+
+<DatabaseTab value="sqlite">
+
+- `READ UNCOMMITTED` — 只有在启用 [共享缓存模式（shared-cache mode）](https://www.sqlite.org/sharedcache.html) 时才会生效；在默认模式下 SQLite 始终使用 `SERIALIZABLE`，与之无关
+- `SERIALIZABLE`
+
+:::info 了解更多
+
+- [SQLite Isolation](https://www.sqlite.org/isolation.html)
+
+:::
+
+</DatabaseTab>
+</DatabaseTabs>
+
+## 默认隔离级别
+
+你可以通过在 DataSource 选项中设置 `isolationLevel` 来为所有事务配置默认隔离级别：
+
+```typescript
+const dataSource = new DataSource({
+    type: "postgres",
+    isolationLevel: "SERIALIZABLE",
+    // ...
+})
+```
+
+设置后，所有在未显式指定隔离级别的情况下启动的事务都将使用这个默认值。传给 `transaction()` 或 `startTransaction()` 的显式隔离级别会覆盖默认值。
+
+## 使用 `QueryRunner` 来创建并控制单个数据库连接的状态
+
+`QueryRunner` 提供单个数据库连接。
+通过 query runner 来组织事务。
+单个事务只能在同一个 query runner 上建立。
+你可以手动创建一个 query runner 实例，并使用它来手动控制事务状态。
+示例：
+
+```typescript
+// 创建一个新的 query runner
+const queryRunner = dataSource.createQueryRunner()
+
+// 使用我们新的 query runner 建立真实的数据库连接
+await queryRunner.connect()
+
+// 现在我们可以在 query runner 上执行任何查询，例如：
+await queryRunner.query("SELECT * FROM users")
+
+// 我们也可以访问与 query runner 创建的连接协同工作的实体管理器：
+const users = await queryRunner.manager.find(User)
+
+// 现在打开一个新的事务：
+await queryRunner.startTransaction()
+
+try {
+    // 在这个事务上执行一些操作：
+    await queryRunner.manager.save(user1)
+    await queryRunner.manager.save(user2)
+    await queryRunner.manager.save(photos)
+
+    // 现在提交事务：
+    await queryRunner.commitTransaction()
+} catch (err) {
+    // 因为发生了错误，所以回滚我们做出的更改
+    await queryRunner.rollbackTransaction()
+} finally {
+    // 你需要释放手动创建的 query runner：
+    await queryRunner.release()
+}
+```
+
+在 `QueryRunner` 中有 3 种方法可以控制事务：
+
+- `startTransaction` - 在 query runner 实例中启动一个新的事务。
+- `commitTransaction` - 提交使用 query runner 实例所做的所有更改。
+- `rollbackTransaction` - 回滚使用 query runner 实例所做的所有更改。
+
+了解更多关于 [Query Runner](./query-runner.md) 的内容。

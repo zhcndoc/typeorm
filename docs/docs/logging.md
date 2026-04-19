@@ -76,14 +76,13 @@
 
 ## 更改默认日志器
 
-TypeORM 提供了 4 种不同类型的日志器：
+TypeORM 附带 5 种不同的内置日志器：
 
-- `advanced-console` - 这是默认日志器，会在控制台中记录所有消息，支持颜色和 SQL 语法高亮。
-- `simple-console` - 这是一个简单的控制台日志器，与高级日志器完全相同，但不使用任何颜色高亮。
-  如果你对彩色日志不满意或者遇到问题，可以使用这个日志器。
-- `formatted-console` - 几乎和高级日志器一样，但它会格式化 SQL 查询以提高可读性（使用 [@sqltools/formatter](https://github.com/mtxr/vscode-sqltools)）。
-- `file` - 该日志器会将所有日志写入项目根目录（与 `package.json` 同级）的 `ormlogs.log` 文件中。
-- `debug` - 该日志器使用了 [debug 包](https://github.com/visionmedia/debug)，要开启日志，请设置环境变量 `DEBUG=typeorm:*`（注意，日志选项对该日志器无效）。
+- `advanced-console` - 这是默认日志器，它会使用颜色和 SQL 语法高亮将所有消息记录到控制台。
+- `simple-console` - 这是一个简单的控制台日志器，它与 advanced 日志器完全相同，但不使用任何颜色高亮。如果你遇到问题 / 或者不喜欢彩色日志，可以使用此日志器。
+- `formatted-console` - 这几乎与 advanced 日志器相同，但它会将 SQL 查询格式化得更易读（使用 [@sqltools/formatter](https://github.com/mtxr/vscode-sqltools)）。
+- `file` - 此日志器会将所有日志写入指定文件（如果未提供路径，则写入当前工作目录下的 `ormlogs.log`）。
+- `debug` - 此日志器使用 [debug package](https://github.com/debug-js/debug)；要启用日志，请设置环境变量 `DEBUG=typeorm:*`（注意：该日志器会将所有日志传递给 `debug` 包，由它控制日志级别设置）。
 
 你可以在数据源选项中启用任意一个日志器：
 

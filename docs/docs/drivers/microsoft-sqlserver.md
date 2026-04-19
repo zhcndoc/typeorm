@@ -202,10 +202,10 @@ const results = await dataSource.query(
 
 ### 连接池不重置隔离级别
 
-The driver-specific `options.isolationLevel` and `options.connectionIsolationLevel` data source options are correctly applied when a connection is first created by the underlying [node-mssql](https://github.com/tediousjs/node-mssql) driver. However, `node-mssql` does not call `connection.reset()` when returning connections to the pool. This means that if any operation changes the isolation level on a pooled connection (e.g., an explicit transaction at a different level), the change persists and leaks to the next consumer of that connection.
+特定于驱动程序的 `options.isolationLevel` 和 `options.connectionIsolationLevel` 数据源选项在底层 [node-mssql](https://github.com/tediousjs/node-mssql) 驱动首次创建连接时会被正确应用。但是，当连接返回到连接池时，`node-mssql` 不会调用 `connection.reset()`。这意味着如果有任何操作在连接池连接上更改了隔离级别（例如，不同隔离级别下的显式事务），该更改会持续存在并泄露到该连接的下一个使用者。
 
-实际上，这使得 `options.isolationLevel` 和 `options.connectionIsolationLevel` 对于同时使用每事务隔离级别的应用程序来说并不可靠。
+实际上，这使得对于同时使用每事务隔离级别的应用程序而言，`options.isolationLevel` 和 `options.connectionIsolationLevel` 并不可靠。
 
-**Recommended alternative:** Use the top-level `isolationLevel` DataSource option (available on all drivers) instead. This applies the isolation level explicitly on each transaction start, bypassing the pool limitation entirely. See [Transactions > Default Isolation Level](../transactions.md#default-isolation-level).
+**推荐替代方案：** 使用顶层 `isolationLevel` DataSource 选项（所有驱动都可用）替代。它会在每个事务开始时显式应用隔离级别，从而完全绕过连接池限制。参见 [Transactions > Default Isolation Level](../transactions.mdx#default-isolation-level)。
 
 这是一个上游限制，已在 [tediousjs/node-mssql#1483](https://github.com/tediousjs/node-mssql/issues/1483) 中跟踪。

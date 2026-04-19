@@ -13,8 +13,8 @@ const dataSource = manager.dataSource
 const queryRunner = manager.queryRunner
 ```
 
-- `transaction` - 提供一个事务，其中多个数据库请求将在单个数据库事务中执行。
-  了解更多 [Transactions](../transactions.md)。
+- `transaction` - 提供一个事务，其中将会在同一个数据库事务中执行多个数据库请求。
+  了解更多 [Transactions](../transactions.mdx)。
 
 ```typescript
 await manager.transaction(async (manager) => {
