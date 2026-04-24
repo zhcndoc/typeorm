@@ -1,5 +1,6 @@
 import type { ObjectLiteral } from "../../common/ObjectLiteral"
 import { TypeORMError } from "../../error"
+import { NamedPlaceholdersNotSupportedError } from "../../error/NamedPlaceholdersNotSupportedError"
 import { QueryFailedError } from "../../error/QueryFailedError"
 import { QueryRunnerAlreadyReleasedError } from "../../error/QueryRunnerAlreadyReleasedError"
 import { TransactionNotStartedError } from "../../error/TransactionNotStartedError"
@@ -284,10 +285,12 @@ export class CockroachQueryRunner
      */
     async query(
         query: string,
-        parameters?: any[],
+        parameters?: any[] | ObjectLiteral,
         useStructuredResult = false,
     ): Promise<any> {
         if (this.isReleased) throw new QueryRunnerAlreadyReleasedError()
+        if (parameters && !Array.isArray(parameters))
+            throw new NamedPlaceholdersNotSupportedError()
 
         const databaseConnection = await this.connect()
 
@@ -3273,7 +3276,7 @@ export class CockroachQueryRunner
             .map((dbTable) => `'${dbTable.table_schema}'`)
             .join(", ")
         const enumsSql =
-            `SELECT "t"."typname" AS "name", string_agg("e"."enumlabel", '|') AS "value" ` +
+            `SELECT "t"."typname" AS "name", string_agg("e"."enumlabel", '|' ORDER BY "e"."enumsortorder") AS "value" ` +
             `FROM "pg_enum" "e" ` +
             `INNER JOIN "pg_type" "t" ON "t"."oid" = "e"."enumtypid" ` +
             `INNER JOIN "pg_namespace" "n" ON "n"."oid" = "t"."typnamespace" ` +

@@ -57,8 +57,8 @@ npm install sql.js
 
 ### `expo` 数据源选项
 
-- `database` - 数据库名称。例如，"mydb"。
-- `driver` - Expo SQLite 模块。例如，`require('expo-sqlite')`。
+- `database` - 数据库名称。例如，`"mydb"`。
+- `driver` - Expo SQLite 模块。可选 — TypeORM 会自动加载 `expo-sqlite`。仅在需要自定义实例时显式传入（例如，已打补丁的分支）。
 
 ### `nativescript` 数据源选项
 

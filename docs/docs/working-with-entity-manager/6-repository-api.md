@@ -167,7 +167,7 @@ await repository.updateAll({ category: "ADULT" })
 
 await repository.updateAll(
     { category: "ADULT" },
-    { returning: "*" }, // 限于支持返回（returning）子句的驱动
+    { returning: "*" }, // 仅限支持 RETURNING 的驱动
 )
 ```
 
@@ -485,6 +485,12 @@ const rawData = await repository.query(
 const rawData = await repository.query(
     "SELECT * FROM USERS WHERE name = @0 and age = @1",
     ["John", 24],
+)
+
+// mysql2 另外在 extra.namedPlaceholders 为 true 时支持命名占位符
+const rawData = await repository.query(
+    "SELECT * FROM USERS WHERE name = :name and age = :age",
+    { name: "John", age: 24 },
 )
 ```
 

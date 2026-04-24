@@ -1,7 +1,7 @@
 # DataSource API
 
 - `options` - 用于创建该 dataSource 的选项。
-  详细了解 [数据源选项](./2-data-source-options.md)。
+  详细了解 [data source options](./2-data-source-options.md)。
 
 ```typescript
 const dataSourceOptions: DataSourceOptions = dataSource.options
@@ -149,6 +149,13 @@ const rawData = await dataSource.query(`SELECT * FROM USERS`)
 const rawData = await dataSource.query(
     "SELECT * FROM USERS WHERE name = ? and age = ?",
     ["John", 24],
+)
+
+// mysql2 additionally supports named parameters
+// when extra.namedPlaceholders is true
+const rawData = await dataSource.query(
+    "SELECT * FROM USERS WHERE name = :name and age = :age",
+    { name: "John", age: 24 },
 )
 
 // aurora-postgres, cockroachdb, postgres
