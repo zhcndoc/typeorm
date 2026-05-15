@@ -1137,26 +1137,6 @@ const photos = await AppDataSource.getRepository(Photo)
 
 你将经常使用 QueryBuilder，详见[文档](./query-builder/1-select-query-builder.md)。
 
-## 示例
-
-有几个仓库你可以克隆并从中开始：
-
-- [TypeScript 版 TypeORM 示例](https://github.com/typeorm/typescript-example)
-- [JavaScript 版 TypeORM 示例](https://github.com/typeorm/javascript-example)
-- [JavaScript + Babel 版示例](https://github.com/typeorm/babel-example)
-- [TypeScript + SystemJS 浏览器示例](https://github.com/typeorm/browser-example)
-- [TypeScript + React 浏览器示例](https://github.com/ItayGarin/typeorm-react-swc)
-- [Express + TypeORM 示例](https://github.com/typeorm/typescript-express-example)
-- [Koa + TypeORM 示例](https://github.com/typeorm/typescript-koa-example)
-- [MongoDB + TypeORM 示例](https://github.com/typeorm/mongo-typescript-example)
-- [Cordova + TypeORM 示例](https://github.com/typeorm/cordova-example)
-- [Ionic + TypeORM 示例](https://github.com/typeorm/ionic-example)
-- [React Native + TypeORM 示例](https://github.com/typeorm/react-native-example)
-- [Nativescript-Vue + TypeORM 示例](https://github.com/typeorm/nativescript-vue-typeorm-sample)
-- [Nativescript-Angular + TypeORM 示例](https://github.com/betov18x/nativescript-angular-typeorm-example)
-- [Electron + JavaScript + TypeORM 示例](https://github.com/typeorm/electron-javascript-example)
-- [Electron + TypeScript + TypeORM 示例](https://github.com/typeorm/electron-typescript-example)
-
 ## 扩展
 
 这里有一些用于简化 TypeORM 工作及与其他模块集成的扩展：

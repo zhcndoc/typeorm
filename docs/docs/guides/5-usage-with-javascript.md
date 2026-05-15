@@ -26,11 +26,11 @@ dataSource
             name: "TypeScript",
         }
         var category2 = {
-            name: "Programming",
+            name: "编程",
         }
 
         var post = {
-            title: "Control flow based type analysis",
+            title: "基于控制流的类型分析",
             text: "TypeScript 2.0 实现了基于控制流的局部变量和参数类型分析。",
             categories: [category1, category2],
         }
@@ -105,5 +105,3 @@ module.exports = new EntitySchema({
     },
 })
 ```
-
-你可以查看这个示例 [typeorm/javascript-example](https://github.com/typeorm/javascript-example) 来了解更多。

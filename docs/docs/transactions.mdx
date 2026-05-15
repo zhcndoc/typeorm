@@ -59,18 +59,26 @@ await myDataSource.manager.transaction(
 <DatabaseTabs>
 <DatabaseTab value="cockroachdb">
 
-- `READ COMMITTED` — 需要集群设置 `sql.txn.read_committed_isolation.enabled`，并且在较新的版本中默认启用
+- `READ COMMITTED` — 需要集群设置 `sql.txn.read_committed_isolation.enabled`，该设置在较新版本中默认启用
+- `REPEATABLE READ` — 需要集群设置 `sql.txn.repeatable_read_isolation.enabled`，该设置默认禁用（在 v24.3.0 中引入）
 - `SERIALIZABLE`（默认）
 
-CockroachDB 根本不实现更弱的隔离级别。当你通过 SQL 请求 `READ UNCOMMITTED` 或 `REPEATABLE READ`（例如 `BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED`）时，CockroachDB 接受该语法，静默忽略你请求的弱隔离级别，并改为以更严格的级别运行事务——没有警告，也没有错误：
+CockroachDB 会将较弱的 SQL 隔离级别请求映射为更强的级别。回退行为取决于对应的集群设置。例如，当你通过 SQL 请求 `READ UNCOMMITTED`、`READ COMMITTED` 或 `REPEATABLE READ`（例如 `BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED`）时，CockroachDB 会接受语法，但可能会改以更严格的级别运行事务：
 
-- `READ UNCOMMITTED` → 以 `READ COMMITTED` 运行
-- `REPEATABLE READ` → 以 `SERIALIZABLE` 运行
+- `READ COMMITTED` → 运行方式：
+    - 如果 `sql.txn.read_committed_isolation.enabled` 为 false 且 `sql.txn.repeatable_read_isolation.enabled` 为 false，则为 `SERIALIZABLE`
+    - 如果 `sql.txn.repeatable_read_isolation.enabled` 为 true 且 `sql.txn.read_committed_isolation.enabled` 为 false，则为 `REPEATABLE READ`
+- `READ UNCOMMITTED` → 运行方式：
+    - 如果 `sql.txn.read_committed_isolation.enabled` 为 false 且 `sql.txn.repeatable_read_isolation.enabled` 为 false，则为 `SERIALIZABLE`
+    - 如果 `sql.txn.read_committed_isolation.enabled` 为 true，则为 `READ COMMITTED`
+    - 如果 `sql.txn.repeatable_read_isolation.enabled` 为 true 且 `sql.txn.read_committed_isolation.enabled` 为 false，则为 `REPEATABLE READ`
+- `REPEATABLE READ` → 如果 `sql.txn.repeatable_read_isolation.enabled` 为 false，则以 `SERIALIZABLE` 运行
 
 :::info 了解更多
 
-- [CockroachDB Read Committed](https://www.cockroachlabs.com/docs/stable/read-committed)
-- [CockroachDB Transactions](https://www.cockroachlabs.com/docs/stable/transactions)
+- [CockroachDB 读已提交](https://www.cockroachlabs.com/docs/stable/read-committed)
+- [CockroachDB 可重复读](https://www.cockroachlabs.com/docs/releases/v24.3.html#:~:text=sql.txn.repeatable_read_isolation.enabled%3A%20defaults%20to%20false.%20When%20set%20to%20true%2C%20the%20following%20statements%20configure%20transactions%20to%20run%20under%20REPEATABLE%20READ%20isolation%2C%20rather%20than%20being%20automatically%20interpreted%20as%20SERIALIZABLE)
+- [CockroachDB 事务](https://www.cockroachlabs.com/docs/stable/transactions)
 
 :::
 
@@ -85,8 +93,8 @@ CockroachDB 根本不实现更弱的隔离级别。当你通过 SQL 请求 `READ
 
 :::info 了解更多
 
-- [Spanner Isolation Levels](https://cloud.google.com/spanner/docs/isolation-levels)
-- [Spanner Transactions](https://cloud.google.com/spanner/docs/transactions)
+- [Spanner 隔离级别](https://cloud.google.com/spanner/docs/isolation-levels)
+- [Spanner 事务](https://cloud.google.com/spanner/docs/transactions)
 
 :::
 
@@ -170,7 +178,7 @@ SQL Server 还支持驱动特定的 `options.isolationLevel` 和 `options.connec
 
 :::info 了解更多
 
-- [Oracle Data Concurrency and Consistency](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/data-concurrency-and-consistency.html)
+- [Oracle 数据并发性与一致性](https://docs.oracle.com/en/database/oracle/oracle-database/23/cncpt/data-concurrency-and-consistency.html)
 
 :::
 
@@ -191,7 +199,7 @@ SQL Server 还支持驱动特定的 `options.isolationLevel` 和 `options.connec
 
 :::info 了解更多
 
-- [PostgreSQL Transaction Isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
+- [PostgreSQL 事务隔离](https://www.postgresql.org/docs/current/transaction-iso.html)
 
 :::
 
@@ -205,7 +213,7 @@ SQL Server 还支持驱动特定的 `options.isolationLevel` 和 `options.connec
 
 :::info 了解更多
 
-- [SAP HANA Transaction Isolation Levels](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/5e7cb20c7b8c44a19cc61c64ca4fcb3b.html)
+- [SAP HANA 事务隔离级别](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/5e7cb20c7b8c44a19cc61c64ca4fcb3b.html)
 
 :::
 
@@ -218,7 +226,7 @@ SQL Server 还支持驱动特定的 `options.isolationLevel` 和 `options.connec
 
 :::info 了解更多
 
-- [SQLite Isolation](https://www.sqlite.org/isolation.html)
+- [SQLite 隔离](https://www.sqlite.org/isolation.html)
 
 :::
 

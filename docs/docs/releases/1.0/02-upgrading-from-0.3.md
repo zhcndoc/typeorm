@@ -248,6 +248,18 @@ new DataSource({
 })
 ```
 
+### Oracle
+
+主 TypeORM 包中不再导出 `LegacyOracleNamingStrategy`。如果您仍然需要它，可以从 `@typeorm/legacy-naming-strategies` 导入。
+
+```typescript
+// 之前
+import { LegacyOracleNamingStrategy } from "typeorm"
+
+// 之后
+import { LegacyOracleNamingStrategy } from "@typeorm/legacy-naming-strategies"
+```
+
 ### SAP HANA
 
 几个已弃用的 SAP HANA 连接别名已被移除。
@@ -443,7 +455,21 @@ new DataSource({
 
 ### 哈希处理
 
-内部哈希实现已替换为 Node.js 内置的 `crypto`。如果你使用了 TypeORM 的查询结果缓存，升级后现有的缓存条目将失效，因为哈希函数会产生不同的输出。缓存将自动重建 —— 你可能会看到缓存未命中率短暂上升。
+在 TypeORM v1 中，用于哈希的 SHA1 哈希算法会直接应用于输入。在之前的版本（v0.3）中，输入会先使用 [encodeURIComponent](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) 编码。
+
+如果你使用 TypeORM 的查询结果缓存，升级后现有缓存条目将失效，因为哈希函数会产生不同的输出。缓存会自动重建——你可能会看到缓存未命中率短暂上升。
+
+如果你的表名和列名包含特殊字符，可以使用 `@typeorm/legacy-naming-strategies` 来避免数据库中的变更：
+
+```typescript
+import { NamingStrategyV03 } from "@typeorm/legacy-naming-strategies"
+
+const dataSource = new DataSource({
+    ...
+    namingStrategy: new NamingStrategyV03(),
+    ...
+})
+```
 
 ### Glob 模式
 

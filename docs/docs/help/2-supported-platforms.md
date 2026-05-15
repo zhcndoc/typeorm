@@ -50,14 +50,13 @@ new DataSource({
 
 ## Cordova / Ionic 应用
 
-TypeORM 能够在 Cordova/Ionic 应用中使用，[cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件。  
-你可以选择使用和浏览器包类似的模块加载器。  
-关于如何在 Cordova 中使用 TypeORM 的示例，请见 [typeorm/cordova-example](https://github.com/typeorm/cordova-example)；在 Ionic 中请见 [typeorm/ionic-example](https://github.com/typeorm/ionic-example)。**重要**：用于 Ionic 需要自定义 webpack 配置文件！请查看示例了解所需更改。  
-注意，目前使用 [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件时不支持事务。更多信息请参见 [Cordova SQLite 限制](https://github.com/storesafe/cordova-sqlite-storage#other-limitations)。
+TypeORM 能够使用 [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件在 Cordova/Ionic 应用中运行。  
+你可以像在浏览器包中一样，在不同的模块加载器之间进行选择。  
+**重要**：与 Ionic 一起使用时，需要自定义 webpack 配置文件。请注意，当前使用 [cordova-sqlite-storage](https://github.com/litehelpers/Cordova-sqlite-storage) 插件时不支持事务。有关更多信息，请参阅 [Cordova SQLite 限制](https://github.com/storesafe/cordova-sqlite-storage#other-limitations)。
 
 ## Expo
 
-TypeORM 能够在 Expo 应用中使用 [Expo SQLite API](https://docs.expo.io/versions/latest/sdk/sqlite/)。关于如何在 Expo 中使用 TypeORM 的示例，请见 [typeorm/expo-example](https://github.com/typeorm/expo-example)。
+TypeORM 能够使用 [Expo SQLite API](https://docs.expo.io/versions/latest/sdk/sqlite/) 在 Expo 应用中运行。
 
 ## NativeScript
 
@@ -90,4 +89,4 @@ _使用 NativeScript 时，**必须使用 webpack**。
 
 ## React Native
 
-TypeORM 可在 React Native 应用中使用，通过 [react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) 插件。示例请见 [typeorm/react-native-example](https://github.com/typeorm/react-native-example)。
+TypeORM 能够使用 [react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage) 插件在 React Native 应用中运行。

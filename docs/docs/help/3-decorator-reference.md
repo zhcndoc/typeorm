@@ -31,7 +31,7 @@ export class User {}
     engine: "MyISAM",
     database: "example_dev",
     schema: "schema_with_best_tables",
-    comment: "This is users table",
+    comment: "这是 users 表",
     synchronize: false,
     orderBy: {
         name: "ASC",
@@ -129,35 +129,43 @@ export class User {
 
 `@Column` 接受多个可用选项：
 
-- `type: ColumnType` - 列类型。详见[支持的列类型](../entity/1-entities.md#column-types)。  
-- `name: string` - 数据库表中的列名。默认由属性名生成，可手动设定。  
-- `length: string|number` - 列类型长度。例如 `varchar(150)`，指定列类型和长度。  
-- `width: number` - 列类型的显示宽度，仅用于 [MySQL 整数类型](https://dev.mysql.com/doc/refman/5.7/en/integer-types.html)。在新版本 MySQL 中已弃用，将在未来版本 TypeORM 中移除。  
-- `onUpdate: string` - `ON UPDATE` 触发器，仅用于 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html)。  
-- `nullable: boolean` - 是否允许该列为 `NULL`，默认 `false`。  
-- `update: boolean` - 是否允许通过 "save" 操作更新该列，默认 `true`。若为 `false` ，只能插入时写入字段。  
-- `insert: boolean` - 插入时是否设置该列值，默认 `true`。  
-- `select: boolean` - 查询时是否默认包含该列，默认 `true`，设为 `false` 时列数据不会在标准查询结果返回。  
-- `default: string` - 数据库级别的 `DEFAULT` 值。  
-- `primary: boolean` - 将该列标记为主键。等同于 `@PrimaryColumn`。  
-- `unique: boolean` - 设置唯一约束，默认 `false`。  
-- `comment: string` - 列注释，不是所有数据库均支持。  
-- `precision: number` - 小数精度，适用于 decimal 类型，最大存储数字位数。  
-- `scale: number` - 小数标度，decimal 类型小数点右边的位数，不能超过 precision。  
-- `zerofill: boolean` - MySQL 数字列添加 `ZEROFILL` 属性。启用时 MySQL 自动加上 `UNSIGNED`。在新版本 MySQL 中弃用，将在未来版本 TypeORM 移除。建议改用字符串列和 MySQL 的 `LPAD` 函数。  
-- `unsigned: boolean` - MySQL 数字列添加 `UNSIGNED` 属性。  
-- `charset: string` - 列字符集，并非所有数据库支持。  
-- `collation: string` - 列排序规则。  
-- `enum: string[]|AnyEnum` - 用于枚举列类型，指定允许的枚举值列表，可以是字符串数组或枚举类。  
-- `enumName: string` - 生成枚举类型的名称。未指定时 TypeORM 会根据实体与列名生成。若在不同表使用同一枚举类型时须指定。  
-- `primaryKeyConstraintName: string` - 主键约束名称，不指定则根据表名及列名生成。  
-- `asExpression: string` - 生成列表达式，仅支持 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) 和 [Postgres](https://www.postgresql.org/docs/12/ddl-generated-columns.html)。  
-- `generatedType: "VIRTUAL"|"STORED"` - 生成列类型，仅使用于 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/create-table-generated-columns.html) 和 [Postgres（仅支持“STORED”）](https://www.postgresql.org/docs/12/ddl-generated-columns.html)。  
-- `hstoreType: "object"|"string"` - Postgres `HSTORE` 列的返回类型，字符串或对象。仅 Postgres 支持。  
-- `array: boolean` - 用于 Postgres 和 CockroachDB 的数组类型列（例如 int[]）。  
-- `transformer: ValueTransformer|ValueTransformer[]` - 用于读写时转换列值的转换器，可为单个或数组，应用顺序为实体到数据库值为自然顺序，反之为倒序。  
-- `spatialFeatureType: string` - 可选空间列约束类型（`Point`、`Polygon`、`LineString`、`Geometry`）。未指定默认为 `Geometry`。仅 PostgreSQL 和 CockroachDB 支持。  
-- `srid: number` - 空间参考 ID，用作空间列约束，默认 `0`。标准地理坐标对应 [EPSG 4326](http://spatialreference.org/ref/epsg/wgs-84/)。仅 PostgreSQL 和 CockroachDB 支持。  
+- `type: ColumnType` - 列类型。为[支持的列类型](../entity/1-entities.md#column-types)之一。
+- `name: string` - 数据库表中的列名。
+  默认情况下，列名由属性名生成。
+  你可以通过指定自己的名称来更改它。
+- `length: string|number` - 列类型的长度。例如，如果你想创建 `varchar(150)` 类型，
+  需要指定列类型和长度选项。
+- `width: number` - 列类型的显示宽度。仅用于[MySQL 整型类型](https://dev.mysql.com/doc/refman/5.7/en/integer-types.html)。在较新的 MySQL 版本中已 _弃用_，并将在 TypeORM 的后续版本中移除。
+- `onUpdate: string` - `ON UPDATE` 触发器。仅用于[MySQL](https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html)。
+- `nullable: boolean` - 决定该列是否可以为 `NULL`，或始终必须为 `NOT NULL`。默认列为 `nullable: false`。
+- `update: boolean` - 表示在 "save" 操作中是否更新该列的值。如果为 false，则只有在第一次插入对象时才能写入该值。
+  默认值为 `true`。
+- `insert: boolean` - 表示在第一次插入对象时是否设置该列的值。默认值为 `true`。
+- `select: boolean` - 定义查询时是否默认隐藏该列。设置为 `false` 时，标准查询不会显示该列数据。默认列为 `select: true`
+- `default: string` - 添加数据库层级的列 `DEFAULT` 值。
+- `primary: boolean` - 将列标记为主键。等同于使用 `@PrimaryColumn`。
+- `unique: boolean` - 将列标记为唯一列（创建唯一约束）。默认值为 false。
+- `comment: string` - 数据库列注释。并非所有数据库类型都支持。
+- `precision: number` - 小数（精确数值）列的精度（仅适用于 decimal 列），表示存储值的最大
+  位数。用于某些列类型。
+- `scale: number` - 小数（精确数值）列的小数位数（仅适用于 decimal 列），
+  表示小数点右侧的位数，且不能大于 precision。
+  用于某些列类型。
+- `zerofill: boolean` - 为数值列添加 `ZEROFILL` 属性。仅用于 MySQL。若为 `true`，MySQL 会自动为该列添加 `UNSIGNED` 属性。在较新的 MySQL 版本中已 _弃用_，并将在 TypeORM 的后续版本中移除。请按 MySQL 的建议使用字符列和 `LPAD` 函数。
+- `unsigned: boolean` - 为数值列添加 `UNSIGNED` 属性。仅用于 MySQL。
+- `charset: string` - 定义列字符集。并非所有数据库类型都支持。
+- `collation: string` - 定义列排序规则。
+- `enum: string[]|AnyEnum` - 用于 `enum` 列类型，以指定允许的枚举值列表。
+  你可以指定值数组，或指定一个枚举类。
+- `enumName: string` - 生成的枚举类型名称。如果未指定，TypeORM 会根据实体名和列名生成枚举类型——因此当你打算在不同表中使用相同枚举类型时，这个选项是必要的。
+- `primaryKeyConstraintName: string` - 主键约束的名称。如果未指定，则会根据表名和相关列名生成约束名称。
+- `asExpression: string` - 生成列表达式。受 PostgreSQL/CockroachDB、MySQL/MariaDB、Oracle、SAP HANA、Spanner、SQLite 和 SQL Server 支持。
+- `generatedType: "VIRTUAL"|"STORED"` - 生成列类型。受 PostgreSQL（仅 `STORED`）、CockroachDB、MySQL/MariaDB、Oracle（仅 `VIRTUAL`）、Spanner（仅 `STORED`）、SQLite 和 SQL Server（仅 `STORED`，内部映射为 `PERSISTED`）支持。
+- `hstoreType: "object"|"string"` - `HSTORE` 列的返回类型。以字符串或对象形式返回值。仅用于[Postgres](https://www.postgresql.org/docs/9.6/static/hstore.html)。
+- `array: boolean` - 用于 postgres 和 cockroachdb 的可数组化列类型（例如 int[]）。
+- `transformer: ValueTransformer|ValueTransformer[]` - 指定值转换器（或转换器数组），用于在从数据库读取或写入时对该列进行（反）序列化。若为数组，值转换器将按从 entityValue 到 databaseValue 的自然顺序应用，并按从 databaseValue 到 entityValue 的逆序应用。
+- `spatialFeatureType: string` - 可选的特征类型（`Point`、`Polygon`、`LineString`、`Geometry`），用于作为空间列的约束。如果未指定，则行为与提供了 `Geometry` 相同。仅用于 PostgreSQL 和 CockroachDB。
+- `srid: number` - 用于作为空间列约束的可选[空间参考 ID](https://postgis.net/docs/using_postgis_dbmanagement.html#spatial_ref_sys)。如果未指定，则默认为 `0`。标准地理坐标（WGS84 基准下的纬度/经度）对应于[EPSG 4326](http://spatialreference.org/ref/epsg/wgs-84/)。仅用于 PostgreSQL 和 CockroachDB。
 
 了解更多关于[实体列](../entity/1-entities.md#entity-columns)。
 
@@ -558,7 +566,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@BeforeInsert`
 
@@ -575,7 +583,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@AfterInsert`
 
@@ -592,7 +600,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@BeforeUpdate`
 
@@ -609,7 +617,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@AfterUpdate`
 
@@ -626,7 +634,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@BeforeRemove`
 
@@ -643,7 +651,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@AfterRemove`
 
@@ -660,7 +668,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@BeforeSoftRemove`
 
@@ -677,7 +685,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@AfterSoftRemove`
 
@@ -694,7 +702,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@BeforeRecover`
 
@@ -711,7 +719,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@AfterRecover`
 
@@ -728,7 +736,7 @@ export class Post {
 }
 ```
 
-Learn more about [listeners](../listeners-and-subscribers.md).
+了解更多关于[监听器](../listeners-and-subscribers.md)。
 
 #### `@EventSubscriber`
 
@@ -770,7 +778,7 @@ export class PostSubscriber implements EntitySubscriberInterface {
 }
 ```
 
-Learn more about [subscribers](../listeners-and-subscribers.md).
+了解更多关于[订阅者](../listeners-and-subscribers.md)。
 
 ## 其他装饰器
 
@@ -840,7 +848,7 @@ export class User {
 }
 ```
 
-> Note: MySQL stores unique constraints as unique indexes
+> 注意：MySQL 将唯一约束存储为唯一索引
 
 #### `@Check`
 

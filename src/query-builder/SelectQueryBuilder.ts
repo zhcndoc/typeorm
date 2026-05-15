@@ -1436,35 +1436,23 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         order: "ASC" | "DESC" = "ASC",
         nulls?: "NULLS FIRST" | "NULLS LAST",
     ): this {
-        if (order !== undefined && order !== "ASC" && order !== "DESC")
-            throw new TypeORMError(
-                `SelectQueryBuilder.addOrderBy "order" can accept only "ASC" and "DESC" values.`,
-            )
-        if (
-            nulls !== undefined &&
-            nulls !== "NULLS FIRST" &&
-            nulls !== "NULLS LAST"
-        )
-            throw new TypeORMError(
-                `SelectQueryBuilder.addOrderBy "nulls" can accept only "NULLS FIRST" and "NULLS LAST" values.`,
-            )
-
-        if (sort) {
-            if (typeof sort === "object") {
-                this.validateOrderByCondition(sort)
-                this.expressionMap.orderBys = sort
-            } else {
-                if (nulls) {
-                    this.expressionMap.orderBys = {
-                        [sort as string]: { order, nulls },
-                    }
-                } else {
-                    this.expressionMap.orderBys = { [sort as string]: order }
-                }
-            }
-        } else {
+        if (!sort) {
             this.expressionMap.orderBys = {}
+            return this
         }
+
+        if (typeof sort === "object") {
+            this.validateOrderByCondition(sort)
+            this.expressionMap.orderBys = sort
+            return this
+        }
+
+        const condition: OrderByCondition = nulls
+            ? { [sort]: { order, nulls } }
+            : { [sort]: order }
+        this.validateOrderByCondition(condition)
+        this.expressionMap.orderBys = condition
+
         return this
     }
 
@@ -1480,18 +1468,10 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         order: "ASC" | "DESC" = "ASC",
         nulls?: "NULLS FIRST" | "NULLS LAST",
     ): this {
-        if (order !== undefined && order !== "ASC" && order !== "DESC")
-            throw new TypeORMError(
-                `SelectQueryBuilder.addOrderBy "order" can accept only "ASC" and "DESC" values.`,
-            )
-        if (
-            nulls !== undefined &&
-            nulls !== "NULLS FIRST" &&
-            nulls !== "NULLS LAST"
-        )
-            throw new TypeORMError(
-                `SelectQueryBuilder.addOrderBy "nulls" can accept only "NULLS FIRST" and "NULLS LAST" values.`,
-            )
+        const condition: OrderByCondition = nulls
+            ? { [sort]: { order, nulls } }
+            : { [sort]: order }
+        this.validateOrderByCondition(condition)
 
         if (nulls) {
             this.expressionMap.orderBys[sort] = { order, nulls }
@@ -1503,41 +1483,27 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
 
     /**
      * Sets LIMIT - maximum number of rows to be selected.
-     * When joins are present, a two-query distinct-id strategy is used
-     * so that LIMIT applies to root entities rather than raw joined rows.
+     * NOTE that it may not work as you expect if you are using joins.
+     * If you want to implement pagination, and you are having join in your query,
+     * then use the take method instead.
      *
      * @param limit
      */
     limit(limit?: number): this {
-        this.expressionMap.limit = this.normalizeNumber(limit)
-        if (
-            this.expressionMap.limit !== undefined &&
-            isNaN(this.expressionMap.limit)
-        )
-            throw new TypeORMError(
-                `Provided "limit" value is not a number. Please provide a numeric value.`,
-            )
-
+        this.expressionMap.limit = this.validateNumericInput("limit", limit)
         return this
     }
 
     /**
      * Sets OFFSET - selection offset.
-     * When joins are present, a two-query distinct-id strategy is used
-     * so that OFFSET applies to root entities rather than raw joined rows.
+     * NOTE that it may not work as you expect if you are using joins.
+     * If you want to implement pagination, and you are having join in your query,
+     * then use the skip method instead.
      *
      * @param offset
      */
     offset(offset?: number): this {
-        this.expressionMap.offset = this.normalizeNumber(offset)
-        if (
-            this.expressionMap.offset !== undefined &&
-            isNaN(this.expressionMap.offset)
-        )
-            throw new TypeORMError(
-                `Provided "offset" value is not a number. Please provide a numeric value.`,
-            )
-
+        this.expressionMap.offset = this.validateNumericInput("offset", offset)
         return this
     }
 
@@ -1547,15 +1513,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
      * @param take
      */
     take(take?: number): this {
-        this.expressionMap.take = this.normalizeNumber(take)
-        if (
-            this.expressionMap.take !== undefined &&
-            isNaN(this.expressionMap.take)
-        )
-            throw new TypeORMError(
-                `Provided "take" value is not a number. Please provide a numeric value.`,
-            )
-
+        this.expressionMap.take = this.validateNumericInput("take", take)
         return this
     }
 
@@ -1565,15 +1523,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
      * @param skip
      */
     skip(skip?: number): this {
-        this.expressionMap.skip = this.normalizeNumber(skip)
-        if (
-            this.expressionMap.skip !== undefined &&
-            isNaN(this.expressionMap.skip)
-        )
-            throw new TypeORMError(
-                `Provided "skip" value is not a number. Please provide a numeric value.`,
-            )
-
+        this.expressionMap.skip = this.validateNumericInput("skip", skip)
         return this
     }
 
@@ -3467,10 +3417,7 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
         // first query find ids in skip and take range
         // and second query loads the actual data in given ids range
         if (
-            (this.expressionMap.skip ||
-                this.expressionMap.take ||
-                this.expressionMap.offset ||
-                this.expressionMap.limit) &&
+            (this.expressionMap.skip || this.expressionMap.take) &&
             this.expressionMap.joinAttributes.length > 0
         ) {
             // we are skipping order by here because its not working in subqueries anyway
@@ -3510,10 +3457,6 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
 
             const originalQuery = this.clone()
 
-            // clear limit/offset from the inner query since pagination is handled by the outer distinct query
-            originalQuery.expressionMap.limit = undefined
-            originalQuery.expressionMap.offset = undefined
-
             // preserve original timeTravel value since we set it to "false" in subquery
             const originalQueryTimeTravel =
                 originalQuery.expressionMap.timeTravel
@@ -3532,8 +3475,8 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
                     "distinctAlias",
                 )
                 .timeTravelQuery(originalQueryTimeTravel)
-                .offset(this.expressionMap.skip ?? this.expressionMap.offset)
-                .limit(this.expressionMap.take ?? this.expressionMap.limit)
+                .offset(this.expressionMap.skip)
+                .limit(this.expressionMap.take)
                 .orderBy(orderBys)
                 .cache(
                     this.expressionMap.cache && this.expressionMap.cacheId
@@ -3593,14 +3536,12 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
                             " IN (:...orm_distinct_ids)"
                     }
                 }
-                const secondQuery = this.clone()
+                rawResults = await this.clone()
                     .mergeExpressionMap({
                         extraAppendedAndWhereCondition: condition,
                     })
                     .setParameters(parameters)
-                secondQuery.expressionMap.limit = undefined
-                secondQuery.expressionMap.offset = undefined
-                rawResults = await secondQuery.loadRawResults(queryRunner)
+                    .loadRawResults(queryRunner)
             }
         } else {
             rawResults = await this.loadRawResults(queryRunner)
@@ -3641,83 +3582,90 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
                     this.findOptions.loadEagerRelations,
                 )
 
-            await Promise.all(
-                this.relationMetadatas.map(async (relation) => {
-                    // Prevent infinite recursion from circular eager
-                    // chains (e.g. A→B→C→A). Each branch maintains its
-                    // own visited set so parallel branches don't interfere.
-                    if (relation.isEager) {
-                        const targetEntity =
-                            relation.inverseEntityMetadata.tablePath
-                        if (this.eagerLoadChain.has(targetEntity)) return
-                    }
+            const loadRelation = async (
+                relation: RelationMetadata,
+            ): Promise<void> => {
+                // Prevent infinite recursion from circular eager
+                // chains (e.g. A→B→C→A). Each branch maintains its
+                // own visited set so parallel branches don't interfere.
+                if (relation.isEager) {
+                    const targetEntity =
+                        relation.inverseEntityMetadata.tablePath
+                    if (this.eagerLoadChain.has(targetEntity)) return
+                }
 
-                    const relationTarget = relation.inverseEntityMetadata.target
-                    const relationAlias =
-                        relation.inverseEntityMetadata.targetName
+                const relationTarget = relation.inverseEntityMetadata.target
+                const relationAlias = relation.inverseEntityMetadata.targetName
 
-                    const queryBuilder = this.createQueryBuilder(queryRunner)
-                        .select(relationAlias)
-                        .from(relationTarget, relationAlias)
+                const queryBuilder = this.createQueryBuilder(queryRunner)
+                    .select(relationAlias)
+                    .from(relationTarget, relationAlias)
 
-                    // Propagate eager load chain with current entity
-                    // added, so the child detects cycles in its branch
-                    if (relation.isEager) {
-                        queryBuilder.eagerLoadChain = new Set(
-                            this.eagerLoadChain,
+                // Propagate eager load chain with current entity
+                // added, so the child detects cycles in its branch
+                if (relation.isEager) {
+                    queryBuilder.eagerLoadChain = new Set(this.eagerLoadChain)
+                    queryBuilder.eagerLoadChain.add(
+                        relation.entityMetadata.tablePath,
+                    )
+                }
+
+                queryBuilder.setFindOptions({
+                    select: this.findOptions.select
+                        ? OrmUtils.deepValue(
+                              this.findOptions.select,
+                              relation.propertyPath,
+                          )
+                        : undefined,
+                    order: this.findOptions.order
+                        ? OrmUtils.deepValue(
+                              this.findOptions.order,
+                              relation.propertyPath,
+                          )
+                        : undefined,
+                    relations: this.findOptions.relations
+                        ? OrmUtils.deepValue(
+                              this.findOptions.relations,
+                              relation.propertyPath,
+                          )
+                        : undefined,
+                    withDeleted: this.findOptions.withDeleted,
+                    relationLoadStrategy: this.findOptions.relationLoadStrategy,
+                    loadEagerRelations: this.findOptions.loadEagerRelations,
+                })
+                if (entities.length > 0) {
+                    const relatedEntityGroups: any[] =
+                        await queryStrategyRelationIdLoader.loadManyToManyRelationIdsAndGroup(
+                            relation,
+                            entities,
+                            undefined,
+                            queryBuilder,
                         )
-                        queryBuilder.eagerLoadChain.add(
-                            relation.entityMetadata.tablePath,
+                    entities.forEach((entity) => {
+                        const relatedEntityGroup = relatedEntityGroups.find(
+                            (group) => group.entity === entity,
                         )
-                    }
-
-                    queryBuilder.setFindOptions({
-                        select: this.findOptions.select
-                            ? OrmUtils.deepValue(
-                                  this.findOptions.select,
-                                  relation.propertyPath,
-                              )
-                            : undefined,
-                        order: this.findOptions.order
-                            ? OrmUtils.deepValue(
-                                  this.findOptions.order,
-                                  relation.propertyPath,
-                              )
-                            : undefined,
-                        relations: this.findOptions.relations
-                            ? OrmUtils.deepValue(
-                                  this.findOptions.relations,
-                                  relation.propertyPath,
-                              )
-                            : undefined,
-                        withDeleted: this.findOptions.withDeleted,
-                        relationLoadStrategy:
-                            this.findOptions.relationLoadStrategy,
-                        loadEagerRelations: this.findOptions.loadEagerRelations,
+                        if (relatedEntityGroup) {
+                            const value =
+                                relatedEntityGroup.related === undefined
+                                    ? null
+                                    : relatedEntityGroup.related
+                            relation.setEntityValue(entity, value)
+                        }
                     })
-                    if (entities.length > 0) {
-                        const relatedEntityGroups: any[] =
-                            await queryStrategyRelationIdLoader.loadManyToManyRelationIdsAndGroup(
-                                relation,
-                                entities,
-                                undefined,
-                                queryBuilder,
-                            )
-                        entities.forEach((entity) => {
-                            const relatedEntityGroup = relatedEntityGroups.find(
-                                (group) => group.entity === entity,
-                            )
-                            if (relatedEntityGroup) {
-                                const value =
-                                    relatedEntityGroup.related === undefined
-                                        ? null
-                                        : relatedEntityGroup.related
-                                relation.setEntityValue(entity, value)
-                            }
-                        })
-                    }
-                }),
-            )
+                }
+            }
+
+            // Avoid concurrent queries on the same pg client; see #12238.
+            // CockroachDB uses the pg package over a single connection too.
+            const driverType = this.dataSource.options.type
+            if (driverType === "postgres" || driverType === "cockroachdb") {
+                for (const relation of this.relationMetadatas) {
+                    await loadRelation(relation)
+                }
+            } else {
+                await Promise.all(this.relationMetadatas.map(loadRelation))
+            }
         }
 
         return {
@@ -3915,18 +3863,6 @@ export class SelectQueryBuilder<Entity extends ObjectLiteral>
     ): this {
         ObjectUtils.assign(this.expressionMap, expressionMap)
         return this
-    }
-
-    /**
-     * Normalizes a give number - converts to int if possible.
-     *
-     * @param num
-     */
-    protected normalizeNumber(num: any) {
-        if (typeof num === "number" || num === undefined || num === null)
-            return num
-
-        return Number(num)
     }
 
     /**

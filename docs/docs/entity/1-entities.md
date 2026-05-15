@@ -342,7 +342,7 @@ TypeORM 支持跨数据库的 `vector` 和 `halfvec` 列类型：
     - PostgreSQL：`halfvec` 类型，通过 `pgvector` 扩展提供
     - SAP HANA Cloud：`half_vector` 类型的别名
 
-你可以通过 `length` 选项指定向量纬度：
+你可以通过 `length` 选项指定向量维度：
 
 ```typescript
 @Entity()
@@ -446,7 +446,29 @@ name: string;
 - `transformer: { from(value: DatabaseType): EntityType, to(value: EntityType): DatabaseType }` - 用于将任意类型的属性 `EntityType` 转换为数据库支持的类型 `DatabaseType`。支持数组形式的转换器，会按自然顺序写入，按相反顺序读取。例如 `[lowercase, encrypt]` 会先转换为小写再加密写入，读取时先解密。
 - `utc: boolean` - 指定日期值是否应以 UTC 时区存储和读取，仅适用于 `date` 类型列。默认 `false`（为兼容性使用本地时区）。
 
-注意：大多数列选项是关系型数据库特定的，`MongoDB` 中不可用。
+- `length: number` - 列类型的长度。例如，如果你想创建 `varchar(150)` 类型，则需要指定列类型和长度选项。
+- `onUpdate: string` - `ON UPDATE` 触发器。仅用于 [MySQL](https://dev.mysql.com/doc/refman/5.7/en/timestamp-initialization.html)。
+- `nullable: boolean` - 使数据库中的列为 `NULL` 或 `NOT NULL`。默认列为 `nullable: false`。
+- `update: boolean` - 指示列值是否在 “save” 操作中更新。若为 false，则只有在第一次插入对象时才能写入该值。默认值为 `true`。
+- `insert: boolean` - 指示列值是否在第一次插入对象时设置。默认值为 `true`。
+- `select: boolean` - 定义在执行查询时是否默认隐藏该列。设置为 `false` 时，标准查询不会显示该列数据。默认列为 `select: true`
+- `default: string` - 添加数据库层面的列 `DEFAULT` 值。
+- `primary: boolean` - 将列标记为主键。与使用 `@PrimaryColumn` 相同。
+- `unique: boolean` - 将列标记为唯一列（创建唯一约束）。
+- `comment: string` - 数据库列注释。不支持所有数据库类型。
+- `precision: number` - 十进制（精确数值）列的精度（仅适用于 decimal 列），表示存储值的最大位数。用于某些列类型。
+- `scale: number` - 十进制（精确数值）列的小数位数（仅适用于 decimal 列），表示小数点右侧的位数，且不能大于 precision。用于某些列类型。
+- `unsigned: boolean` - 为数值列添加 `UNSIGNED` 属性。仅用于 MySQL。
+- `charset: string` - 定义列字符集。不支持所有数据库类型。
+- `collation: string` - 定义列排序规则。
+- `enum: string[]|AnyEnum` - 用于 `enum` 列类型，指定允许的枚举值列表。你可以指定值数组或枚举类。
+- `enumName: string` - 定义所使用枚举的名称。
+- `asExpression: string` - 生成列表达式。受 PostgreSQL/CockroachDB、MySQL/MariaDB、Oracle、SAP HANA、Spanner、SQLite 和 SQL Server 支持。
+- `generatedType: "VIRTUAL"|"STORED"` - 生成列类型。受 PostgreSQL（仅 `STORED`）、CockroachDB、MySQL/MariaDB、Oracle（仅 `VIRTUAL`）、Spanner（仅 `STORED`）、SQLite 和 SQL Server（仅 `STORED`，内部映射为 `PERSISTED`）支持。
+- `hstoreType: "object"|"string"` - `HSTORE` 列的返回类型。返回值为字符串或对象。仅用于 [Postgres](https://www.postgresql.org/docs/9.6/static/hstore.html)。
+- `array: boolean` - 用于支持数组的 postgres 和 cockroachdb 列类型（例如 int[]）
+- `transformer: { from(value: DatabaseType): EntityType, to(value: EntityType): DatabaseType }` - 用于将任意类型 `EntityType` 的属性封装为数据库支持的类型 `DatabaseType`。也支持转换器数组，在写入时会按自然顺序应用，在读取时会按相反顺序应用。例如 `[lowercase, encrypt]` 在写入时会先将字符串转为小写再加密，读取时则先解密再不做处理。
+- `utc: boolean` - 指示日期值是否应以 UTC 时区而不是本地时区存储和读取。仅适用于 `date` 列类型。默认值为 `false`（为向后兼容而使用本地时区）。
 
 ## 实体继承
 
@@ -541,9 +563,9 @@ TypeORM 支持邻接列表（Adjacency list）和闭包表（Closure table）两
 
 ### 邻接列表
 
-邻接列表是一个简单的自引用模型。
-优点是简单明了，
-缺点是因为连接限制，不能一次性加载很大的树。
+邻接列表是一个简单的自引用模型。  
+优点是简单明了，  
+缺点是因为连接限制，不能一次性加载很大的树。  
 示例：
 
 ```typescript
@@ -576,9 +598,9 @@ export class Category {
 
 ### 闭包表
 
-闭包表将父子关系以特殊方式存储在独立的表中。
-读写效率均较高。
-想深入了解闭包表请看[Bill Karwin 的精彩演讲](https://www.slideshare.net/billkarwin/models-for-hierarchical-data)。
+闭包表将父子关系以特殊方式存储在独立的表中。  
+读写效率均较高。  
+想深入了解闭包表请看[Bill Karwin 的精彩演讲](https://www.slideshare.net/billkarwin/models-for-hierarchical-data)。  
 示例：
 
 ```typescript
