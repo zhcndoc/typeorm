@@ -551,6 +551,22 @@ const loadedPosts = await dataSource.getRepository(Post).findBy({
 SELECT * FROM "post" WHERE "metadata" ::jsonb @> '{"author":{"name":"John"}}'
 ```
 
+`JsonContains` 也接受数组，因此存储 JSON 数组的 jsonb 列可以直接查询：
+
+```ts
+import { JsonContains } from "typeorm"
+
+const loadedPosts = await dataSource.getRepository(Post).findBy({
+    tags: JsonContains([{ name: "TypeScript" }]),
+})
+```
+
+将执行以下查询：
+
+```sql
+SELECT * FROM "post" WHERE "tags" ::jsonb @> '[{"name":"TypeScript"}]'
+```
+
 - `Raw`
 
 ```ts

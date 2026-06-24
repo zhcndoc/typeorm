@@ -66,6 +66,18 @@ postCode: number
 
 如果您需要零填充的显示格式，请在应用层使用 `String.prototype.padStart()` 或在原始查询中使用 MySQL `LPAD()` 函数来处理。整数类型的 `unsigned` 选项**不受**此更改影响。
 
+#### `QueryBuilder.useIndex` 签名已更改
+
+在指定 `USE INDEX` 查询提示时，`QueryBuilder.useIndex()` 方法不再接受原始 SQL，而是接受索引名称或索引名称数组。
+
+```typescript
+// 之前
+qb.useIndex("index1, `index#2`")
+
+// 之后
+qb.useIndex(["index1", "index#2"])
+```
+
 ### SQLite
 
 `sqlite3` 包已被弃用。请改用 `better-sqlite3`：
@@ -1060,7 +1072,7 @@ Container.set("UserRepository", dataSource.getRepository(User))
 
 ### NestJS
 
-NestJS 用户不受影响 — `@nestjs/typeorm` 包有自己的集成，不依赖于 TypeORM 已移除的容器系统。但是，`@nestjs/typeorm` v10 和当前的 v11.0.0 尝试注册已移除的 `Connection` 类，将在启动时崩溃。确保你使用的是包含 TypeORM v1 兼容性修复版本的 `@nestjs/typeorm`。
+NestJS 用户不受影响——`@nestjs/typeorm` 包有其自己的集成，不依赖于 TypeORM 已移除的容器系统。不过，`@nestjs/typeorm` v10 和 v11.0.0 会尝试注册已移除的 `Connection` 类，并会在启动时崩溃。请升级到 `@nestjs/typeorm` v11.0.1 或更高版本以兼容 TypeORM v1。`@typeorm/codemod` 工具会自动为你升级它。
 
 ## 其他内部移除
 

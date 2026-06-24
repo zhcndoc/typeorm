@@ -1171,7 +1171,9 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
         if (!this.hasCommonTableExpressions()) {
             return ""
         }
-        const databaseRequireRecusiveHint =
+
+        let hasRecursiveCTEs = false
+        const doesDbRequireRecursiveHint =
             this.dataSource.driver.cteCapabilities.requiresRecursiveHint
 
         const cteStrings = this.expressionMap.commonTableExpressions.map(
@@ -1215,10 +1217,9 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
                     }
                     cteHeader += `(${escapedColumnNames.join(", ")})`
                 }
-                const recursiveClause =
-                    cte.options.recursive && databaseRequireRecusiveHint
-                        ? "RECURSIVE"
-                        : ""
+                if (cte.options.recursive) {
+                    hasRecursiveCTEs = true
+                }
                 let materializeClause = ""
                 if (
                     this.dataSource.driver.cteCapabilities.materializedHint &&
@@ -1230,7 +1231,6 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
                 }
 
                 return [
-                    recursiveClause,
                     cteHeader,
                     "AS",
                     materializeClause,
@@ -1241,7 +1241,10 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
             },
         )
 
-        return "WITH " + cteStrings.join(", ") + " "
+        const recursiveClause =
+            hasRecursiveCTEs && doesDbRequireRecursiveHint ? "RECURSIVE " : ""
+
+        return "WITH " + recursiveClause + cteStrings.join(", ") + " "
     }
 
     /**
@@ -1540,7 +1543,15 @@ export abstract class QueryBuilder<Entity extends ObjectLiteral> {
                         parameters.push(this.createParameter(v))
                     }
                 } else {
-                    parameters.push(this.createParameter(parameterValue.value))
+                    let value = parameterValue.value
+                    if (
+                        parameterValue.type === "jsonContains" &&
+                        value !== null &&
+                        typeof value === "object"
+                    ) {
+                        value = JSON.stringify(value)
+                    }
+                    parameters.push(this.createParameter(value))
                 }
             }
 

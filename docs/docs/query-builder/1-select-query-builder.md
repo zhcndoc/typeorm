@@ -1168,7 +1168,9 @@ const users = await dataSource
 
 ## 查询已删除的行
 
-实体若使用 `@DeleteDateColumn` 表示软删除，默认查询不会返回被软删除的行。
+`select: false` 仅控制读取时从数据库加载哪些内容。`repository.save()` 返回的内存实体不受影响——你为 `select: false` 列提供的任何值，都会同时保留在返回的实体以及传递给 `save()` 的原始引用中。若想之后从数据库重新读取这些列，请再执行一次带 `addSelect` 的查询。
+
+## 查询已删除的行
 
 示例：
 
