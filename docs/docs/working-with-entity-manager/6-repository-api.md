@@ -341,7 +341,16 @@ const count = await repository.count({
         firstName: "Timber",
     },
 })
+
+const distinctCount = await repository.count({
+    select: {
+        firstName: true,
+    },
+})
 ```
+
+当提供 `select` 时，会计算所选列的不同组合数量；如果同时使用 `relations`，还会包括所选关联列。
+如果未提供 `select`，则默认的计数行为保持不变。
 
 - `countBy` - 计算符合 `FindOptionsWhere` 的实体数量。对于分页很有用。
 

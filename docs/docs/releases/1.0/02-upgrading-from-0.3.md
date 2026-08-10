@@ -533,7 +533,7 @@ const dataSource = new DataSource({
 })
 ```
 
-## Columns
+## 列
 
 ### `readonly` 选项已移除
 
@@ -1062,9 +1062,7 @@ class UserService {
 import { DataSource } from "typeorm"
 import { Container } from "typedi"
 
-const dataSource = new DataSource({
-    /* ... */
-})
+const dataSource = new DataSource({/* ... */})
 await dataSource.initialize()
 Container.set(DataSource, dataSource)
 Container.set("UserRepository", dataSource.getRepository(User))

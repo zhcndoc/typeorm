@@ -194,7 +194,7 @@ const dataSource = new DataSource({
 该组合适用于你想要：
 
 - 明确地在数据库中查找 NULL 值
-- 捕获可能滑入查询中的 undefined 值的编程错误
+- 捕获可能滑入查询中的 undefined 值的编程错误。
 
 ## 适用于所有 where 操作
 
@@ -229,10 +229,33 @@ await manager.delete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 
 await manager.softDelete(Post, { text: null }) // 尊重 invalidWhereValuesBehavior 设置
 ```
 
-### 使用 setFindOptions 的查询构建器
+:::warning
+**空条件会被拒绝。** `update`、`delete`、`softDelete` 和 `restore` 要求条件不能为空——空条件会生成 `WHERE 1=1`，从而影响**所有**行。由于 `"ignore"` 会移除 `null`/`undefined` 属性，因此键**全部**被移除的条件会变为空条件。在这种情况下，操作会被拒绝，而不会作为不带过滤条件的写入操作执行：
 
 ```typescript
-// setFindOptions 走查找选项路径，因此会尊重该设置
+const dataSource = new DataSource({
+    // ... 其他选项
+    invalidWhereValuesBehavior: { null: "ignore", undefined: "ignore" },
+})
+
+// { text: null } 移除属性后变为 {} -> 被拒绝；表中的数据不会被清空
+await manager.delete(Post, { text: null })
+// Error: Empty criteria(s) are not allowed for the delete method.
+```
+
+当你确实希望影响所有行时，请使用专用的 `updateAll()` / `deleteAll()` 方法。
+:::
+
+### 仅规范化普通对象条件
+
+`invalidWhereValuesBehavior` 仅规范化**普通的 `FindOptionsWhere` 对象**。传递给 `update` / `delete` / `softDelete` / `restore` 的任何其他条件值——**实体类实例**、`FindOperator`、数组、`Date`、`Buffer` 或基本类型的 `id`——都会原样传递，**不会**经过验证。因此，某个可为空列为 `null` 的实体实例会生成 `col = NULL`（匹配不到任何内容），而不会抛出错误或进行转换。如果需要处理 null，请传递一个带有 `IsNull()` 运算符的普通对象（例如 `{ text: IsNull() }`）。
+
+> 对实体实例条件进行深度验证需要实体元数据，这不在此处的范围内；如果希望应用 `invalidWhereValuesBehavior`，请使用普通的 `FindOptionsWhere` 对象。
+
+### 使用 setFindOptions 的 QueryBuilder
+
+```typescript
+// setFindOptions 会经过查找选项路径，因此会尊重该设置
 await dataSource
     .createQueryBuilder(Post, "post")
     .setFindOptions({ where: { text: null } }) // 尊重 invalidWhereValuesBehavior 设置
@@ -241,7 +264,7 @@ await dataSource
 
 ### 不受影响：查询构建器的 `.where()`
 
-查询构建器的 `.where()`、`.andWhere()` 和 `.orWhere()` 是低级 API，不受此设置影响。`null` 和 `undefined` 值直接传递：
+查询构建器的 `.where()`、`.andWhere()` 和 `.orWhere()` 是低级 API，不受此设置影响。`null` 和 `undefined` 值会直接传递：
 
 ```typescript
 // 这不会尊重 invalidWhereValuesBehavior — null 会直接传递

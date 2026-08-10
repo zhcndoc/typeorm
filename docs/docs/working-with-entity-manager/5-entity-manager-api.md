@@ -309,7 +309,16 @@ const count = await manager.count(User, {
         firstName: "Timber",
     },
 })
+
+const distinctCount = await manager.count(User, {
+    select: {
+        firstName: true,
+    },
+})
 ```
+
+当提供 `select` 时，会统计所选列的不同组合，包括与 `relations` 一起使用时所选关系的列。
+如果未提供 `select`，则默认的计数行为保持不变。
 
 - `countBy` - 统计匹配 `FindOptionsWhere` 条件的实体数量。适用于分页。
 

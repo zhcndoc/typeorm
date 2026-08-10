@@ -142,11 +142,12 @@ export class Category {
 }
 ```
 
-你可以通过在 `@Tree("closure-table", options)` 中设置可选参数 `options` 指定闭包表的名称和/或闭包表列名。`ancestorColumnName` 和 `descendantColumnName` 是回调函数，接收主列的元数据并返回列名。
+您可以通过将可选参数 `options` 传入 `@Tree("closure-table", options)`，指定闭包表的名称和/或闭包表的列名。`ancestorColumnName` 和 `descendantColumnName` 是回调函数，它们接收主列的元数据并返回列名。`closureTableName` 是传递给 DataSource 命名策略的 `closureJunctionTableName` 的参数，默认为父实体的 `tableNameWithoutPrefix`。`closureTableSchema` 指定闭包表要保存到的架构名称，默认为父实体的架构（如果在父实体的装饰器选项中提供）或 dataSource 架构。
 
 ```ts
 @Tree("closure-table", {
-    closureTableName: "category_closure",
+    closureTableName: "category",
+    closureTableSchema: "closures_schema",
     ancestorColumnName: (column) => "ancestor_" + column.propertyName,
     descendantColumnName: (column) => "descendant_" + column.propertyName,
 })

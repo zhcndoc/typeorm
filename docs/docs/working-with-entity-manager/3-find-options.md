@@ -1,4 +1,4 @@
-# 查找选项
+# 查找选项。
 
 ## 基本选项
 
@@ -241,7 +241,7 @@ userRepository.findOne({
 })
 ```
 
-更多信息请参见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)
+更多信息请参见 [锁模式](../query-builder/1-select-query-builder.md#lock-modes)。
 
 ## 示例
 
@@ -279,7 +279,19 @@ userRepository.find({
 })
 ```
 
-无参数查找：
+`count` API 也接受这些查找选项。使用 `select` 时，可以请求不同值计数：
+
+```typescript
+const distinctCount = await userRepository.count({
+    select: {
+        firstName: true,
+    },
+})
+```
+
+当 `select` 包含关系字段时，请在 `relations` 中包含匹配的条目，区别计数将使用所选的关系列。
+
+不带参数的查找：
 
 ```ts
 userRepository.find()
