@@ -51,7 +51,19 @@ const config: Config = {
                 //       async: true,
                 //   },
                   {
-                      src: 'https://www.zhcndoc.com/js/common.js',
+                      src: "https://plausible.io/js/script.hash.js",
+                      defer: true,
+                      "data-domain": "typeorm.io",
+                  },
+                  {
+                      src: "https://widget.kapa.ai/kapa-widget.bundle.js",
+                      "data-website-id": "a9979852-2282-4862-87b3-b3631fb63d46",
+                      "data-project-name": "TypeORM",
+                      "data-project-color": "#d94400",
+                      "data-project-logo":
+                          "https://typeorm.io/img/typeorm-icon-colored.png",
+                      "data-mcp-enabled": "true",
+                      "data-mcp-server-url": "https://typeorm.mcp.kapa.ai",
                       async: true,
                   },
               ]

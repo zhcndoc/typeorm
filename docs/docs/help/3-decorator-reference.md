@@ -164,7 +164,7 @@ export class User {
 - `hstoreType: "object"|"string"` - `HSTORE` 列的返回类型。以字符串或对象形式返回值。仅用于[Postgres](https://www.postgresql.org/docs/9.6/static/hstore.html)。
 - `array: boolean` - 用于 postgres 和 cockroachdb 的可数组化列类型（例如 int[]）。
 - `transformer: ValueTransformer|ValueTransformer[]` - 指定值转换器（或转换器数组），用于在从数据库读取或写入时对该列进行（反）序列化。若为数组，值转换器将按从 entityValue 到 databaseValue 的自然顺序应用，并按从 databaseValue 到 entityValue 的逆序应用。
-- `spatialFeatureType: string` - 可选的特征类型（`Point`、`Polygon`、`LineString`、`Geometry`），用于作为空间列的约束。如果未指定，则行为与提供了 `Geometry` 相同。仅用于 PostgreSQL 和 CockroachDB。
+- `spatialFeatureType: string` - 可选的特征类型（`Point`、`Polygon`、`LineString`、`Geometry`），用于作为空间列的约束，并可带有 `Z`、`M` 或 `ZM` 维度后缀（如 `PointZ`、`GeometryZM`）。如果未指定，则行为与提供了 `Geometry` 相同。仅用于 PostgreSQL 和 CockroachDB。
 - `srid: number` - 用于作为空间列约束的可选[空间参考 ID](https://postgis.net/docs/using_postgis_dbmanagement.html#spatial_ref_sys)。如果未指定，则默认为 `0`。标准地理坐标（WGS84 基准下的纬度/经度）对应于[EPSG 4326](http://spatialreference.org/ref/epsg/wgs-84/)。仅用于 PostgreSQL 和 CockroachDB。
 
 了解更多关于[实体列](../entity/1-entities.md#entity-columns)。

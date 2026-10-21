@@ -7,6 +7,8 @@ TypeORM 的 `DataSource` 保存你的数据库连接设置，并根据你使用�
 
 要建立初始连接或连接池，你必须调用 `DataSource` 实例的 `initialize` 方法。
 
+`initialize` 只能调用一次：如果上一次调用仍在进行中，或已经成功，再次调用会以 `CannotConnectAlreadyConnectedError` 拒绝。如果初始化失败，部分建立的连接会被清理，因此可以安全地再次调用 `initialize`。
+
 断开连接（关闭连接池中的所有连接）发生在调用 `destroy` 方法时。
 
 通常，你会在应用启动时调用 `DataSource` 实例的 `initialize` 方法，
